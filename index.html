@@ -379,9 +379,45 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
 #modal-ativo .modal-card{max-width:680px}
 #c-fgc .aloc-row,#c-escada .aloc-row{grid-template-columns:minmax(100px,1fr) 1.3fr minmax(150px,auto)}
 .kpi.clicavel{cursor:pointer}
+/* ── v2: ajuda, hero, este mês, FAB, barra inferior no celular ── */
+.dica{display:none!important}
+body.ajuda-on .dica{display:block!important}
+.hero-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.hero-grid .kpi{padding:18px 20px}
+.hero-grid .kpi-value{font-size:27px;margin-bottom:2px}
+.hero-grid .kpi-value small{font-size:14px;font-weight:600;color:var(--mut)}
+.hbar{height:10px;background:var(--bor);border-radius:6px;overflow:hidden;margin:10px 0 2px}
+.hbar>i{display:block;height:100%;background:var(--acc);border-radius:6px;min-width:3px}
+.mes-item{padding:11px 0;border-bottom:1px solid var(--bor)}
+.mes-item:last-child{border-bottom:none;padding-bottom:0}
+.mes-item .lin{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:14px}
+.mes-item .lin strong{font-variant-numeric:tabular-nums;white-space:nowrap}
+.mes-item .sub-txt{margin-top:3px}
+.mes-item .btn{margin-top:8px}
+.conc{margin-top:12px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--prio);background:var(--prio-soft);font-size:13px;font-weight:600;line-height:1.45}
+.secao{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:26px 0 12px}
+.conf-nav{display:inline-flex;background:var(--nav);margin-bottom:12px}
+.conf-nav #f-mes{font-size:13.5px;font-weight:600;min-width:150px;text-align:center;color:var(--nav-txt)}
+#c-conf-card.pendente{border:2px solid var(--acc)}
+nav button.tab-link .ti{font-size:13px}
+#fab{position:fixed;right:24px;bottom:24px;width:58px;height:58px;border-radius:50%;background:var(--acc);color:var(--acc-txt);border:none;font-size:30px;font-weight:600;line-height:1;box-shadow:0 6px 20px rgba(15,23,42,.3);z-index:400;display:grid;place-items:center;transition:transform .15s}
+#fab:hover{transform:scale(1.07)}
+#btnAjuda{font-weight:700;font-size:17px}
 .kpi.clicavel:hover{border-color:var(--acc)}
+@media (max-width:980px){ .hero-grid{grid-template-columns:1fr} }
 @media (max-width:680px){
   .donut-wrap svg{width:160px;height:160px;margin:0 auto}
+  /* abas viram barra inferior, como app de banco */
+  nav{position:fixed;left:0;right:0;bottom:0;z-index:450;box-shadow:0 -2px 10px rgba(15,23,42,.2);padding-bottom:env(safe-area-inset-bottom)}
+  .nav-inner{padding:0!important;justify-content:space-around}
+  nav button.tab-link{flex:1;flex-direction:column;gap:2px;padding:8px 2px 7px!important;font-size:10px!important;letter-spacing:0;border-bottom:none;border-top:3px solid transparent;position:relative}
+  nav button.tab-link.active{border-top-color:var(--nav-txt)}
+  nav button.tab-link .ti{font-size:19px}
+  nav .pending-badge{position:absolute;top:3px;right:18%}
+  main{padding-bottom:120px}
+  .app-rodape{padding-bottom:90px}
+  #fab{bottom:80px;right:16px;width:54px;height:54px}
+  .hero-grid .kpi-value{font-size:24px}
   .seg button{padding:8px 10px;font-size:12px}
 }
     </style>
@@ -443,8 +479,10 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
             <label class="check-field"><input type="checkbox" id="a-isento"> Isento de IR</label>
         </div>
         <div class="form-row" style="margin-top:10px;">
-            <div class="form-field"><label>Observação (opcional)</label><input id="a-obs" placeholder="Ex.: comprado para a aposentadoria, cupom semestral"></div>
+            <div class="form-field" style="flex:2;min-width:240px;"><label>Os juros são pagos todo mês em</label><select id="a-paga"></select></div>
+            <div class="form-field" style="flex:2;min-width:200px;"><label>Observação (opcional)</label><input id="a-obs" placeholder="Ex.: cupom semestral"></div>
         </div>
+        <p class="mis-note" style="margin:8px 0 0;">Use "os juros são pagos em" para empréstimos ou títulos com cupom: o saldo do ativo fica parado e a estimativa coloca os juros no ativo escolhido.</p>
         <div class="form-row" style="margin-top:16px;justify-content:flex-end;">
             <button class="btn btn-ghost" onclick="fecharAtivo()">Cancelar</button>
             <button class="btn btn-primary" onclick="salvarAtivo()">Salvar ativo</button>
@@ -470,94 +508,117 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
             <span class="status-pill"><span id="status-dot" class="status-dot dot-offline"></span><span id="status-text">Offline</span></span>
         </div>
         <div class="header-actions">
-            <div class="month-nav" title="Mês de referência (usado no Fechamento e nos destaques)">
-                <button onclick="changeMonth(-1)">◀</button>
-                <span id="current-month">—</span>
-                <button onclick="changeMonth(1)">▶</button>
-            </div>
-            <button class="icon-btn" onclick="irHoje()" title="Voltar ao mês atual">⌂</button>
             <button class="icon-btn" onclick="forceSync()" title="Sincronizar">🔄</button>
+            <button class="icon-btn" id="btnAjuda" onclick="alternarAjuda()" aria-pressed="false" title="Mostrar/ocultar explicações">?</button>
             <button class="icon-btn" onclick="toggleTheme()" title="Tema">🌓</button>
             <button class="icon-btn" id="btnPrivado" onclick="alternarPrivado()" aria-pressed="false" title="Modo privado — atalho P"></button>
         </div>
     </div>
     <nav>
     <div class="nav-inner">
-        <button class="tab-link active" data-tab="Dashboard" onclick="openTab('Dashboard')">📊 Dashboard</button>
-        <button class="tab-link" data-tab="Carteira" onclick="openTab('Carteira')">🧩 Carteira</button>
-        <button class="tab-link" data-tab="Movimentos" onclick="openTab('Movimentos')">💰 Aportes e resgates</button>
-        <button class="tab-link" data-tab="Fechamento" onclick="openTab('Fechamento')">📅 Fechamento <span id="badge-fech" class="pending-badge" style="display:none">!</span></button>
-        <button class="tab-link" data-tab="Previsao" onclick="openTab('Previsao')">🔮 Previsão</button>
-        <button class="tab-link" data-tab="Mercado" onclick="openTab('Mercado')">📈 Mercado</button>
-        <button class="tab-link" data-tab="Plano" onclick="openTab('Plano')">🗺 Plano</button>
-        <button class="tab-link" data-tab="Configuracoes" onclick="openTab('Configuracoes')">⚙ Config.</button>
+        <button class="tab-link active" data-tab="Inicio" onclick="openTab('Inicio')"><span class="ti">🏠</span><span class="tl">Início</span></button>
+        <button class="tab-link" data-tab="Carteira" onclick="openTab('Carteira')"><span class="ti">🧩</span><span class="tl">Carteira</span> <span id="badge-conf" class="pending-badge" style="display:none">!</span></button>
+        <button class="tab-link" data-tab="Movimentos" onclick="openTab('Movimentos')"><span class="ti">💰</span><span class="tl">Movimentos</span></button>
+        <button class="tab-link" data-tab="Projecao" onclick="openTab('Projecao')"><span class="ti">🔮</span><span class="tl">Projeção</span></button>
+        <button class="tab-link" data-tab="Ajustes" onclick="openTab('Ajustes')"><span class="ti">⚙</span><span class="tl">Ajustes</span></button>
     </div>
     </nav>
 </header>
 
 <main>
-<!-- ═════════════ DASHBOARD ═════════════ -->
-<section id="Dashboard" class="tab-content active">
-    <div class="acoes-dash">
-        <button class="btn btn-primary" onclick="atalhoAporte()">＋ Lançar aporte</button>
-        <button class="btn btn-ghost" onclick="atalhoFechamento()">📅 Fechar o mês</button>
-        <button class="btn btn-ghost" onclick="forceSave()" title="Grava tudo no Google Sheets agora">💾 Salvar no Sheets</button>
-        <button class="btn btn-ghost" onclick="exportExcel()">📊 Excel</button>
-    </div>
-
+<!-- ═════════════ INÍCIO ═════════════ -->
+<section id="Inicio" class="tab-content active">
     <div class="card inicio-card no-priv" id="d-inicio" style="display:none;">
         <h2>Comece por aqui</h2>
         <ol id="d-inicio-lista"></ol>
     </div>
 
-    <div class="card">
-        <div class="mis-hero">
-            <div>
-                <div class="kpi-label">🎯 Renda de <span id="d-renda-alvo">R$ 10.000</span>/mês em valores de hoje</div>
-                <div class="big" id="d-pct">—</div>
-                <div class="sub" id="d-hero-sub">—</div>
-            </div>
-            <div style="text-align:right;">
-                <span class="mis-fase" id="d-fase">—</span>
-                <div class="sub" id="d-chegada">—</div>
-            </div>
+    <div class="hero-grid" id="d-hero"></div>
+
+    <div class="flex-row">
+        <div class="card flex-col" id="d-mes-card"><div id="d-mes"></div></div>
+        <div class="card flex-col">
+            <div class="card-head"><h2>Atenção</h2><button class="btn btn-ghost btn-sm" id="d-alertas-mais" style="width:auto;padding:0 10px;display:none;" onclick="alternarAlertas()"></button></div>
+            <ul class="alert-list" id="d-alertas"></ul>
         </div>
-        <div class="prog" id="d-prog"></div>
-        <p class="mis-note" id="d-prog-nota"></p>
     </div>
 
-    <div class="kpi-grid" id="d-kpis"></div>
-
     <div class="card">
-        <h2>Plano × Realizado</h2>
-        <div class="mis-legend">
-            <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--acc)" stroke-width="3"/><circle cx="13" cy="5" r="3.5" fill="var(--acc)"/></svg>Realizado (fechamentos)</span>
-            <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--mut)" stroke-width="2" stroke-dasharray="6 4"/></svg>Plano</span>
-            <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--txt)" stroke-width="1.5" stroke-dasharray="2 3"/></svg>Meta corrigida pela inflação</span>
+        <div class="card-head">
+            <h2>Evolução</h2>
+            <div class="seg" id="d-hor">
+                <button data-h="12" onclick="setHorizonte('12')">12 meses</button>
+                <button data-h="24" onclick="setHorizonte('24')">24 meses</button>
+                <button data-h="60" onclick="setHorizonte('60')">5 anos</button>
+                <button data-h="meta" onclick="setHorizonte('meta')">Até a meta</button>
+            </div>
         </div>
+        <div class="mis-legend" id="d-legenda"></div>
         <div class="mis-chart" id="d-chart"></div>
     </div>
 
     <div class="flex-row">
-        <div class="card flex-col"><h2>Gatilhos e alertas</h2><ul class="alert-list" id="d-alertas"></ul></div>
-        <div class="card flex-col"><h2>Distribuição por classe</h2><div id="d-donut"></div></div>
-    </div>
-    <div class="flex-row">
+        <div class="card flex-col"><h2>Onde está o dinheiro</h2><div id="d-donut"></div><div id="d-conc"></div></div>
         <div class="card flex-col"><h2>Próximos eventos</h2><div id="d-eventos"></div></div>
-        <div class="card flex-col">
-            <h2>Rendimento mês a mês</h2>
-            <div class="mis-legend">
-                <span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--acc)"/></svg>Rendimento real</span>
-                <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--txt)" stroke-width="2.5"/></svg>Esperado no plano</span>
-            </div>
-            <div class="mis-chart" id="d-rend"></div>
+    </div>
+
+    <div class="card" id="d-rend-card" style="display:none;">
+        <h2>Rendimento mês a mês</h2>
+        <div class="mis-legend">
+            <span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--acc)"/></svg>Rendimento conferido</span>
+            <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--txt)" stroke-width="2.5"/></svg>Esperado no plano</span>
         </div>
+        <div class="mis-chart" id="d-rend"></div>
+    </div>
+
+    <div class="card" style="padding:0;">
+        <details class="mis-cfg" style="padding:16px 22px;">
+            <summary>Histórico mensal (saldos conferidos)</summary>
+            <p class="mis-note" style="margin:6px 0 8px;">Clique numa linha para abrir a conferência daquele mês.</p>
+            <div style="overflow-x:auto;margin:0 -22px -16px;"><table>
+                <thead><tr><th>Mês</th><th class="num-cell">Aportes líq.</th><th class="num-cell">Rendimento</th><th class="num-cell">Rend. %</th><th class="num-cell">Esperado</th>
+                <th class="num-cell">Patrimônio</th><th class="num-cell">Plano</th><th class="num-cell">Desvio</th><th class="num-cell">Rend. ÷ aporte</th></tr></thead>
+                <tbody id="f-hist"></tbody>
+            </table></div>
+        </details>
     </div>
 </section>
 
 <!-- ═════════════ CARTEIRA ═════════════ -->
 <section id="Carteira" class="tab-content">
     <div class="kpi-grid" id="c-kpis"></div>
+
+    <!-- Conferir saldos (antigo Fechamento) -->
+    <div class="card no-priv" id="c-conf-card">
+        <div class="card-head">
+            <h2>📋 Conferir saldos com a corretora</h2>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <span id="f-status" style="font-size:12px;font-weight:600;color:var(--mut);"></span>
+                <button class="btn btn-ghost btn-sm" id="c-conf-toggle" style="width:auto;padding:0 12px;height:32px;" onclick="alternarConferir()">Abrir</button>
+            </div>
+        </div>
+        <div id="c-conf-corpo" style="display:none;">
+            <p class="mis-note dica" style="margin:0 0 12px;">Uma vez por mês, abra a corretora e confira o <strong>saldo de cada ativo</strong>. Os campos já vêm com a <strong>estimativa do app</strong> (saldo anterior + movimentos + rendimento pela taxa): só corrija o que for diferente. Mês sem conferência segue com a estimativa.</p>
+            <div class="month-nav conf-nav">
+                <button onclick="changeMonth(-1)" title="Mês anterior">◀</button>
+                <span id="f-mes">—</span>
+                <button onclick="changeMonth(1)" title="Mês seguinte">▶</button>
+            </div>
+            <div id="f-wrap">
+                <div id="f-form"></div>
+                <div class="mis-total"><span>Patrimônio da Missão no fim do mês</span><strong id="f-total">R$ 0,00</strong></div>
+                <div class="mis-conf" id="f-conf"></div>
+                <div class="form-row" style="margin-top:12px;justify-content:flex-end;">
+                    <button class="btn btn-ghost" onclick="abrirAtivo()">＋ Ativo que faltou</button>
+                    <button class="btn btn-ghost" onclick="fechPreencher()">↺ Usar a estimativa</button>
+                    <button class="btn btn-ghost" id="f-excluir" onclick="fechExcluir()">Excluir conferência</button>
+                    <button class="btn btn-primary" onclick="fechSalvar()">✓ Salvar conferência</button>
+                </div>
+            </div>
+            <p class="mis-note" id="f-bloqueado" style="display:none;"></p>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-head">
             <h2>Ativos</h2>
@@ -569,7 +630,7 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
                 <button class="btn btn-primary" onclick="abrirAtivo()">＋ Novo ativo</button>
             </div>
         </div>
-        <p class="mis-note" style="margin:0 0 10px;"><strong>Saldo estimado</strong> = saldo do último fechamento + aportes, resgates e transferências lançados depois dele. Ele vira o saldo real quando você fecha o mês.</p>
+        <p class="mis-note dica" style="margin:0 0 10px;"><strong>Saldo estimado</strong> = último saldo conferido + aportes, resgates e transferências + rendimento estimado pela taxa de cada ativo. Ativo sem taxa cadastrada não rende na estimativa.</p>
         <div id="c-tabela"></div>
     </div>
     <div class="flex-row">
@@ -582,12 +643,12 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
             <div id="c-aloc"></div>
             <h2 style="margin-top:18px;">Próximo aporte sugerido</h2>
             <div id="c-sugestao"></div>
-            <p class="mis-note">Direciona o aporte para as classes mais abaixo do alvo: rebalanceia sem vender nada.</p>
+            <p class="mis-note dica">Direciona o aporte para as classes mais abaixo do alvo: rebalanceia sem vender nada. O alvo se muda em Ajustes → Parâmetros.</p>
         </div>
         <div class="card flex-col">
             <h2>Proteção do FGC por instituição</h2>
             <div id="c-fgc"></div>
-            <p class="mis-note">FGC garante até <strong>R$ 250 mil por CPF por instituição</strong> (CDB, LCI, LCA, LC) e teto de R$ 1 milhão a cada 4 anos. Tesouro Direto tem garantia do Tesouro Nacional e não entra nessa conta.</p>
+            <p class="mis-note dica">FGC garante até <strong>R$ 250 mil por CPF por instituição</strong> (CDB, LCI, LCA, LC) e teto de R$ 1 milhão a cada 4 anos. Tesouro Direto tem garantia do Tesouro Nacional e não entra nessa conta.</p>
             <h2 style="margin-top:18px;">Escada de vencimentos</h2>
             <div id="c-escada"></div>
         </div>
@@ -620,25 +681,11 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
     </div>
 
     <div class="card">
-        <div class="card-head">
-            <h2>Movimentos</h2>
-            <div class="seg" id="m-filtro">
-                <button class="active" data-f="todos" onclick="setFiltroMov('todos')">Todos</button>
-                <button data-f="aporte" onclick="setFiltroMov('aporte')">Aportes</button>
-                <button data-f="resgate" onclick="setFiltroMov('resgate')">Resgates</button>
-                <button data-f="transf" onclick="setFiltroMov('transf')">Transf.</button>
-            </div>
-        </div>
-        <div class="summary-strip" id="m-resumo" style="margin-bottom:12px;"></div>
-        <div id="m-lista"></div>
-    </div>
-
-    <div class="card">
         <div class="pg-head">
             <h2>Programação de recebimentos</h2>
             <span id="p-resumo" class="sub-txt"></span>
         </div>
-        <p class="mis-note" style="margin:0 0 12px;">Dinheiro <strong>novo</strong> que você espera colocar na Missão (venda de imóvel, bônus, 13º...). Entra nas projeções da aba Previsão. Ao receber, use <strong>✓ Efetivar</strong>: vira um aporte. Não lance aqui resgates de algo que já está na carteira — isso contaria o dinheiro duas vezes.</p>
+        <p class="mis-note dica" style="margin:0 0 12px;">Dinheiro <strong>novo</strong> que você espera colocar na Missão (venda de imóvel, bônus, 13º...). Entra nas projeções. Ao receber, use <strong>✓ Efetivar</strong>: vira um aporte. Não lance aqui resgates de algo que já está na carteira — isso contaria o dinheiro duas vezes.</p>
         <div class="form-row no-priv">
             <div class="form-field" style="flex:2;min-width:180px;"><label>Descrição</label><input id="p-desc" placeholder="Ex.: Venda da casa"></div>
             <div class="form-field" style="max-width:170px;"><label>Data prevista</label><input type="date" id="p-data"></div>
@@ -650,44 +697,27 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
         <div id="p-totais" style="margin-top:14px;"></div>
         <div id="p-lista" style="margin-top:14px;"></div>
     </div>
-</section>
 
-<!-- ═════════════ FECHAMENTO ═════════════ -->
-<section id="Fechamento" class="tab-content">
-    <div class="card no-priv">
+    <div class="card">
         <div class="card-head">
-            <h2>Fechamento de <span id="f-mes">—</span></h2>
-            <span id="f-status" style="font-size:12px;font-weight:600;color:var(--mut);"></span>
-        </div>
-        <p class="mis-note" style="margin:0 0 12px;">No fim do mês, abra a corretora e copie o <strong>saldo de cada ativo</strong>. Os campos já vêm com o saldo anterior + os movimentos do mês: só ajuste para o valor real. A diferença é o rendimento. Use ◀ ▶ no topo para escolher o mês.</p>
-        <div id="f-wrap">
-            <div id="f-form"></div>
-            <div class="mis-total"><span>Patrimônio da Missão no fim do mês</span><strong id="f-total">R$ 0,00</strong></div>
-            <div class="mis-conf" id="f-conf"></div>
-            <div class="form-row" style="margin-top:12px;justify-content:flex-end;">
-                <button class="btn btn-ghost" onclick="abrirAtivo()">＋ Ativo que faltou</button>
-                <button class="btn btn-ghost" onclick="fechPreencher()">↺ Preencher com o esperado</button>
-                <button class="btn btn-ghost" id="f-excluir" onclick="fechExcluir()">Excluir fechamento</button>
-                <button class="btn btn-primary" onclick="fechSalvar()">Salvar fechamento</button>
+            <h2>Movimentos lançados</h2>
+            <div class="seg" id="m-filtro">
+                <button class="active" data-f="todos" onclick="setFiltroMov('todos')">Todos</button>
+                <button data-f="aporte" onclick="setFiltroMov('aporte')">Aportes</button>
+                <button data-f="resgate" onclick="setFiltroMov('resgate')">Resgates</button>
+                <button data-f="transf" onclick="setFiltroMov('transf')">Transf.</button>
             </div>
         </div>
-        <p class="mis-note" id="f-bloqueado" style="display:none;"></p>
-    </div>
-    <div class="card" style="padding:0;">
-        <div style="padding:18px 22px 4px;"><h2 style="margin:0;">Histórico mensal</h2><p class="mis-note" style="margin:4px 0 8px;">Clique numa linha para abrir aquele mês.</p></div>
-        <table>
-            <thead><tr><th>Mês</th><th class="num-cell">Aportes líq.</th><th class="num-cell">Rendimento</th><th class="num-cell">Rend. %</th><th class="num-cell">Esperado</th>
-            <th class="num-cell">Patrimônio</th><th class="num-cell">Plano</th><th class="num-cell">Desvio</th><th class="num-cell">Rend. ÷ aporte</th></tr></thead>
-            <tbody id="f-hist"></tbody>
-        </table>
+        <div class="summary-strip" id="m-resumo" style="margin-bottom:12px;"></div>
+        <div id="m-lista"></div>
     </div>
 </section>
 
-<!-- ═════════════ PREVISÃO ═════════════ -->
-<section id="Previsao" class="tab-content">
+<!-- ═════════════ PROJEÇÃO ═════════════ -->
+<section id="Projecao" class="tab-content">
     <div class="card no-priv">
         <h2>Simulador</h2>
-        <p class="mis-note" style="margin:0 0 12px;">Parte do <strong>patrimônio estimado de hoje</strong>. Mexa nos campos e tudo abaixo recalcula na hora (nada é gravado). Os cenários pessimista e otimista usam os ajustes definidos em Plano → Parâmetros.</p>
+        <p class="mis-note dica" style="margin:0 0 12px;">Parte do <strong>patrimônio estimado de hoje</strong>. Mexa nos campos e tudo abaixo recalcula na hora (nada é gravado). Os cenários pessimista e otimista usam os ajustes de Ajustes → Parâmetros.</p>
         <div class="form-row">
             <div class="form-field"><label>Aporte mensal (R$)</label><input id="s-aporte" inputmode="decimal" oninput="renderPrevisao()"></div>
             <div class="form-field"><label>Ajuste na Selic projetada (p.p.)</label><input id="s-dselic" inputmode="decimal" value="0" oninput="renderPrevisao()"></div>
@@ -722,16 +752,14 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
         </div>
     </div>
     <div class="card" style="padding:0;">
-        <div style="padding:18px 22px 4px;"><h2 style="margin:0;">Projeção ano a ano</h2><p class="mis-note" style="margin:4px 0 8px;">Valores em dezembro de cada ano. "Valores de hoje" desconta a inflação esperada.</p></div>
+        <div style="padding:18px 22px 4px;"><h2 style="margin:0;">Projeção ano a ano</h2><p class="mis-note" style="margin:4px 0 8px;">Valores em dezembro de cada ano. "R$ de hoje" desconta a inflação esperada.</p></div>
         <div style="overflow-x:auto;"><table>
             <thead><tr><th>Ano</th><th class="num-cell">Pessimista</th><th class="num-cell">Base</th><th class="num-cell">Otimista</th><th class="num-cell">Base em R$ de hoje</th><th class="num-cell">Juros/mês (base)</th><th class="num-cell">Renda sustentável</th><th class="num-cell">% da meta</th></tr></thead>
             <tbody id="s-anual"></tbody>
         </table></div>
     </div>
-</section>
 
-<!-- ═════════════ MERCADO ═════════════ -->
-<section id="Mercado" class="tab-content">
+    <h3 class="secao">📈 Mercado</h3>
     <div class="card no-priv">
         <h2>Índices de mercado</h2>
         <div class="form-row">
@@ -746,11 +774,11 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
             <button class="btn btn-primary" onclick="salvarIndices()">Salvar índices</button>
         </div>
         <div id="i-leitura" style="margin-top:14px;"></div>
-        <p class="mis-note">Selic, CDI e IPCA vêm da API do Banco Central. A taxa do Tesouro IPCA+ precisa ser digitada: veja em tesourodireto.com.br o IPCA+ de vencimento mais longo que você usa.</p>
+        <p class="mis-note dica">Selic, CDI e IPCA vêm da API do Banco Central. A taxa do Tesouro IPCA+ precisa ser digitada: veja em tesourodireto.com.br o IPCA+ de vencimento mais longo que você usa.</p>
     </div>
     <div class="card no-priv">
         <h2>Comparador de ofertas</h2>
-        <p class="mis-note" style="margin:0 0 12px;">Recebeu uma oferta do banco? Coloque aqui e compare <strong>líquido de IR e de inflação</strong>. Usa o CDI e a inflação esperada atuais e o IR regressivo pelo prazo. Não é gravado.</p>
+        <p class="mis-note dica" style="margin:0 0 12px;">Recebeu uma oferta do banco? Coloque aqui e compare <strong>líquido de IR e de inflação</strong>. Usa o CDI e a inflação esperada atuais e o IR regressivo pelo prazo. Não é gravado.</p>
         <div class="form-row">
             <div class="form-field" style="flex:2;min-width:180px;"><label>Nome</label><input id="k-nome" placeholder="Ex.: CDB Banco X 2028"></div>
             <div class="form-field"><label>Tipo</label><select id="k-tipo"><option value="cdi">% do CDI</option><option value="pre">Prefixado (% a.a.)</option><option value="ipca">IPCA + (% a.a.)</option></select></div>
@@ -763,16 +791,17 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
     </div>
 </section>
 
-<!-- ═════════════ PLANO ═════════════ -->
-<section id="Plano" class="tab-content">
+<!-- ═════════════ AJUSTES ═════════════ -->
+<section id="Ajustes" class="tab-content">
     <div class="flex-row">
         <div class="card flex-col"><h2>Roteiro das fases</h2><table><tbody id="pl-fases"></tbody></table></div>
         <div class="card flex-col no-priv"><h2>Fase 0 · Fundação</h2><ul class="check-list" id="pl-check"></ul></div>
     </div>
     <div class="card no-priv">
-        <h2>Parâmetros do plano</h2>
-        <p class="mis-note" style="margin:0 0 14px;">Mudar um parâmetro recalcula plano, meta e previsões. O ponto de partida é o patrimônio no fechamento do mês-base.</p>
-        <div class="form-row">
+        <details class="mis-cfg" id="g-det">
+        <summary>Parâmetros do plano</summary>
+        <p class="mis-note dica" style="margin:10px 0 14px;">Mudar um parâmetro recalcula plano, meta e previsões. O ponto de partida é o patrimônio no fim do mês-base.</p>
+        <div class="form-row" style="margin-top:12px;">
             <div class="form-field"><label>Mês-base (ponto de partida)</label><input type="month" id="g-base"></div>
             <div class="form-field"><label>Patrimônio no mês-base (R$)</label><input id="g-p0" inputmode="decimal"></div>
             <div class="form-field"><label>Aporte mensal meta (R$)</label><input id="g-aporte" inputmode="decimal"></div>
@@ -798,14 +827,31 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
             <button class="btn btn-ghost" onclick="restaurarPadrao()">Restaurar padrão</button>
             <button class="btn btn-primary" onclick="salvarCfg()">Salvar parâmetros</button>
         </div>
+        </details>
     </div>
-</section>
 
-<!-- ═════════════ CONFIG ═════════════ -->
-<section id="Configuracoes" class="tab-content">
+    <h3 class="secao">⚙ Dados e conexão</h3>
+    <div class="flex-row">
+        <div class="card flex-col">
+            <h2>Salvar e exportar</h2>
+            <div class="form-row">
+                <button class="btn btn-primary" onclick="forceSave()" title="Grava tudo no Google Sheets agora">💾 Salvar no Sheets</button>
+                <button class="btn btn-ghost" onclick="exportExcel()">📊 Excel</button>
+                <button class="btn btn-ghost" onclick="exportBackup()">📥 Backup JSON</button>
+            </div>
+        </div>
+        <div class="card flex-col">
+            <h2>Senha</h2>
+            <div class="form-row">
+                <div class="form-field"><label>Nova senha</label><input type="password" id="new-pass" placeholder="Nova senha"></div>
+                <button class="btn btn-ghost" onclick="changePassword()">Salvar</button>
+            </div>
+            <p class="mis-note dica">Começa igual à do CGG neste navegador. Mudar aqui não muda a do CGG.</p>
+        </div>
+    </div>
     <div class="card">
         <h2>Conexão Google Sheets</h2>
-        <p style="font-size:13px;color:var(--mut);margin-bottom:14px;">Planilha <strong>própria da Missão</strong> — não é a do CGG. O app recusa gravar se a URL apontar para a planilha do CGG.</p>
+        <p class="mis-note dica" style="margin:0 0 12px;">Planilha <strong>própria da Missão</strong> — não é a do CGG. O app recusa gravar se a URL apontar para a planilha do CGG.</p>
         <div class="form-row" style="max-width:760px;">
             <div class="form-field" style="flex:3;"><label>URL do Web App</label><input type="url" id="config-url" placeholder="https://script.google.com/macros/s/.../exec"></div>
             <button class="btn btn-primary" onclick="saveUrl()">Salvar e conectar</button>
@@ -813,43 +859,26 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
         <div style="margin-top:10px;"><button class="btn btn-ghost" onclick="showScript()">📋 Ver script do Apps Script</button></div>
     </div>
     <div class="card">
-        <h2>Trazer os dados da aba Missão do CGG</h2>
-        <p class="mis-note" style="margin:0 0 12px;">Lê a planilha do CGG <strong>só para leitura</strong> (nada é gravado lá) e copia parâmetros, índices, checklist, aportes, registros mensais e programação. Como o CGG registrava por <strong>classe</strong>, cada classe vira um ativo "(vindo do CGG)". Depois você renomeia ou desmembra com Transferências. <strong>Substitui</strong> o que estiver nesta planilha.</p>
+        <h2>Importar / restaurar</h2>
+        <p class="mis-note dica" style="margin:0 0 12px;">Lê a planilha do CGG <strong>só para leitura</strong> e copia a antiga aba Missão. Cada classe vira um ativo "(vindo do CGG)". <strong>Substitui</strong> o que estiver nesta planilha.</p>
         <div class="form-row" style="max-width:860px;">
             <div class="form-field" style="flex:3;"><label>URL do Web App do CGG</label><input type="url" id="cgg-url"></div>
-            <button class="btn btn-primary" onclick="importarCGG()">⬇ Importar do CGG</button>
+            <button class="btn btn-ghost" onclick="importarCGG()">⬇ Importar do CGG</button>
         </div>
         <div style="margin-top:10px;">
             <input type="file" id="cgg-file" accept=".json" style="display:none" onchange="importarArquivo(event)">
-            <button class="btn btn-ghost" onclick="$('cgg-file').click()">📂 Ou importar de um backup JSON (do CGG ou desta Missão)</button>
-        </div>
-    </div>
-    <div class="flex-row">
-        <div class="card flex-col">
-            <h2>Backup</h2>
-            <p style="font-size:12px;color:var(--mut);margin-bottom:12px;">Cópia completa em JSON. Para restaurar, use o botão de importar acima.</p>
-            <div class="form-row">
-                <button class="btn btn-primary" onclick="exportBackup()">📥 Exportar backup</button>
-                <button class="btn btn-ghost" onclick="exportExcel()">📊 Exportar Excel</button>
-            </div>
-        </div>
-        <div class="card flex-col">
-            <h2>Senha</h2>
-            <p style="font-size:12px;color:var(--mut);margin-bottom:12px;">Começa igual à do CGG neste navegador. Mudar aqui não muda a do CGG.</p>
-            <div class="form-row">
-                <div class="form-field"><label>Nova senha</label><input type="password" id="new-pass" placeholder="Nova senha"></div>
-                <button class="btn btn-ghost" onclick="changePassword()">Salvar</button>
-            </div>
+            <button class="btn btn-ghost" onclick="$('cgg-file').click()">📂 Restaurar de um backup JSON</button>
         </div>
     </div>
     <div class="card">
         <h2>Uso do armazenamento</h2>
-        <p style="font-size:12px;color:var(--mut);">Cada item (ativo, movimento, fechamento...) fica numa linha própria da aba "Dados". O limite do Sheets é 50.000 caracteres por célula — vale por item, não pelo total.</p>
         <div class="uso-bar" id="uso-bar"><i style="width:0%"></i></div>
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;"><span id="uso-txt">—</span><strong id="uso-pct">—</strong></div>
+        <p class="mis-note dica">Cada item fica numa linha própria da aba "Dados". O limite do Sheets é 50.000 caracteres por célula — vale por item, não pelo total.</p>
     </div>
 </section>
 </main>
+<button id="fab" onclick="atalhoAporte()" title="Lançar aporte">＋</button>
 <footer class="app-rodape" data-versao="longa"></footer>
 
 <script>
@@ -858,8 +887,10 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
 //  MAIOR.MENOR.AJUSTE (nova função = MENOR+1; correção = AJUSTE+1)
 //   1.0.0 (01/11/2026) app próprio da Missão, separado do CGG
 //   1.1.0 (08/11/2026) Programação de recebimentos: totalizador mensal e geral
+//   2.0.0 (08/11/2026) 5 abas; Início novo; Fechamento vira "Conferir saldos" na Carteira;
+//                     saldo estimado por dia pela taxa de cada ativo; botão ＋; ajuda "?"; barra inferior no celular
 // ══════════════════════════════════════════════════════
-const APP_VERSAO = '1.1.0';
+const APP_VERSAO = '2.0.0';
 const APP_VERSAO_DATA = '08/11/2026';
 document.querySelectorAll('[data-versao]').forEach(el => {
     el.textContent = el.dataset.versao === 'longa' ? `Missão · versão ${APP_VERSAO} · ${APP_VERSAO_DATA}` : `v${APP_VERSAO}`;
@@ -1164,6 +1195,48 @@ function fmtTaxa(a){
 }
 
 // ══════════════════════════════════════════════════════
+//  ESTIMATIVA DIÁRIA DE SALDOS
+//  Parte do último saldo conferido (antes da data), aplica os movimentos na
+//  ordem e faz cada ativo render pela própria taxa, líquida de IR. Ativo com
+//  "juros pagos em" fica parado e os juros vão para o ativo indicado.
+// ══════════════════════════════════════════════════════
+const fimMes = i => { const y = Math.floor(i/12), m = i%12; return `${y}-${String(m+1).padStart(2,'0')}-${String(new Date(y, m+1, 0).getDate()).padStart(2,'0')}`; };
+const diasEntre = (a, b) => (Date.parse(b + 'T12:00:00') - Date.parse(a + 'T12:00:00')) / 864e5;
+function taxaLiqAA(a, ix, c){
+    if (a.encerrado) return 0;
+    const b = brutoAA(a, ix, c);
+    if (b == null || b <= 0) return 0;
+    return a.isento ? b : b * (1 - c.ir/100);
+}
+function estimar(B, alvoISO, maxCkI=Infinity){
+    const atvs = ativos();
+    const ck = B.hist.filter(h => h.i < maxCkI && fimMes(h.i) <= alvoISO).pop() || null;
+    const ini = ck ? fimMes(ck.i) : null;
+    const v = {}, taxa = {}, destino = {};
+    atvs.forEach(a => { v[a.id] = ck ? (Number((ck.saldos||{})[a.id]) || 0) : 0; taxa[a.id] = taxaLiqAA(a, B.ix, B.c); });
+    atvs.forEach(a => { if (a.pagaPara && a.pagaPara !== a.id && v[a.pagaPara] !== undefined) destino[a.id] = a.pagaPara; });
+    let t = ini, rend = 0;
+    const crescer = ate => {
+        if (t == null) { t = ate; return; }
+        const d = diasEntre(t, ate);
+        if (d > 0) {
+            const g = {};
+            atvs.forEach(a => { const s = v[a.id]; if (s > 0 && taxa[a.id]) g[a.id] = s * (Math.pow(1 + taxa[a.id], d/365) - 1); });
+            Object.entries(g).forEach(([id, x]) => { v[destino[id] || id] += x; rend += x; });
+        }
+        t = ate;
+    };
+    B.ms.filter(m => (ini == null || m.data > ini) && m.data <= alvoISO).sort((a,b) => a.data.localeCompare(b.data)).forEach(m => {
+        crescer(m.data);
+        if (m.tipo === 'aporte' && v[m.ativo] !== undefined) v[m.ativo] += m.valor;
+        else if (m.tipo === 'resgate' && v[m.ativo] !== undefined) v[m.ativo] -= m.valor;
+        else if (m.tipo === 'transf') { if (v[m.ativo] !== undefined) v[m.ativo] -= m.valor; if (v[m.ativoDest] !== undefined) v[m.ativoDest] += m.valor; }
+    });
+    crescer(alvoISO);
+    return { v, ck, rend, semAtivo: ck ? 0 : Math.max(0, Number(B.c.p0) || 0) };
+}
+
+// ══════════════════════════════════════════════════════
 //  CÁLCULO CENTRAL — tudo que as abas mostram sai daqui
 // ══════════════════════════════════════════════════════
 function calc(){
@@ -1193,8 +1266,9 @@ function calc(){
     const p0Real  = c.p0 + netBase;      // aportes no mês-base (ou antes) entram no ponto de partida
 
     // Curva do plano
-    const plano = [c.p0];
-    for (let k = 1, v = c.p0; k <= 360; k++) { v = v*(1 + taxaI(baseI+k)) + c.aporte; plano.push(v); }
+    // O plano parte do patrimônio REAL do mês-base (valor inicial + aportes lançados até ele)
+    const plano = [p0Real];
+    for (let k = 1, v = p0Real; k <= 360; k++) { v = v*(1 + taxaI(baseI+k)) + c.aporte; plano.push(v); }
     const planoChegK = plano.findIndex((p,k) => k > 0 && p >= metaNom(k));
     const plano1miK  = plano.findIndex(p => p >= 1e6);
     const plano2miK  = plano.findIndex(p => p >= 2e6);
@@ -1229,13 +1303,14 @@ function calc(){
     const ultI    = ultimo ? ultimo.i : baseI;
     const ultTot  = ultimo ? ultimo.tot : p0Real;
 
-    // Posição de hoje = último fechamento + tudo que foi lançado depois
+    // Posição de hoje = último saldo conferido + movimentos depois + rendimento estimado pela taxa de cada ativo
     const netDepois = netEntre(ultI, Infinity);
-    const estHoje = ultTot + netDepois;
-    const saldoAtivo = aid => (ultimo ? (Number((ultimo.saldos||{})[aid])||0) : 0) + efeitoAtivo(aid, ultimo ? ultI : -Infinity, Infinity);
-    const posAtivos = atvs.map(a => ({ ...a, saldo: saldoAtivo(a.id) }));
+    const E = estimar({ hist, ms, ix, c }, hojeISO());
+    const posAtivos = atvs.map(a => ({ ...a, saldo: E.v[a.id] || 0, semTaxa: brutoAA(a, ix, c) == null }));
     const somaAtivos = posAtivos.reduce((s,a) => s + a.saldo, 0);
-    const semAtivo = estHoje - somaAtivos;                           // parte do ponto de partida ainda sem ativo
+    const semAtivo = E.semAtivo;                                     // parte do ponto de partida ainda sem ativo
+    const estHoje = somaAtivos + semAtivo;
+    const rendEst = E.rend;                                          // rendimento estimado desde a última conferência
     const porClasse = CLASSES.map(cl => {
         const v = posAtivos.filter(a => (a.classe||'out') === cl.k).reduce((s,a) => s + a.saldo, 0);
         return { ...cl, v, pct: somaAtivos > 0 ? v/somaAtivos : null, alvo: (Number(c.alvo[cl.k])||0)/100 };
@@ -1254,7 +1329,7 @@ function calc(){
         .map(p => ({ ...p, i: Math.max(dataI(p.data), hojeI+1), valor: Number(p.valor) }));
 
     const X = { c, ix, baseI, selI, hojeI, ipcaM, metaHoje, metaNom, taxaI, ms, netEntre, apEntre, apAte, efeitoAtivo, netBase, p0Real,
-        plano, planoChegK, plano1miK, plano2miK, hist, atual, regSel, ultimo, ultI, ultTot, netDepois, estHoje,
+        plano, planoChegK, plano1miK, plano2miK, hist, atual, regSel, ultimo, ultI, ultTot, netDepois, estHoje, rendEst,
         posAtivos, somaAtivos, semAtivo, porClasse, kHoje, patrReal, pctMeta, rendaSust, selicAtual, rPot, rendPot, progPend };
 
     // Chegada prevista: da posição de hoje, aporte meta, Selic projetada, sem extras
@@ -1292,16 +1367,20 @@ function grafLinhas({ i0, N, series, ymax, marks=[], selK=null }){
     const top = ymax * 1.06 || 1;
     const X = k => L + (W-L-R) * k / N;
     const Y = v => T + (H-T-B) * (1 - v/top);
-    const passo = top > 12e6 ? 2e6 : top > 6e6 ? 1e6 : top > 2.5e6 ? 5e5 : top > 1e6 ? 2.5e5 : 1e5;
+    const passo = top > 12e6 ? 2e6 : top > 6e6 ? 1e6 : top > 2.5e6 ? 5e5 : top > 1e6 ? 2.5e5 : top > 4e5 ? 1e5 : 5e4;
     let g = '';
     for (let v = 0; v <= top; v += passo)
         g += `<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--bor)"/><text x="${L-8}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--mut)">${v===0?'0':fmtMi(v).replace('R$ ','')}</text>`;
-    const passoAno = N > 200 ? 24 : 12;
+    // Eixo X: anos em horizontes longos; trimestres ou meses em horizontes curtos
+    const passoM = N <= 16 ? 2 : N <= 40 ? 3 : N > 200 ? 24 : 12;
     for (let k = 0; k <= N; k++) {
         const i = i0 + k;
-        if (i % passoAno === 0) g += `<line x1="${X(k)}" x2="${X(k)}" y1="${T}" y2="${H-B}" stroke="var(--bor)" stroke-dasharray="2 3"/><text x="${X(k)}" y="${H-B+18}" text-anchor="middle" font-size="11" fill="var(--mut)" font-weight="600">${i/12}</text>`;
+        if (i % passoM === 0) {
+            const rot = passoM < 12 ? `${MESES_ABREV[i%12]}/${String(Math.floor(i/12)).slice(2)}` : i/12;
+            g += `<line x1="${X(k)}" x2="${X(k)}" y1="${T}" y2="${H-B}" stroke="var(--bor)" stroke-dasharray="2 3"/><text x="${X(k)}" y="${H-B+18}" text-anchor="middle" font-size="11" fill="var(--mut)" font-weight="600">${rot}</text>`;
+        }
     }
-    if (selK != null && selK >= 0 && selK <= N) g += `<line x1="${X(selK)}" x2="${X(selK)}" y1="${T}" y2="${H-B}" stroke="var(--acc)" stroke-width="1.5" opacity=".45"/>`;
+    if (selK != null && selK >= 0 && selK <= N) g += `<line x1="${X(selK)}" x2="${X(selK)}" y1="${T}" y2="${H-B}" stroke="var(--acc)" stroke-width="1.5" opacity=".45"/><text x="${X(selK)+4}" y="${T+10}" font-size="10.5" font-weight="700" fill="var(--acc)">hoje</text>`;
     series.forEach(s => {
         const pts = s.pts.filter(p => p.k >= 0 && p.k <= N);
         if (!pts.length) return;
@@ -1346,177 +1425,202 @@ const kp = (label, val, cls, rows, extra='', onclick='') => `<div class="kpi ${e
 // ══════════════════════════════════════════════════════
 const FASES = ['Fase 0 · Fundação','Fase 1 · Acumulação','Fase 2 · Blindagem','Fase 3 · Renda'];
 function render(){
-    $('current-month').textContent = mesExtenso();
     let X;
     try { X = calc(); } catch(e) { console.error('calc', e); return; }
     $('h-renda').textContent = `R$ ${fmtN(X.c.renda/1000,0)} mil`;
-    [renderDashboard, renderCarteira, renderMovimentos, renderProg, renderFechamento, renderPrevisao, renderMercado, renderPlano, renderUso]
+    [renderInicio, renderCarteira, renderFechamento, renderMovimentos, renderProg, renderPrevisao, renderMercado, renderPlano, renderUso]
         .forEach(f => { try { f(X); } catch(e) { console.error(f.name, e); } });
 }
 function mesExtenso(){ const s = currentDate.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}); return s.charAt(0).toUpperCase() + s.slice(1); }
 
 // ══════════════════════════════════════════════════════
-//  DASHBOARD
+//  INÍCIO
 // ══════════════════════════════════════════════════════
-function renderDashboard(X){
+let horizonte = (() => { try { return localStorage.getItem('mis_hor') || '24'; } catch(e) { return '24'; } })();
+let alertasTodos = false;
+function setHorizonte(h){ horizonte = h; try { localStorage.setItem('mis_hor', h); } catch(e) {} render(); }
+function alternarAlertas(){ alertasTodos = !alertasTodos; render(); }
+// Mês a conferir: o último mês encerrado, se ainda não foi conferido
+const mesPendente = X => { const m = X.hojeI - 1; return (m > X.baseI && !X.hist.some(h => h.i === m)) ? m : null; };
+
+function renderInicio(X){
     const { c } = X;
-    // Guia inicial
+    // Guia inicial (some quando tudo estiver feito)
     const passos = [
-        [dados.some(i => i.type === 'mov' || i.type === 'fech'), 'Traga os dados do CGG: <strong>Config. → Importar do CGG</strong> (ou comece do zero em Plano → Parâmetros)'],
-        [ativos().some(a => !String(a.id).startsWith('at_mig_')), 'Cadastre suas aplicações reais em <strong>Carteira → ＋ Novo ativo</strong> (Tesouro, CDB, LCI...)'],
-        [X.semAtivo <= 1 || X.estHoje <= 0, 'Distribua o ponto de partida: lance um <strong>Fechamento</strong> com o saldo de cada ativo'],
-        [dados.some(i => i.type === 'idx'), 'Atualize os índices em <strong>Mercado → Buscar no Banco Central</strong>'],
+        [dados.some(i => i.type === 'mov' || i.type === 'fech'), 'Traga os dados do CGG em <strong>Ajustes → Importar do CGG</strong> (ou comece do zero em Ajustes → Parâmetros)'],
+        [ativos().some(a => !String(a.id).startsWith('at_mig_')), 'Cadastre suas aplicações reais em <strong>Carteira → ＋ Novo ativo</strong>, com a taxa de cada uma'],
+        [X.semAtivo <= 1 || X.estHoje <= 0, 'Distribua o ponto de partida: <strong>Carteira → Conferir saldos</strong> com o saldo de cada ativo'],
+        [dados.some(i => i.type === 'idx'), 'Atualize os índices em <strong>Projeção → Mercado → Buscar no Banco Central</strong>'],
     ];
-    const pend = passos.filter(p => !p[0]).length;
-    $('d-inicio').style.display = pend ? '' : 'none';
+    $('d-inicio').style.display = passos.some(p => !p[0]) ? '' : 'none';
     $('d-inicio-lista').innerHTML = passos.map(p => `<li class="${p[0]?'ok':''}">${p[1]}</li>`).join('');
 
-    $('d-renda-alvo').textContent = fmt(c.renda);
-    $('d-pct').textContent = `${fmtN(X.pctMeta*100,1)}% da meta`;
-    $('d-hero-sub').innerHTML = `<strong>${fmt(X.estHoje)}</strong> hoje · ${fmt(X.patrReal)} em valores do início do plano · meta ${fmtMi(X.metaHoje)}`;
-    $('d-fase').textContent = FASES[X.fase];
-    let cheg = '—';
-    if (X.chegI != null) {
-        const faltam = X.chegI - X.hojeI;
-        cheg = faltam <= 0 ? '✓ Meta atingida' : `Chegada prevista: <strong>${iLbl(X.chegI)}</strong> (${mesesTxt(faltam)})`;
-        if (X.planoChegI != null && faltam > 0) {
-            const dif = X.planoChegI - X.chegI;
-            cheg += dif === 0 ? ' · no prazo do plano' : ` · ${seta(dif)} ${Math.abs(dif)} ${Math.abs(dif)===1?'mês':'meses'} ${dif>0?'adiantado':'atrasado'} vs plano (${iLbl(X.planoChegI)})`;
-        }
-    }
-    $('d-chegada').innerHTML = cheg;
-    const pos = v => Math.max(0, Math.min(100, v*100)).toFixed(1);
-    const marcos = [];
-    if (X.plano1miK > 0) marcos.push({ p: 1e6 / Math.pow(1+X.ipcaM, X.plano1miK) / X.metaHoje, t:'R$ 1 mi' });
-    if (X.plano2miK > 0) marcos.push({ p: 2e6 / Math.pow(1+X.ipcaM, X.plano2miK) / X.metaHoje, t:'R$ 2 mi' });
-    $('d-prog').innerHTML = `<i style="width:${pos(X.pctMeta)}%"></i>` + marcos.map((m,j) => `<div class="mk ${j%2?'top':''}" style="left:${pos(m.p)}%"><span>${m.t}</span></div>`).join('');
-    $('d-prog-nota').textContent = `Meta = renda alvo ÷ saque sustentável de ${fmtN(c.saque,2)}% a.m. real = ${fmtMi(X.metaHoje)} em valores do mês-base. A barra desconta a inflação do patrimônio de hoje.`;
-
-    // KPIs
+    // ── 3 números grandes ──
     const u = X.ultimo;
-    const planoU = X.plano[u ? u.k : 0], desvio = (u ? u.tot : X.p0Real) - planoU;
-    const refFech = X.hojeI - 1;                                   // só meses já encerrados
-    const metaAc = c.aporte * Math.max(0, refFech - X.baseI), apAc = X.apAte(X.hojeI) - X.apAte(X.baseI), difAc = apAc - metaAc;
-    const apMes = X.apEntre(X.hojeI-1, X.hojeI);
-    const metadeI = c.aporte/2 / X.rPot, viradaP = c.aporte / X.rPot;
-    $('d-kpis').innerHTML = [
-        kp('🏦 Patrimônio hoje', fmt(X.estHoje), 'c-primary', [
-            [u ? `Fechamento ${iLbl(u.i)}` : `Partida ${iLbl(X.baseI)}`, fmt(X.ultTot)],
-            ['Movimentos depois', fmtSigned(X.netDepois)],
+    const estimado = Math.abs(X.rendEst) > 0.5 || Math.abs(X.netDepois) > 0.5;
+    const faltam = X.chegI != null ? X.chegI - X.hojeI : null;
+    const difPlano = (X.chegI != null && X.planoChegI != null) ? X.planoChegI - X.chegI : null;
+    $('d-hero').innerHTML = [
+        kp(`🏦 Patrimônio hoje${estimado ? ' <span class="tag">estimado</span>' : ''}`, fmt(X.estHoje), 'c-primary', [
+            [u ? `Conferido em ${iLbl(u.i)}` : `Partida (${iLbl(X.baseI)})`, fmt(X.ultTot)],
+            ['+ Movimentos depois', fmtSigned(X.netDepois)],
+            ['+ Rendimento estimado', fmtSigned(X.rendEst)],
             ...(X.semAtivo > 1 ? [['Ainda sem ativo', fmt(X.semAtivo)]] : []) ], 'kpi-highlight clicavel', "openTab('Carteira')"),
-        kp(`📐 vs plano${u ? ' · ' + iLbl(u.i) : ''}`, u ? `${seta(desvio)} ${fmtSigned(desvio)}` : '—', '', [
-            ['Plano para o mês', fmt(planoU)],
-            ['Desvio %', u ? fmtPs(desvio/planoU,1) : '—'],
-            ['Rentab. acumulada', u ? fmtP(u.rentAcum) : '—'] ]),
-        kp(`💰 Aportes · ${iLbl(X.hojeI)}`, fmt(apMes), '', [
-            ['Acumulado no plano', fmt(apAc)],
-            [`Meta até ${iLbl(refFech)}`, fmt(metaAc)],
-            ['Diferença', `${seta(difAc)} ${fmtSigned(difAc)}`] ], 'clicavel', "openTab('Movimentos')"),
-        kp(`📈 Rendimento${u ? ' · ' + iLbl(u.i) : ''}`, u ? `${seta(u.rend)} ${fmtSigned(u.rend)}` : '—', '', [
-            ['No mês', u ? fmtP(u.rendPct) : '—'],
-            ['Esperado no plano', u ? fmtP(u.espPct) : fmtP(X.taxaI(X.hojeI))],
-            ['Juros hoje (Selic atual)', `${fmt(X.rendPot)}/mês`] ]),
-        kp('🌱 Renda sustentável hoje', `${fmt(X.rendaSust)}/mês`, '', [
-            ['% da renda alvo', fmtP(X.rendaSust / c.renda, 1)],
-            ['Saque real usado', `${fmtN(c.saque,2)}% a.m.`] ]),
-        kp('🔄 Ponto de virada', fmtP(X.rendPot / c.aporte, 0), '', [
-            ['Juros ÷ aporte meta', 'hoje'],
-            ['Juros = ½ aporte com', fmtMi(metadeI)],
-            ['Juros = aporte com', fmtMi(viradaP)] ]),
-        kp('🎯 Meta', fmtMi(X.metaHoje), '', [
-            ['Falta (valores do início)', fmt(Math.max(0, X.metaHoje - X.patrReal))],
-            ['Nominal na chegada', X.chegI != null ? fmtMi(X.metaNom(X.chegI - X.baseI)) : '—'] ], 'clicavel', "openTab('Previsao')"),
+        `<div class="kpi clicavel" onclick="openTab('Projecao')"><div class="kpi-label">🌱 Renda que a Missão sustenta hoje</div>
+            <div class="kpi-value">${fmt(X.rendaSust)} <small>/ mês</small></div>
+            <div class="hbar" title="${fmtP(X.pctMeta,1)} da meta"><i style="width:${Math.min(100, X.pctMeta*100).toFixed(1)}%"></i></div>
+            <div class="kpi-sub">
+                <div class="kpi-sub-row"><span>Meta</span><strong>${fmt(c.renda)}/mês</strong></div>
+                <div class="kpi-sub-row"><span>Caminho percorrido</span><strong>${fmtP(X.pctMeta,1)}</strong></div>
+                <div class="kpi-sub-row"><span>Juros brutos hoje (Selic)</span><strong>${fmt(X.rendPot)}/mês</strong></div>
+            </div></div>`,
+        kp('🎯 Chegada prevista', X.chegI == null ? '—' : faltam <= 0 ? '✓ Atingida' : iLbl(X.chegI), '', [
+            ['Faltam', faltam == null ? '—' : faltam <= 0 ? '—' : mesesTxt(faltam)],
+            ['vs plano', difPlano == null || faltam <= 0 ? '—' : difPlano === 0 ? 'no prazo' : `${seta(difPlano)} ${Math.abs(difPlano)} ${Math.abs(difPlano)===1?'mês':'meses'} ${difPlano > 0 ? 'adiantado' : 'atrasado'}`],
+            ['Fase', FASES[X.fase].split(' · ')[1]] ], 'clicavel', "openTab('Projecao')"),
     ].join('');
 
-    // Plano × realizado
-    const lastK = X.hist.length ? X.hist[X.hist.length-1].k : 0;
-    const chegK = X.chegI != null ? X.chegI - X.baseI : 0;
-    const N = Math.min(360, Math.max(X.planoChegK > 0 ? X.planoChegK : 60, chegK, lastK) + 4);
-    const plano = X.plano.slice(0, N+1);
-    const meta = [...Array(N+1)].map((_,k) => X.metaNom(k));
-    const real = [{ k:0, v:X.p0Real, tip:`${iLbl(X.baseI)}: ${fmt(X.p0Real)} (partida)` },
-        ...X.hist.map(h => ({ k:h.k, v:h.tot, tip:`${iLbl(h.i)}: ${fmt(h.tot)} (plano ${fmt(h.plano)})` }))];
-    if (X.netDepois && X.hojeI >= X.ultI) real.push({ k: X.hojeI - X.baseI, v: X.estHoje, tip:`Hoje (estimado): ${fmt(X.estHoje)}` });
-    $('d-chart').innerHTML = grafLinhas({ i0: X.baseI, N, ymax: Math.max(...plano, ...meta, ...real.map(p => p.v)), selK: X.selI - X.baseI,
-        series: [
-            { pts: meta.map((v,k) => ({k,v})), stroke:'var(--txt)', w:1.5, dash:'2 3' },
-            { pts: plano.map((v,k) => ({k,v})), stroke:'var(--mut)', w:2, dash:'6 4' },
-            { pts: real, stroke:'var(--acc)', w:3, dots:true } ],
-        marks: X.planoChegK > 0 ? [{ k:X.planoChegK, v:X.plano[X.planoChegK], tip:`Plano atinge a meta em ${iLbl(X.baseI+X.planoChegK)}` }] : [] });
-
+    renderEsteMes(X);
     renderAlertas(X);
+    renderEvolucao(X);
+
+    // Distribuição + concentração
     const itens = X.porClasse.map(p => ({ n:p.n, v:p.v }));
     if (X.semAtivo > 1) itens.push({ n:'Ainda sem ativo definido', v:X.semAtivo });
     $('d-donut').innerHTML = donut(itens, 'HOJE');
+    const maior = X.posAtivos.filter(a => a.saldo > 0).sort((a,b) => b.saldo - a.saldo)[0];
+    const pm = maior && X.estHoje > 0 ? maior.saldo / X.estHoje : 0;
+    $('d-conc').innerHTML = pm > 0.30 ? `<div class="conc">◆ <strong>${escH(maior.nome)}</strong> concentra ${fmtP(pm,0)} da Missão${maior.garantia === 'nenhuma' ? ', sem garantia' : ''}${maior.vencimento ? ` · vence em ${dataBR(maior.vencimento)}` : ''}.</div>` : '';
     renderEventos(X);
-    renderRendChart(X);
+
+    // Rendimento mês a mês só com histórico suficiente
+    $('d-rend-card').style.display = X.hist.length >= 3 ? '' : 'none';
+    if (X.hist.length >= 3) renderRendChart(X);
+}
+
+function renderEsteMes(X){
+    const c = X.c, hoje = hojeISO(), mesAtual = hoje.slice(0,7);
+    const apMes = X.apEntre(X.hojeI-1, X.hojeI), pct = c.aporte > 0 ? apMes / c.aporte : 0;
+    const progMes = progs().filter(p => !p.efetivada && String(p.data).slice(0,7) === mesAtual);
+    const progAtr = progs().filter(p => !p.efetivada && p.data < hoje && String(p.data).slice(0,7) !== mesAtual);
+    const pend = mesPendente(X);
+    const venc = X.posAtivos.filter(a => !a.encerrado && a.vencimento && a.saldo > 1).sort((a,b) => a.vencimento.localeCompare(b.vencimento))[0];
+    const soma = l => l.reduce((s,p) => s + Number(p.valor||0), 0);
+    let h = `<h2>Este mês · ${iLbl(X.hojeI)}</h2>`;
+    h += `<div class="mes-item"><div class="lin"><span>💰 Aportado</span><strong>${fmt(apMes)} <span class="sub-txt">de ${fmt(c.aporte)}</span></strong></div>
+        <div class="hbar"><i style="width:${Math.min(100, pct*100).toFixed(1)}%"></i></div>
+        <div class="sub-txt">${apMes >= c.aporte ? '✓ Meta do mês cumprida' : `Faltam <strong>${fmt(c.aporte - apMes)}</strong>`}</div>
+        ${apMes < c.aporte ? `<button class="btn btn-primary btn-sm" style="width:auto;padding:0 12px;height:30px;" onclick="atalhoAporte()">＋ Lançar aporte</button>` : ''}</div>`;
+    h += `<div class="mes-item"><div class="lin"><span>📥 Programado para entrar</span><strong>${progMes.length ? fmt(soma(progMes)) : '—'}</strong></div>
+        <div class="sub-txt">${progMes.length ? progMes.map(p => `${dataBR(p.data).slice(0,5)} · ${escH(p.desc)}`).join(' · ') : 'Nada programado para este mês'}${progAtr.length ? ` · <strong>▲ ${progAtr.length} atrasado(s): ${fmt(soma(progAtr))}</strong>` : ''}</div></div>`;
+    h += `<div class="mes-item"><div class="lin"><span>📋 Conferência de saldos</span><strong>${pend != null ? `▲ ${iLbl(pend)} pendente` : (X.ultimo ? `✓ ${iLbl(X.ultimo.i)}` : '—')}</strong></div>
+        <div class="sub-txt">${pend != null ? 'O app está usando a estimativa. Leva uns 5 minutos.' : 'Saldos em dia. A próxima conferência é no começo do mês que vem.'}</div>
+        ${pend != null ? `<button class="btn btn-ghost btn-sm" style="width:auto;padding:0 12px;height:30px;" onclick="abrirConferir(${pend})">Conferir ${iLbl(pend)}</button>` : ''}</div>`;
+    h += `<div class="mes-item"><div class="lin"><span>📈 Rendimento estimado desde a conferência</span><strong>${seta(X.rendEst)} ${fmtSigned(X.rendEst)}</strong></div></div>`;
+    if (venc) {
+        const m = dataI(venc.vencimento) - X.hojeI;
+        h += `<div class="mes-item"><div class="lin"><span>⏳ Próximo vencimento</span><strong>${dataBR(venc.vencimento)}</strong></div>
+            <div class="sub-txt">${escH(venc.nome)} · ${fmt(venc.saldo)} · ${venc.vencimento < hoje ? '<strong>▲ já venceu</strong>' : m <= 0 ? 'este mês' : 'em ' + mesesTxt(m)}</div></div>`;
+    }
+    $('d-mes').innerHTML = h;
 }
 
 function renderAlertas(X){
     const { c, ix } = X, out = [];
-    const add = (ic, txt, cls='') => out.push(`<li class="${cls}"><b class="ic">${ic}</b><span>${txt}</span></li>`);
-    const u = X.ultimo;
+    // pri: 0 = urgente, 1 = atenção, 2 = lembrete, 3 = boa notícia
+    const add = (pri, ic, txt) => out.push({ pri, html:`<li class="${pri===0?'forte':pri===3?'bom':''}"><b class="ic">${ic}</b><span>${txt}</span></li>` });
+    const u = X.ultimo, hoje = hojeISO();
     if (u) {
         const dp = (u.tot - u.plano) / u.plano;
-        if (dp < -0.05) add('▼', `<strong>Patrimônio ${fmtN(Math.abs(dp)*100,1)}% abaixo do plano</strong> em ${iLbl(u.i)}. Confira aportes e rentabilidade dos últimos meses.`, 'forte');
-        else if (dp > 0.05) add('▲', `Patrimônio ${fmtN(dp*100,1)}% acima do plano. Mantenha o ritmo; não aumente o risco por isso.`, 'bom');
+        if (dp < -0.05) add(0, '▼', `<strong>Patrimônio ${fmtN(Math.abs(dp)*100,1)}% abaixo do plano</strong> em ${iLbl(u.i)}. Confira aportes e rentabilidade dos últimos meses.`);
+        else if (dp > 0.05) add(3, '▲', `Patrimônio ${fmtN(dp*100,1)}% acima do plano. Mantenha o ritmo; não aumente o risco por isso.`);
         if (u.rendPct != null && (u.rendPct < -0.03 || u.rendPct > 0.05))
-            add('⚠', `<strong>Rendimento de ${fmtSigned(u.rend)} (${fmtPs(u.rendPct,1)}) em ${iLbl(u.i)} parece errado.</strong> Confira se os saldos incluem todos os aportes do período.`, 'forte');
+            add(0, '⚠', `<strong>Rendimento de ${fmtSigned(u.rend)} (${fmtPs(u.rendPct,1)}) em ${iLbl(u.i)} parece errado.</strong> Confira se os saldos incluem todos os aportes do período.`);
     }
-    const mesAnt = X.hojeI - 1;
-    if (mesAnt > X.baseI && !X.hist.some(h => h.i === mesAnt))
-        add('○', `<strong>${iLbl(mesAnt)} ainda não foi fechado.</strong> Lance os saldos na aba Fechamento.`, 'forte');
+    const pend = mesPendente(X);
+    if (pend != null) add(1, '○', `<strong>Saldos de ${iLbl(pend)} não conferidos.</strong> O app segue com a estimativa; confira em Carteira quando puder.`);
     if (X.hojeI > X.baseI) {
         const devido = c.aporte * (X.hojeI - 1 - X.baseI), feito = X.apAte(X.hojeI-1) - X.apAte(X.baseI);
-        if (devido > 0 && feito < devido) add('▼', `<strong>Aportes atrasados:</strong> ${fmt(feito)} de ${fmt(devido)} previstos até ${iLbl(X.hojeI-1)}. Faltam ${fmt(devido-feito)}.`, 'forte');
-        else if (feito > devido + c.aporte) add('▲', `Aportes adiantados em ${fmt(feito - devido)} em relação à meta acumulada.`, 'bom');
+        if (devido > 0 && feito < devido) add(0, '▼', `<strong>Aportes atrasados:</strong> ${fmt(feito)} de ${fmt(devido)} previstos até ${iLbl(X.hojeI-1)}. Faltam ${fmt(devido-feito)}.`);
+        else if (feito > devido + c.aporte) add(3, '▲', `Aportes adiantados em ${fmt(feito - devido)} em relação à meta acumulada.`);
     }
-    if (X.semAtivo > Math.max(1000, X.estHoje*0.01)) add('◆', `${fmt(X.semAtivo)} do ponto de partida ainda não estão em nenhum ativo. Cadastre os ativos e faça o fechamento do mês com os saldos reais.`);
-    // Vencimentos próximos
-    const hoje = hojeISO(), lim = new Date(Date.now() + 60*864e5).toISOString().slice(0,10);
+    if (X.semAtivo > Math.max(1000, X.estHoje*0.01)) add(1, '◆', `${fmt(X.semAtivo)} do ponto de partida ainda não estão em nenhum ativo. Cadastre os ativos e confira os saldos.`);
+    const semTaxa = X.posAtivos.filter(a => !a.encerrado && a.semTaxa && a.saldo > 1);
+    if (semTaxa.length) add(2, '○', `${semTaxa.length} ativo(s) sem taxa cadastrada não rendem na estimativa: ${semTaxa.map(a => escH(a.nome)).join(', ')}.`);
+    const lim = new Date(Date.now() + 60*864e5).toISOString().slice(0,10);
     X.posAtivos.filter(a => !a.encerrado && a.vencimento && a.saldo > 1 && a.vencimento <= lim).forEach(a =>
-        add(a.vencimento < hoje ? '⚠' : '◆', `<strong>${escH(a.nome)}</strong> ${a.vencimento < hoje ? 'venceu' : 'vence'} em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Planeje o reinvestimento e lance como Transferência.`, a.vencimento < hoje ? 'forte' : ''));
-    // FGC
-    fgcPorInst(X).filter(f => f.v > 250000).forEach(f => add('▲', `<strong>${escH(f.inst)}</strong> tem ${fmt(f.v)} em produtos com FGC: ${fmt(f.v-250000)} acima da garantia de R$ 250 mil.`, 'forte'));
-    // Programação atrasada
-    progs().filter(p => !p.efetivada && p.data < hoje).forEach(p => add('○', `Recebimento programado "<strong>${escH(p.desc)}</strong>" (${fmt(p.valor)}) era para ${dataBR(p.data)}. Efetive ou ajuste a data.`));
+        add(a.vencimento < hoje ? 0 : 1, a.vencimento < hoje ? '⚠' : '◆', `<strong>${escH(a.nome)}</strong> ${a.vencimento < hoje ? 'venceu' : 'vence'} em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Reaplique e lance como Transferência.`));
+    fgcPorInst(X).filter(f => f.v > 250000).forEach(f => add(0, '▲', `<strong>${escH(f.inst)}</strong> tem ${fmt(f.v)} em produtos com FGC: ${fmt(f.v-250000)} acima da garantia de R$ 250 mil.`));
+    progs().filter(p => !p.efetivada && p.data < hoje).forEach(p => add(1, '○', `Recebimento "<strong>${escH(p.desc)}</strong>" (${fmt(p.valor)}) era para ${dataBR(p.data)}. Efetive ou ajuste a data.`));
     const tp = Number(ix.ipcaPlus);
     if (tp) {
-        if (tp > 8) add('▲', `Tesouro IPCA+ acima de IPCA + 8%: taxa excepcional. Considere aumentar a fatia travada.`, 'bom');
-        else if (tp >= 7) add('▲', `Tesouro IPCA+ a IPCA + ${fmtN(tp,2)}%: taxa real alta. Vale concentrar aportes em IPCA+, até 60% da carteira.`, 'bom');
-        if (tp < 5) add('▼', `Tesouro IPCA+ abaixo de IPCA + 5%: a renda sustentável futura cai. Gatilho de revisão.`, 'forte');
+        if (tp > 8) add(3, '▲', `Tesouro IPCA+ acima de IPCA + 8%: taxa excepcional. Considere aumentar a fatia travada.`);
+        else if (tp >= 7) add(3, '▲', `Tesouro IPCA+ a IPCA + ${fmtN(tp,2)}%: taxa real alta. Bom momento para aportes em IPCA+.`);
+        if (tp < 5) add(1, '▼', `Tesouro IPCA+ abaixo de IPCA + 5%: a renda sustentável futura cai. Gatilho de revisão.`);
     }
     if (X.somaAtivos > 0) {
         const desal = X.porClasse.filter(a => a.pct != null && Math.abs(a.pct - a.alvo) > 0.10);
-        if (desal.length) add('◆', `Alocação fora do alvo em mais de 10 pontos: ${desal.map(a => `${a.n} (${fmtP(a.pct,0)} × ${fmtP(a.alvo,0)})`).join(', ')}. Rebalanceie pelos próximos aportes.`);
+        if (desal.length) add(2, '◆', `Alocação fora do alvo: ${desal.map(a => `${a.n} (${fmtP(a.pct,0)} × ${fmtP(a.alvo,0)})`).join(', ')}. Rebalanceie pelos próximos aportes.`);
     }
-    if (X.hojeI % 12 === 0 || X.hojeI % 12 === 6) add('●', `${iLbl(X.hojeI)} é mês de <strong>revisão semestral</strong>: marcos, alocação e gatilhos.`);
-    if (X.feitos < CHECK.length) add('○', `Fase 0: ${CHECK.length - X.feitos} de ${CHECK.length} tarefas pendentes (aba Plano).`);
+    if (X.hojeI % 12 === 0 || X.hojeI % 12 === 6) add(2, '●', `${iLbl(X.hojeI)} é mês de <strong>revisão semestral</strong>: marcos, alocação e gatilhos.`);
+    if (X.feitos < CHECK.length) add(2, '○', `Fase 0: ${CHECK.length - X.feitos} de ${CHECK.length} tarefas pendentes (Ajustes).`);
     const dIdx = ix.data ? (Date.now() - new Date(ix.data + 'T12:00').getTime()) / 864e5 : 999;
-    if (dIdx > 45) add('○', `Índices de mercado sem atualização há ${Math.round(dIdx)} dias (aba Mercado).`);
+    if (dIdx > 45) add(2, '○', `Índices de mercado sem atualização há ${Math.round(dIdx)} dias (Projeção → Mercado).`);
     const somaAlvo = Object.values(c.alvo).reduce((s,v) => s + (Number(v)||0), 0);
-    if (Math.abs(somaAlvo - 100) > 0.01) add('▼', `A alocação-alvo soma ${fmtN(somaAlvo,0)}%, e não 100%. Ajuste em Plano → Parâmetros.`, 'forte');
-    if (!out.length) add('✓', 'Nenhum gatilho acionado. Siga o plano.', 'bom');
-    $('d-alertas').innerHTML = out.join('');
-    const b = $('badge-fech'); if (b) b.style.display = (mesAnt > X.baseI && !X.hist.some(h => h.i === mesAnt)) ? '' : 'none';
+    if (Math.abs(somaAlvo - 100) > 0.01) add(0, '▼', `A alocação-alvo soma ${fmtN(somaAlvo,0)}%, e não 100%. Ajuste em Ajustes → Parâmetros.`);
+    if (!out.length) add(3, '✓', 'Nenhum gatilho acionado. Siga o plano.');
+    out.sort((a,b) => a.pri - b.pri);
+    const mostra = alertasTodos ? out : out.slice(0,3);
+    $('d-alertas').innerHTML = mostra.map(o => o.html).join('');
+    const bm = $('d-alertas-mais');
+    bm.style.display = out.length > 3 ? '' : 'none';
+    bm.textContent = alertasTodos ? 'Mostrar menos' : `Ver todos (${out.length})`;
+    $('badge-conf').style.display = pend != null ? '' : 'none';
+}
+
+function renderEvolucao(X){
+    document.querySelectorAll('#d-hor button').forEach(b => b.classList.toggle('active', b.dataset.h === horizonte));
+    const kHoje = X.hojeI - X.baseI;
+    let fimI;
+    if (horizonte === 'meta') fimI = Math.max(X.chegI || 0, X.planoChegI || 0, X.hojeI + 12) + 6;
+    else fimI = X.hojeI + Number(horizonte);
+    const N = Math.max(6, Math.min(420, fimI - X.baseI));
+    const comMeta = horizonte === 'meta' || horizonte === '60';
+    const plano = X.plano.slice(0, N+1).map((v,k) => ({ k, v }));
+    const meta = [...Array(N+1)].map((_,k) => ({ k, v: X.metaNom(k) }));
+    const real = [{ k:0, v:X.p0Real, tip:`${iLbl(X.baseI)}: ${fmt(X.p0Real)} (partida)` },
+        ...X.hist.map(h => ({ k:h.k, v:h.tot, tip:`${iLbl(h.i)}: ${fmt(h.tot)} conferido (plano ${fmt(h.plano)})` }))];
+    if (kHoje > (real[real.length-1].k)) real.push({ k:kHoje, v:X.estHoje, tip:`Hoje: ${fmt(X.estHoje)} (estimado)` });
+    const proj = X.proj.serie.slice(0, Math.max(0, N - kHoje) + 1).map((v,j) => ({ k:kHoje + j, v }));
+    const vals = [...plano, ...real, ...proj].map(p => p.v).concat(comMeta ? meta.map(m => m.v) : []);
+    const marks = [];
+    if (X.chegI != null && X.chegI - X.baseI <= N && X.chegI > X.hojeI) marks.push({ k:X.chegI - X.baseI, v:X.proj.serie[X.chegI - X.hojeI], tip:`Chegada prevista: ${iLbl(X.chegI)}` });
+    $('d-legenda').innerHTML = `<span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--acc)" stroke-width="3"/><circle cx="13" cy="5" r="3.5" fill="var(--acc)"/></svg>Realizado</span>
+        <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--acc)" stroke-width="2" stroke-dasharray="5 4"/></svg>Projeção</span>
+        <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--mut)" stroke-width="2" stroke-dasharray="2 3"/></svg>Plano original</span>
+        ${comMeta ? `<span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--txt)" stroke-width="1.5" stroke-dasharray="1 4"/></svg>Meta corrigida</span>` : `<span class="sub-txt">Meta de ${fmtMi(X.metaNom(kHoje))} fora da escala: veja em "5 anos" ou "Até a meta"</span>`}`;
+    const series = [
+        ...(comMeta ? [{ pts: meta, stroke:'var(--txt)', w:1.5, dash:'1 4' }] : []),
+        { pts: plano, stroke:'var(--mut)', w:2, dash:'2 3' },
+        { pts: proj, stroke:'var(--acc)', w:2, dash:'5 4' },
+        { pts: real, stroke:'var(--acc)', w:3, dots:true } ];
+    $('d-chart').innerHTML = grafLinhas({ i0: X.baseI, N, ymax: Math.max(...vals), series, marks, selK: kHoje });
 }
 
 function renderEventos(X){
     const hoje = hojeISO(), lim = new Date(Date.now() + 365*864e5).toISOString().slice(0,10);
     const ev = [];
-    progs().filter(p => !p.efetivada).forEach(p => ev.push({ d:p.data, t:`📥 ${escH(p.desc)}`, v:Number(p.valor), s:'' }));
-    X.posAtivos.filter(a => !a.encerrado && a.vencimento && a.vencimento <= lim && a.saldo > 1).forEach(a => ev.push({ d:a.vencimento, t:`⏳ Vence: ${escH(a.nome)}`, v:a.saldo, s:'saldo estimado' }));
-    const proxAp = X.hojeI + (X.apEntre(X.hojeI-1, X.hojeI) >= X.c.aporte ? 1 : 0);
-    ev.push({ d: `${iMes(proxAp)}-28`, t:`💰 Aporte meta de ${iLbl(proxAp)}`, v:X.c.aporte - (proxAp === X.hojeI ? X.apEntre(X.hojeI-1, X.hojeI) : 0), s: proxAp === X.hojeI ? 'falta no mês' : '' });
+    progs().filter(p => !p.efetivada).forEach(p => ev.push({ d:p.data, t:`📥 ${escH(p.desc)}`, v:Number(p.valor) }));
+    X.posAtivos.filter(a => !a.encerrado && a.vencimento && a.vencimento <= lim && a.saldo > 1).forEach(a => ev.push({ d:a.vencimento, t:`⏳ Vence: ${escH(a.nome)}`, v:a.saldo }));
     ev.sort((a,b) => a.d.localeCompare(b.d));
-    $('d-eventos').innerHTML = `<table><tbody>${ev.slice(0,8).map(e => `<tr><td style="white-space:nowrap;">${e.d < hoje ? '<strong>▲ ' : ''}${e.d.endsWith('-28') && e.t.startsWith('💰') ? iLbl(dataI(e.d)) : dataBR(e.d)}${e.d < hoje ? '</strong>' : ''}</td><td>${e.t}${e.s ? ` <span class="sub-txt">${e.s}</span>` : ''}</td><td class="num-cell"><strong>${fmt(e.v)}</strong></td></tr>`).join('')}</tbody></table>
-        <p class="mis-note">▲ = data já passou. Recebimentos e vencimentos dos próximos 12 meses.</p>`;
+    $('d-eventos').innerHTML = ev.length ? `<table><tbody>${ev.slice(0,6).map(e => `<tr><td style="white-space:nowrap;">${e.d < hoje ? '<strong>▲ ' : ''}${dataBR(e.d)}${e.d < hoje ? '</strong>' : ''}</td><td>${e.t}</td><td class="num-cell"><strong>${fmt(e.v)}</strong></td></tr>`).join('')}</tbody></table>
+        <p class="mis-note">Recebimentos programados e vencimentos dos próximos 12 meses. ▲ = data já passou.</p>`
+        : '<p class="mis-note" style="margin:0;">Nenhum recebimento programado nem vencimento nos próximos 12 meses.</p>';
 }
 
 function renderRendChart(X){
     const box = $('d-rend');
     const h = X.hist.slice(-12);
-    if (!h.length) { box.innerHTML = '<p class="mis-note" style="margin:0;">Aparece depois do primeiro fechamento mensal.</p>'; return; }
     const W = 760, H = 230, L = 64, R = 12, T = 14, B = 30;
     const vals = h.flatMap(r => [r.rend, r.espRend]);
     const mx = Math.max(1, ...vals), mn = Math.min(0, ...vals);
@@ -1531,6 +1635,17 @@ function renderRendChart(X){
         g += `<text x="${x+w/2}" y="${H-B+16}" text-anchor="middle" font-size="10.5" fill="var(--mut)" font-weight="600">${iLbl(r.i).replace('/20','/')}</text>`;
     });
     box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img">${g}</svg>`;
+}
+
+// ── Ajuda: explicações (.dica) aparecem só quando o "?" está ligado ──
+function aplicarAjuda(on){
+    document.body.classList.toggle('ajuda-on', on);
+    const b = $('btnAjuda'); if (b) { b.setAttribute('aria-pressed', String(on)); b.title = on ? 'Ocultar explicações' : 'Mostrar explicações'; }
+}
+function alternarAjuda(){
+    const on = !document.body.classList.contains('ajuda-on');
+    aplicarAjuda(on); try { localStorage.setItem('mis_ajuda', on ? '1' : '0'); } catch(e) {}
+    toast(on ? 'Explicações visíveis em todas as telas.' : 'Explicações ocultas. Toque em ? para ver de novo.', 'info');
 }
 
 // ══════════════════════════════════════════════════════
@@ -1577,7 +1692,7 @@ function renderCarteira(X){
                 if (a.vencimento) { const m = dataI(a.vencimento) - X.hojeI; venc = `${dataBR(a.vencimento)} <span class="sub-txt">${a.vencimento < hoje ? '▲ vencido' : m <= 0 ? 'este mês' : 'em ' + mesesTxt(m)}</span>`; }
                 html += `<tr class="${a.encerrado ? 'row-paid' : ''}">
                     <td><strong>${escH(a.nome)}</strong>${a.encerrado ? ' <span class="tag">encerrado</span>' : ''}${a.obs ? `<div class="sub-txt">${escH(a.obs)}</div>` : ''}</td>
-                    <td>${escH(a.inst || '—')}</td><td style="white-space:nowrap;">${fmtTaxa(a)}</td><td style="white-space:nowrap;">${venc}</td>
+                    <td>${escH(a.inst || '—')}</td><td style="white-space:nowrap;">${fmtTaxa(a)}${a.semTaxa && !a.encerrado ? ' <span class="tag forte" title="Sem taxa, o saldo não rende na estimativa">sem taxa</span>' : ''}${a.pagaPara ? `<div class="sub-txt">juros → ${escH(nomeAtivo(a.pagaPara))}</div>` : ''}</td><td style="white-space:nowrap;">${venc}</td>
                     <td>${LIQUIDEZ[a.liquidez] || '—'}</td><td>${GARANTIAS[a.garantia] || '—'}</td>
                     <td class="num-cell"><strong>${fmtSigned(a.saldo)}</strong></td><td class="num-cell">${tot ? fmtP(a.saldo/tot,1) : '—'}</td>
                     <td><div style="display:flex;gap:2px;">
@@ -1589,7 +1704,7 @@ function renderCarteira(X){
             });
         });
         html += `</tbody></table></div>`;
-        if (X.semAtivo > 1) html += `<p class="mis-note">◆ Além dos ativos acima, <strong>${fmt(X.semAtivo)}</strong> do ponto de partida ainda não estão atribuídos a nenhum ativo. Isso se resolve no primeiro Fechamento com os saldos reais.</p>`;
+        if (X.semAtivo > 1) html += `<p class="mis-note">◆ Além dos ativos acima, <strong>${fmt(X.semAtivo)}</strong> do ponto de partida ainda não estão atribuídos a nenhum ativo. Isso se resolve na primeira conferência de saldos.</p>`;
         box.innerHTML = html;
     }
     $('c-donut-classe').innerHTML = donut(X.porClasse.map(p => ({ n:p.n, v:p.v })), 'ATIVOS');
@@ -1641,6 +1756,9 @@ function abrirAtivo(id, retorno){
     $('a-garantia').value = a?.garantia || 'tesouro'; $('a-liq').value = a?.liquidez || 'venc'; $('a-index').value = a?.indexador || 'ipca';
     $('a-taxa').value = a?.taxa != null && a.taxa !== '' ? fmtN(a.taxa) : ''; $('a-venc').value = a?.vencimento || '';
     $('a-isento').checked = !!a?.isento; $('a-obs').value = a?.obs || '';
+    $('a-paga').innerHTML = '<option value="">Não — os juros ficam no próprio ativo</option>' +
+        ativos().filter(x => x.id !== id && !x.encerrado).map(x => `<option value="${x.id}">${escH(x.nome)}</option>`).join('');
+    $('a-paga').value = a?.pagaPara || '';
     $('a-inst-lista').innerHTML = [...new Set(ativos().map(x => x.inst).filter(Boolean))].map(s => `<option value="${escH(s)}">`).join('');
     ativoAjustaTaxa();
     $('modal-ativo').classList.remove('hidden');
@@ -1663,7 +1781,7 @@ async function salvarAtivo(){
     const taxaTxt = $('a-taxa').value.trim(), taxa = taxaTxt ? parseBR(taxaTxt) : null;
     if (taxaTxt && isNaN(taxa)) return toast('Taxa inválida.', 'error');
     const reg = { nome, classe:$('a-classe').value, inst:$('a-inst').value.trim(), garantia:$('a-garantia').value, liquidez:$('a-liq').value,
-        indexador:$('a-index').value, taxa, vencimento:$('a-venc').value, isento:$('a-isento').checked, obs:$('a-obs').value.trim() };
+        indexador:$('a-index').value, taxa, vencimento:$('a-venc').value, isento:$('a-isento').checked, obs:$('a-obs').value.trim(), pagaPara:$('a-paga').value || '' };
     const id = ativoEditId || novoId('at'), ret = ativoRetorno, novo = !ativoEditId;
     $('modal-ativo').classList.add('hidden');
     const ok = await commit(d => { upsert(d, id, 'ativo', o => { Object.assign(o, reg); if (novo) o.encerrado = false; }); });
@@ -1679,7 +1797,7 @@ async function encerrarAtivo(id){
 async function excluirAtivo(id){
     const a = ativoPor(id); if (!a) return;
     const usado = movs().some(m => m.ativo === id || m.ativoDest === id) || fechs().some(f => (f.saldos||{})[id] != null) || progs().some(p => p.ativo === id);
-    if (usado) return toast(`"${escH(a.nome)}" tem movimentos ou fechamentos. Use ⏹ Encerrar em vez de excluir, para não perder o histórico.`, 'error', 8000);
+    if (usado) return toast(`"${escH(a.nome)}" tem movimentos ou conferências. Use ⏹ Encerrar em vez de excluir, para não perder o histórico.`, 'error', 8000);
     if (!confirm(`Excluir o ativo "${a.nome}"?`)) return;
     const ok = await commit(d => { const j = d.findIndex(z => z.id === id); if (j >= 0) d.splice(j,1); });
     if (ok) toast('Ativo excluído.', 'success');
@@ -1737,7 +1855,7 @@ function renderMovimentos(X){
     const rot = { aporte:'▲ Aporte', resgate:'▼ Resgate', transf:'⇄ Transf.' };
     box.innerHTML = `<div style="max-height:460px;overflow-y:auto;border:1px solid var(--bor);border-radius:10px;"><table>
         <thead><tr><th>Data</th><th>Tipo</th><th>Ativo</th><th class="num-cell">Valor</th><th>Observação</th><th style="width:70px;"></th></tr></thead><tbody>
-        ${lista.map(m => `<tr class="${m.i === X.selI ? 'row-starred' : ''}">
+        ${lista.map(m => `<tr class="${m.i === X.hojeI ? 'row-starred' : ''}">
             <td style="white-space:nowrap;">${dataBR(m.data)}${m.i <= X.baseI ? ' <span title="No mês-base ou antes: entra no ponto de partida">◆</span>' : ''}</td>
             <td class="mov-ap" style="white-space:nowrap;">${rot[m.tipo] || m.tipo}</td>
             <td>${escH(nomeAtivo(m.ativo))}${m.tipo === 'transf' ? ` → ${escH(nomeAtivo(m.ativoDest))}` : ''}</td>
@@ -1746,7 +1864,7 @@ function renderMovimentos(X){
             <td><div style="display:flex;gap:2px;">
                 <button class="btn btn-warning btn-sm" onclick="editarMov('${m.id}')" title="Editar">✎</button>
                 <button class="btn btn-danger btn-sm" onclick="excluirMov('${m.id}')" title="Excluir">×</button></div></td></tr>`).join('')}
-        </tbody></table></div><p class="mis-note" style="margin:8px 0 0;">Destacados: movimentos do mês selecionado no topo. ◆ = no mês-base ou antes (entra no ponto de partida).</p>`;
+        </tbody></table></div><p class="mis-note" style="margin:8px 0 0;">Destacados: movimentos deste mês. ◆ = no mês-base ou antes (entra no ponto de partida).</p>`;
 }
 async function salvarMov(){
     const data = $('m-data').value, valor = parseBR($('m-valor').value), ativo = $('m-ativo').value, dest = $('m-dest').value, obs = $('m-obs').value.trim();
@@ -1761,7 +1879,7 @@ async function salvarMov(){
     // Transferência num mês já fechado: ajusta os saldos desses fechamentos
     // (tira da origem, põe no destino). O total não muda, então é exato.
     const fechAfet = (!editando && reg.tipo === 'transf') ? fechs().filter(f => mkI(f.mk) >= dataI(data)) : [];
-    const ajustar = fechAfet.length && confirm(`Já existe fechamento em ${fechAfet.map(f => iLbl(mkI(f.mk))).join(', ')}.\n\nAjustar os saldos desse(s) fechamento(s) para refletir a transferência (recomendado)?`);
+    const ajustar = fechAfet.length && confirm(`Já existe conferência de saldos em ${fechAfet.map(f => iLbl(mkI(f.mk))).join(', ')}.\n\nAjustar esses saldos para refletir a transferência (recomendado)?`);
     const ok = await commit(d => {
         upsert(d, id, 'mov', o => Object.assign(o, reg));
         if (ajustar) d.filter(f => f.type === 'fech' && mkI(f.mk) >= dataI(data)).forEach(f => {
@@ -1778,9 +1896,9 @@ async function salvarMov(){
     const i = dataI(data);
     let msg = editando ? 'Movimento atualizado.' : `${{aporte:'Aporte',resgate:'Resgate',transf:'Transferência'}[reg.tipo]} de ${fmt(reg.valor)} lançado em ${iLbl(i)}.`;
     if (progId) msg += ' Programação efetivada.';
-    if (ajustar) msg += ' Fechamento(s) ajustado(s).';
+    if (ajustar) msg += ' Conferência(s) ajustada(s).';
     else if (i <= X.baseI && reg.tipo !== 'transf') msg += ' Entrou no ponto de partida.';
-    else if (X.hist.some(h => h.i >= i)) msg += ` Já existe fechamento a partir de ${iLbl(i)}: confira se os saldos incluem este movimento.`;
+    else if (X.hist.some(h => h.i >= i)) msg += ` Já existe conferência a partir de ${iLbl(i)}: veja se os saldos incluem este movimento.`;
     toast(msg, 'success', 8000);
 }
 function editarMov(id){
@@ -1908,32 +2026,50 @@ function efetivarProg(id){
 }
 
 // ══════════════════════════════════════════════════════
-//  FECHAMENTO MENSAL
+//  CONFERIR SALDOS (antigo Fechamento) — dentro da Carteira
+//  Os campos vêm com a estimativa do app no último dia do mês.
 // ══════════════════════════════════════════════════════
-let fDirty = false, fMk = null, fCtx = null;
+let fDirty = false, fMk = null, fCtx = null, confAberto = false;
 function fechEsperado(X){
-    const ant = X.hist.filter(h => h.i < X.selI).pop() || null;
-    const i0 = ant ? ant.i : -Infinity;
-    const map = {};
-    ativos().forEach(a => { map[a.id] = (ant ? Number((ant.saldos||{})[a.id])||0 : 0) + X.efeitoAtivo(a.id, i0, X.selI); });
-    return { ant, prevI: ant ? ant.i : X.baseI, map };
+    const E = estimar(X, fimMes(X.selI), X.selI);
+    return { ant: E.ck, prevI: E.ck ? E.ck.i : X.baseI, map: E.v, rend: E.rend };
+}
+function alternarConferir(){
+    if (confAberto && fDirty && !confirm('A conferência tem valores não salvos. Fechar e descartá-los?')) return;
+    if (confAberto) { fDirty = false; fMk = null; }
+    confAberto = !confAberto; render();
+}
+// Abre a conferência de um mês (índice de mês) direto na Carteira
+function abrirConferir(i){
+    if (i != null) { if (!podeTrocarMes()) return; currentDate = new Date(Math.floor(i/12), i%12, 1); }
+    confAberto = true; openTab('Carteira'); render();
+    setTimeout(() => $('c-conf-card').scrollIntoView({ behavior:'smooth', block:'start' }), 60);
 }
 function renderFechamento(X){
     $('f-mes').textContent = mesExtenso();
+    const pend = mesPendente(X);
+    $('c-conf-card').classList.toggle('pendente', pend != null);
+    $('c-conf-corpo').style.display = confAberto ? '' : 'none';
+    $('c-conf-toggle').textContent = confAberto ? 'Fechar' : (pend != null ? `Conferir ${iLbl(pend)}` : 'Abrir');
+    $('c-conf-toggle').className = 'btn btn-sm ' + (!confAberto && pend != null ? 'btn-primary' : 'btn-ghost');
+    if (!confAberto) {
+        $('f-status').textContent = pend != null ? `▲ ${iLbl(pend)} não conferido` : (X.ultimo ? `✓ conferido até ${iLbl(X.ultimo.i)}` : '');
+    }
     const bloq = X.selI <= X.baseI, futuro = X.selI > X.hojeI;
     $('f-wrap').style.display = bloq ? 'none' : '';
     const nb = $('f-bloqueado'); nb.style.display = bloq ? '' : 'none';
     if (bloq) {
         nb.innerHTML = X.selI === X.baseI
-            ? `${iLbl(X.baseI)} é o <strong>ponto de partida</strong>: ${fmt(X.c.p0)} (Plano → Parâmetros)${X.netBase ? ` + ${fmt(X.netBase)} de movimentos até este mês = <strong>${fmt(X.p0Real)}</strong>` : ''}. Os fechamentos começam em ${iLbl(X.baseI+1)} (use ▶ no topo).`
-            : `${iLbl(X.selI)} é anterior ao ponto de partida (${iLbl(X.baseI)}). Use ▶ no topo para avançar.`;
-        $('f-status').textContent = ''; fCtx = null;
+            ? `${iLbl(X.baseI)} é o <strong>ponto de partida</strong>: ${fmt(X.c.p0)} (Ajustes → Parâmetros)${X.netBase ? ` + ${fmt(X.netBase)} de movimentos até este mês = <strong>${fmt(X.p0Real)}</strong>` : ''}. As conferências começam em ${iLbl(X.baseI+1)} (use ▶ acima).`
+            : `${iLbl(X.selI)} é anterior ao ponto de partida (${iLbl(X.baseI)}). Use ▶ acima para avançar.`;
+        if (confAberto) $('f-status').textContent = ''; fCtx = null;
     } else {
         const esp = fechEsperado(X), r = X.regSel, mk = iMk(X.selI);
         const saldosReg = r ? (r.saldos||{}) : {};
         const visiveis = ativos().filter(a => !a.encerrado || Math.abs(esp.map[a.id]) > 0.5 || saldosReg[a.id] != null);
         fCtx = { prevTot: esp.ant ? esp.ant.tot : X.p0Real, prevLbl: esp.ant ? `Saldo de ${iLbl(esp.ant.i)}` : `Ponto de partida (${iLbl(X.baseI)})`,
-                 net: X.netEntre(esp.prevI, X.selI), periodo: esp.prevI < X.selI - 1 ? `${iLbl(esp.prevI+1)} a ${iLbl(X.selI)}` : iLbl(X.selI), ids: visiveis.map(a => a.id) };
+                 net: X.netEntre(esp.prevI, X.selI), periodo: esp.prevI < X.selI - 1 ? `${iLbl(esp.prevI+1)} a ${iLbl(X.selI)}` : iLbl(X.selI), ids: visiveis.map(a => a.id),
+                 estRend: esp.rend, estTot: visiveis.reduce((s,a) => s + (esp.map[a.id]||0), 0) };
         const precisa = fMk !== mk || !fDirty || $('f-form').dataset.ids !== fCtx.ids.join(',');
         if (precisa) {
             const valores = {};
@@ -1954,17 +2090,17 @@ function renderFechamento(X){
             fMk = mk;
         }
         fechTotal();
-        $('f-status').textContent = fDirty ? '● alterações não salvas' : (r ? '✓ mês fechado' : (futuro ? '○ mês ainda não chegou' : '○ sugestão (saldo anterior + movimentos): ajuste e salve'));
+        if (confAberto) $('f-status').textContent = fDirty ? '● alterações não salvas' : (r ? '✓ mês conferido' : (futuro ? '○ mês ainda não terminou' : '○ valores estimados: corrija e salve'));
         $('f-excluir').style.display = r ? '' : 'none';
     }
     // Histórico
-    const linhas = X.hist.slice().reverse().map(h => `<tr class="row-click ${h.i === X.selI ? 'row-starred' : ''}" onclick="irMes(${h.i})">
-        <td style="white-space:nowrap;">${iLbl(h.i)}${h.salto ? ' <span title="Houve meses sem fechamento antes deste; o rendimento cobre o período todo">*</span>' : ''}</td>
+    const linhas = X.hist.slice().reverse().map(h => `<tr class="row-click ${h.i === X.ultI ? 'row-starred' : ''}" onclick="abrirConferir(${h.i})">
+        <td style="white-space:nowrap;">${iLbl(h.i)}${h.salto ? ' <span title="Houve meses sem conferência antes deste; o rendimento cobre o período todo">*</span>' : ''}</td>
         <td class="num-cell">${fmtSigned(h.net)}</td><td class="num-cell">${seta(h.rend)} ${fmtSigned(h.rend)}</td><td class="num-cell">${fmtP(h.rendPct)}</td><td class="num-cell">${fmtP(h.espPct)}</td>
         <td class="num-cell"><strong>${fmt(h.tot)}</strong></td><td class="num-cell">${h.plano != null ? fmt(h.plano) : '—'}</td>
         <td class="num-cell">${h.desvio != null ? `${seta(h.desvio)} ${fmtPs(h.desvioPct,1)}` : '—'}</td><td class="num-cell">${fmtP(h.rendAp,0)}</td></tr>`);
     linhas.push(`<tr class="row-paid"><td>${iLbl(X.baseI)}</td><td class="num-cell">${X.netBase ? fmtSigned(X.netBase) : '—'}</td><td class="num-cell">—</td><td class="num-cell">—</td><td class="num-cell">—</td>
-        <td class="num-cell"><strong>${fmt(X.p0Real)}</strong></td><td class="num-cell">${fmt(X.c.p0)}</td><td class="num-cell">partida</td><td class="num-cell">—</td></tr>`);
+        <td class="num-cell"><strong>${fmt(X.p0Real)}</strong></td><td class="num-cell">${fmt(X.p0Real)}</td><td class="num-cell">partida</td><td class="num-cell">—</td></tr>`);
     $('f-hist').innerHTML = linhas.join('');
 }
 function fechMarcar(){ fDirty = true; $('f-status').textContent = '● alterações não salvas'; fechTotal(); }
@@ -1990,37 +2126,33 @@ function fechTotal(){
         <div class="kpi-sub-row"><span>+ Aportes − resgates (${fCtx.periodo})</span><strong>${fmtSigned(fCtx.net)}</strong></div>
         <div class="kpi-sub-row"><span>= Esperado sem rendimento</span><strong>${fmt(esperado)}</strong></div>
         ${t > 0 ? `<div class="kpi-sub-row"><span>Rendimento (informado − esperado)</span><strong>${seta(rend)} ${fmtSigned(rend)}${pct != null ? ` · ${fmtPs(pct,2)}` : ''}</strong></div>` : ''}
+        <div class="kpi-sub-row"><span>Rendimento que o app estimava</span><strong>${fmtSigned(fCtx.estRend)}</strong></div>
         ${estranho ? `<p style="margin:8px 0 0;font-weight:700;">⚠ Rendimento fora do normal para um mês. Confira se os saldos incluem todos os aportes e se falta algum ativo.</p>` : ''}`;
 }
 function fechPreencher(){
     const X = calc(), esp = fechEsperado(X);
     (fCtx?.ids || []).forEach(id => { const el = $(`f-s-${id}`); if (el) el.value = esp.map[id] ? fmtN(esp.map[id]) : ''; });
-    fechMarcar(); toast('Preenchido com saldo anterior + movimentos. Ajuste para o saldo real e salve.', 'info', 6000);
+    fechMarcar(); toast('Preenchido com a estimativa do app. Corrija o que for diferente da corretora e salve.', 'info', 6000);
 }
 async function fechSalvar(){
     const X = calc(); if (X.selI <= X.baseI) return;
     const { saldos, erro } = fechLer();
     if (erro) return toast(`Valor inválido em "${escH(erro)}".`, 'error');
     if (!Object.keys(saldos).length) return toast('Informe o saldo de pelo menos um ativo.', 'error');
-    if (X.selI > X.hojeI && !confirm(`${iLbl(X.selI)} ainda não chegou. Fechar mesmo assim?`)) return;
+    if (X.selI > X.hojeI && !confirm(`${iLbl(X.selI)} ainda não terminou. Salvar a conferência mesmo assim?`)) return;
     const t = Object.values(saldos).reduce((s,v) => s+v, 0);
     const rend = t - fCtx.prevTot - fCtx.net, pct = fCtx.prevTot > 0 ? rend/fCtx.prevTot : 0;
     if ((pct < -0.03 || pct > 0.05) && !confirm(`Com esses saldos, o rendimento de ${iLbl(X.selI)} fica em ${fmtSigned(rend)} (${fmtPs(pct,1)}).\n\nIsso costuma indicar aporte faltando, duplicado, ou um ativo sem saldo.\n\nSalvar mesmo assim?`)) return;
     const mk = iMk(X.selI);
     const ok = await commit(d => { upsert(d, 'fech_' + mk, 'fech', o => { o.mk = mk; o.saldos = saldos; }); });
-    if (ok) { fDirty = false; fMk = null; render(); toast(`Fechamento de ${iLbl(X.selI)} salvo.`, 'success'); }
+    if (ok) { fDirty = false; fMk = null; confAberto = false; render(); toast(`Saldos de ${iLbl(X.selI)} conferidos e salvos.`, 'success'); }
 }
 async function fechExcluir(){
     const X = calc(); if (!X.regSel) return;
-    if (!confirm(`Excluir o fechamento de ${iLbl(X.selI)}?`)) return;
+    if (!confirm(`Excluir a conferência de ${iLbl(X.selI)}? O app volta a usar a estimativa para esse mês.`)) return;
     const id = 'fech_' + iMk(X.selI);
     const ok = await commit(d => { const j = d.findIndex(z => z.id === id); if (j >= 0) d.splice(j,1); });
-    if (ok) { fDirty = false; fMk = null; render(); toast('Fechamento excluído.', 'success'); }
-}
-function atalhoFechamento(){
-    const X = calc();
-    const alvo = X.hist.some(h => h.i === X.hojeI-1) ? X.hojeI : X.hojeI - 1;
-    irMes(Math.max(alvo, X.baseI+1)); openTab('Fechamento');
+    if (ok) { fDirty = false; fMk = null; render(); toast('Conferência excluída.', 'success'); }
 }
 
 // ══════════════════════════════════════════════════════
@@ -2054,6 +2186,8 @@ function renderPrevisao(Xin){
             ['vs plano', base.chegI && X.planoChegI ? `${seta(X.planoChegI - base.chegI)} ${Math.abs(X.planoChegI - base.chegI)} meses` : '—']], 'kpi-highlight'),
         kp('🔺 Otimista', otim.chegI ? iLbl(otim.chegI) : '—', '', [['Em', emQuanto(otim)], ['Selic', pp(cen.otimS)], ['Aporte', `${fmtN(cen.otimA,0)}%`]]),
         kp(`📅 Em 5 anos (${iLbl(X.hojeI+k5)})`, fmt(base.serie[k5]), '', [['Pessimista', fmt(pess.serie[k5])], ['Otimista', fmt(otim.serie[k5])], ['Juros/mês (base)', fmt(base.serie[k5]*X.taxaI(X.hojeI+k5, sp.dSelic))]]),
+        kp('🔄 Ponto de virada', fmtP(X.rendPot / X.c.aporte, 0), '', [['Juros hoje ÷ aporte meta', `${fmt(X.rendPot)} ÷ ${fmtMi(X.c.aporte)}`],
+            ['Juros = ½ aporte com', fmtMi(X.c.aporte/2 / X.rPot)], ['Juros = aporte com', fmtMi(X.c.aporte / X.rPot)]]),
     ].join('');
     // Gráfico
     const fimK = Math.max(...[base, pess, otim].map(p => p.chegI ? p.chegI - X.hojeI : 0));
@@ -2207,7 +2341,7 @@ function renderPlano(X){
     if (!box.dataset.pronto) {
         box.innerHTML = CLASSES.map(cl => `<div class="form-field"><label>${cl.n}</label><input id="g-alvo-${cl.k}" inputmode="decimal"></div>`).join('');
         box.dataset.pronto = '1';
-        document.querySelectorAll('#Plano input').forEach(el => { if (el.type !== 'checkbox') el.addEventListener('input', () => { cfgDirty = true; }); });
+        document.querySelectorAll('#g-det input').forEach(el => { if (el.type !== 'checkbox') el.addEventListener('input', () => { cfgDirty = true; }); });
     }
     if (cfgDirty) return;
     const c = X.c, [by, bm] = c.baseMk.split('-').map(Number);
@@ -2233,12 +2367,12 @@ async function salvarCfg(){
     for (const cl of CLASSES) { const v = parseBR($(`g-alvo-${cl.k}`).value || '0'); if (isNaN(v) || v < 0) return toast(`Alvo inválido em "${cl.n}".`, 'error'); reg.alvo[cl.k] = v; soma += v; }
     if (Math.abs(soma - 100) > 0.01) return toast(`A alocação-alvo soma ${fmtN(soma,0)}%. Precisa somar 100%.`, 'error');
     const perdidos = fechs().filter(f => mkI(f.mk) <= mkI(reg.baseMk)).length;
-    if (perdidos && !confirm(`${perdidos} fechamento(s) ficam no mês-base ou antes e deixarão de contar. Continuar?`)) return;
+    if (perdidos && !confirm(`${perdidos} conferência(s) ficam no mês-base ou antes e deixarão de contar. Continuar?`)) return;
     const ok = await commit(d => { upsert(d, 'cfg', 'cfg', o => Object.assign(o, reg)); });
     if (ok) { cfgDirty = false; $('s-aporte').dataset.pronto = ''; render(); toast('Parâmetros salvos. Plano recalculado.', 'success'); }
 }
 async function restaurarPadrao(){
-    if (!confirm('Restaurar os parâmetros originais do plano? Ativos, movimentos e fechamentos não mudam.')) return;
+    if (!confirm('Restaurar os parâmetros originais do plano? Ativos, movimentos e conferências não mudam.')) return;
     const ok = await commit(d => { upsert(d, 'cfg', 'cfg', o => { const p = o.privado; Object.keys(o).forEach(k => { if (k !== 'id' && k !== 'type') delete o[k]; }); Object.assign(o, JSON.parse(JSON.stringify(PAD_CFG)), { privado:p }); }); });
     if (ok) { cfgDirty = false; render(); toast('Parâmetros restaurados.', 'success'); }
 }
@@ -2277,7 +2411,7 @@ function converterMissao(m){
 }
 async function aplicarImportacao(novos, origem){
     if (!dataLoaded) return toast('Conecte primeiro a planilha própria da Missão (e espere carregar).', 'error', 8000);
-    const resumo = `${novos.filter(i => i.type==='ativo').length} ativo(s), ${novos.filter(i => i.type==='mov').length} movimento(s), ${novos.filter(i => i.type==='fech').length} fechamento(s), ${novos.filter(i => i.type==='prog').length} programação(ões)`;
+    const resumo = `${novos.filter(i => i.type==='ativo').length} ativo(s), ${novos.filter(i => i.type==='mov').length} movimento(s), ${novos.filter(i => i.type==='fech').length} conferência(s), ${novos.filter(i => i.type==='prog').length} programação(ões)`;
     if (!confirm(`Importar de ${origem}: ${resumo}.\n\n${dados.length ? 'ATENÇÃO: isso SUBSTITUI tudo que está na planilha da Missão.\n\n' : ''}Continuar?`)) return;
     showLoading('Importando e gravando...');
     const ok = await commit(d => { d.length = 0; novos.forEach(i => d.push(i)); });
@@ -2333,8 +2467,8 @@ function exportExcel(){
         ...X.posAtivos.map(a => [a.nome, nomeClasse(a.classe), a.inst||'', fmtTaxa(a), a.vencimento ? dataBR(a.vencimento) : '', LIQUIDEZ[a.liquidez]||'', GARANTIAS[a.garantia]||'', Math.round(a.saldo*100)/100, a.encerrado?'Encerrado':'Ativo'])], [34,26,18,22,12,14,16,16,10]);
     add('Movimentos', [['Data','Tipo','Ativo','Para o ativo','Valor (R$)','Observação'],
         ...X.ms.slice().sort((a,b) => a.data.localeCompare(b.data)).map(m => [dataBR(m.data), m.tipo, nomeAtivo(m.ativo), m.tipo==='transf'?nomeAtivo(m.ativoDest):'', m.valor, m.obs||''])], [12,10,34,34,14,40]);
-    add('Fechamentos', [['Mês','Aportes líq. (R$)','Rendimento (R$)','Rend. %','Esperado %','Patrimônio (R$)','Plano (R$)','Desvio (R$)', ...CLASSES.map(c => c.n + ' (R$)')],
-        [iLbl(X.baseI), X.netBase, '', '', '', X.p0Real, X.c.p0, '', ...CLASSES.map(() => '')],
+    add('Conferências', [['Mês','Aportes líq. (R$)','Rendimento (R$)','Rend. %','Esperado %','Patrimônio (R$)','Plano (R$)','Desvio (R$)', ...CLASSES.map(c => c.n + ' (R$)')],
+        [iLbl(X.baseI), X.netBase, '', '', '', X.p0Real, X.p0Real, '', ...CLASSES.map(() => '')],
         ...X.hist.map(h => [iLbl(h.i), h.net, h.rend, h.rendPct, h.espPct, h.tot, h.plano, h.desvio, ...CLASSES.map(c => h.porClasse[c.k])])]);
     const pr = projetar(X, { aporte:X.c.aporte }), anual = [['Ano','Patrimônio dez (R$)','Em R$ do início','Juros/mês (R$)','Renda sustentável (R$)','% da meta']];
     for (let y = Math.floor(X.hojeI/12); y <= Math.floor(X.hojeI/12)+30; y++) { const i = y*12+11, k = i - X.hojeI; if (k < 0 || k > 420) continue; const v = pr.serie[k], r = v/Math.pow(1+X.ipcaM, i-X.baseI); anual.push([y, v, r, v*X.taxaI(i), r*X.c.saque/100, r/X.metaHoje]); }
@@ -2364,12 +2498,11 @@ function openTab(name){
     window.scrollTo({ top:0 });
 }
 function podeTrocarMes(){
-    if (fDirty && !confirm('O fechamento deste mês tem valores não salvos. Trocar de mês e descartá-los?')) return false;
+    if (fDirty && !confirm('A conferência deste mês tem valores não salvos. Trocar de mês e descartá-los?')) return false;
     fDirty = false; return true;
 }
 function changeMonth(o){ if (!podeTrocarMes()) return; currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth()+o, 1); render(); }
 function irMes(i){ if (!podeTrocarMes()) return; currentDate = new Date(Math.floor(i/12), i%12, 1); render(); }
-function irHoje(){ if (!podeTrocarMes()) return; currentDate = new Date(); render(); }
 window.addEventListener('beforeunload', e => { if (fDirty || idxDirty || cfgDirty) { e.preventDefault(); e.returnValue = ''; } });
 
 function toggleTheme(){ const d = document.body.getAttribute('data-theme') === 'dark'; document.body.setAttribute('data-theme', d ? '' : 'dark'); localStorage.setItem('theme', d ? 'light' : 'dark'); render(); }
@@ -2518,7 +2651,10 @@ function init(){
     $('config-url').value = url();
     $('cgg-url').value = localStorage.getItem(LS.cgg) || CGG_URL_PADRAO;
     aplicarPrivado();
-    const aba = localStorage.getItem('mis_aba'); if (aba && $(aba)) openTab(aba);
+    aplicarAjuda(localStorage.getItem('mis_ajuda') === '1');
+    const h = new Date(); currentDate = new Date(h.getFullYear(), h.getMonth() - 1, 1);   // conferência abre no último mês encerrado
+    const aba = localStorage.getItem('mis_aba');
+    openTab(['Inicio','Carteira','Movimentos','Projecao','Ajustes'].includes(aba) ? aba : 'Inicio');
     render();
 }
 init();
