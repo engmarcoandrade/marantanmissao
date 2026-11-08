@@ -647,6 +647,7 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
             <button class="btn btn-primary" id="p-btn" onclick="salvarProg()">＋ Programar</button>
             <button class="btn btn-ghost" id="p-cancel" style="display:none;" onclick="cancelarProg()">Cancelar</button>
         </div>
+        <div id="p-totais" style="margin-top:14px;"></div>
         <div id="p-lista" style="margin-top:14px;"></div>
     </div>
 </section>
@@ -856,9 +857,10 @@ body.privado main .card.no-priv > *, body.privado main .card.no-priv > table > t
 //  VERSÃO DO APP — ATUALIZE A CADA ALTERAÇÃO PUBLICADA
 //  MAIOR.MENOR.AJUSTE (nova função = MENOR+1; correção = AJUSTE+1)
 //   1.0.0 (01/11/2026) app próprio da Missão, separado do CGG
+//   1.1.0 (08/11/2026) Programação de recebimentos: totalizador mensal e geral
 // ══════════════════════════════════════════════════════
-const APP_VERSAO = '1.0.0';
-const APP_VERSAO_DATA = '01/11/2026';
+const APP_VERSAO = '1.1.0';
+const APP_VERSAO_DATA = '08/11/2026';
 document.querySelectorAll('[data-versao]').forEach(el => {
     el.textContent = el.dataset.versao === 'longa' ? `Missão · versão ${APP_VERSAO} · ${APP_VERSAO_DATA}` : `v${APP_VERSAO}`;
 });
@@ -1819,10 +1821,42 @@ function renderProg(X){
     const pend = ps.filter(p => !p.efetivada).sort((a,b) => a.data.localeCompare(b.data));
     const feitas = ps.filter(p => p.efetivada).sort((a,b) => b.data.localeCompare(a.data));
     const soma = l => l.reduce((s,p) => s + Number(p.valor||0), 0);
-    $('p-resumo').innerHTML = ps.length ? `A receber: <strong>${fmt(soma(pend))}</strong> (${pend.length}) · Efetivado: <strong>${fmt(soma(feitas))}</strong> (${feitas.length})` : '';
-    const box = $('p-lista');
-    if (!ps.length) { box.innerHTML = '<p class="mis-note" style="margin:0;">Nenhum recebimento programado.</p>'; return; }
+    $('p-resumo').innerHTML = '';
+    const box = $('p-lista'), tot = $('p-totais');
+    if (!ps.length) { tot.innerHTML = ''; box.innerHTML = '<p class="mis-note" style="margin:0;">Nenhum recebimento programado.</p>'; return; }
     const hoje = hojeISO();
+    // ── Totalizadores: geral + mensal (por data prevista) ──
+    const vl = p => Number(p.valor) || 0;
+    const prox = pend[0];
+    const atrasado = pend.filter(p => p.data < hoje);
+    const meses = {};
+    ps.forEach(p => { const mk = (p.data || '').slice(0,7); if (!mk) return;
+        const m = meses[mk] = meses[mk] || { n:0, pend:0, feito:0 };
+        m.n++; if (p.efetivada) m.feito += vl(p); else m.pend += vl(p); });
+    const mesAtual = hoje.slice(0,7);
+    let acum = 0;
+    const linhasM = Object.keys(meses).sort().map(mk => {
+        const m = meses[mk]; acum += m.pend;
+        const [y, mo] = mk.split('-').map(Number);
+        const passou = mk < mesAtual && m.pend > 0;
+        return `<tr class="${mk === mesAtual ? 'row-starred' : ''}">
+            <td style="white-space:nowrap;"><strong>${iLbl(y*12 + mo - 1)}</strong>${mk === mesAtual ? ' <span class="sub-txt">atual</span>' : ''}${passou ? ' <span class="pg-late">▲ passou</span>' : ''}</td>
+            <td class="num-cell">${m.n}</td><td class="num-cell">${m.pend ? fmt(m.pend) : '—'}</td><td class="num-cell">${m.feito ? fmt(m.feito) : '—'}</td>
+            <td class="num-cell"><strong>${fmt(m.pend + m.feito)}</strong></td><td class="num-cell">${fmt(acum)}</td></tr>`;
+    }).join('');
+    tot.innerHTML = `<div class="summary-strip" style="margin-bottom:12px;">
+            <span>Total programado: <strong>${fmt(soma(ps))}</strong> (${ps.length})</span>
+            <span>A receber: <strong>${fmt(soma(pend))}</strong> (${pend.length})</span>
+            <span>Efetivado: <strong>${fmt(soma(feitas))}</strong> (${feitas.length})</span>
+            ${prox ? `<span>Próximo: <strong>${dataBR(prox.data)} · ${fmt(vl(prox))}</strong></span>` : ''}
+            ${atrasado.length ? `<span>▲ Com data vencida: <strong>${fmt(soma(atrasado))}</strong> (${atrasado.length})</span>` : ''}
+        </div>
+        <div style="border:1px solid var(--bor);border-radius:10px;overflow-x:auto;"><table>
+            <thead><tr><th>Mês</th><th class="num-cell">Itens</th><th class="num-cell">A receber</th><th class="num-cell">Efetivado</th><th class="num-cell">Total do mês</th><th class="num-cell">A receber acumulado</th></tr></thead>
+            <tbody>${linhasM}</tbody>
+            <tfoot><tr style="background:var(--cab);"><td><strong>TOTAL GERAL</strong></td><td class="num-cell"><strong>${ps.length}</strong></td><td class="num-cell"><strong>${fmt(soma(pend))}</strong></td><td class="num-cell"><strong>${fmt(soma(feitas))}</strong></td><td class="num-cell"><strong>${fmt(soma(ps))}</strong></td><td class="num-cell"></td></tr></tfoot>
+        </table></div>
+        <p class="mis-note" style="margin:6px 0 14px;">Os meses seguem a <strong>data prevista</strong> de cada recebimento. "A receber acumulado" soma mês após mês só o que ainda falta entrar.</p>`;
     box.innerHTML = `<div style="max-height:380px;overflow-y:auto;border:1px solid var(--bor);border-radius:10px;"><table>
         <thead><tr><th>Data prevista</th><th>Descrição</th><th>Aplicar em</th><th class="num-cell">Valor</th><th>Situação</th><th style="width:70px;"></th></tr></thead><tbody>
         ${[...pend, ...feitas].map(p => p.efetivada
