@@ -280,6 +280,9 @@ td select{padding:3px 6px;font-size:12px}
 .alert-list li b.ic{flex:none;width:18px;text-align:center;font-size:14px}
 .alert-list li.forte{border-color:var(--prio);background:var(--prio-soft);font-weight:600}
 .alert-list li.bom{border-color:var(--acc);background:var(--acc-soft)}
+.alert-acts{display:flex;gap:6px;align-items:center;flex:none;margin-left:auto}
+.alert-txt{flex:1 1 220px;min-width:0}
+@media (max-width:680px){ .alert-list li{flex-wrap:wrap} .alert-txt{flex-basis:calc(100% - 30px)} .alert-acts{margin-left:28px} }
 .aloc-row{display:grid;grid-template-columns:minmax(140px,1.4fr) 2fr 150px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--bor);font-size:13px}
 .aloc-row:last-child{border-bottom:none}
 .aloc-bar{position:relative;height:12px;background:var(--bor);border-radius:6px}
@@ -539,13 +542,23 @@ nav button.tab-link .ti{font-size:13px}
         <div class="card flex-col" id="d-mes-card"><div id="d-mes"></div></div>
         <div class="card flex-col">
             <div class="card-head"><h2>Atenção</h2><button class="btn btn-ghost btn-sm" id="d-alertas-mais" style="width:auto;padding:0 10px;display:none;" onclick="alternarAlertas()"></button></div>
+            <div class="sub-txt" id="d-alertas-resumo" style="margin:-4px 0 10px;"></div>
             <ul class="alert-list" id="d-alertas"></ul>
         </div>
     </div>
 
+    <div class="card" id="d-aplicar-card">
+        <div class="card-head"><h2>💡 Como aplicar o dinheiro</h2></div>
+        <div class="form-row">
+            <div class="form-field" style="max-width:220px;"><label>Quanto aplicar (R$)</label><input id="ap-valor" inputmode="decimal" placeholder="0,00" oninput="apDigitou()"></div>
+            <div class="form-field" style="flex:2;min-width:260px;"><label>De onde vem o dinheiro</label><select id="ap-origem" onchange="renderAplicar()"></select></div>
+        </div>
+        <div id="d-aplicar" style="margin-top:14px;"></div>
+    </div>
+
     <div class="card">
         <div class="card-head">
-            <h2>Evolução</h2>
+            <h2>Evolução do patrimônio</h2>
             <div class="seg" id="d-hor">
                 <button data-h="12" onclick="setHorizonte('12')">12 meses</button>
                 <button data-h="24" onclick="setHorizonte('24')">24 meses</button>
@@ -555,7 +568,10 @@ nav button.tab-link .ti{font-size:13px}
         </div>
         <div class="mis-legend" id="d-legenda"></div>
         <div class="mis-chart" id="d-chart"></div>
+        <p class="mis-note" id="d-chart-nota"></p>
     </div>
+
+    <div class="card" id="d-meta-card"></div>
 
     <div class="flex-row">
         <div class="card flex-col"><h2>Onde está o dinheiro</h2><div id="d-donut"></div><div id="d-conc"></div></div>
@@ -729,14 +745,15 @@ nav button.tab-link .ti{font-size:13px}
     </div>
     <div class="kpi-grid" id="s-kpis"></div>
     <div class="card">
-        <h2>Cenários</h2>
+        <h2>Cenários · quando chego à meta</h2>
         <div class="mis-legend">
             <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--acc)" stroke-width="3"/></svg>Base</span>
             <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--mut)" stroke-width="2" stroke-dasharray="8 4"/></svg>Otimista</span>
             <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--mut)" stroke-width="2" stroke-dasharray="2 3"/></svg>Pessimista</span>
-            <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--txt)" stroke-width="1.5" stroke-dasharray="1 4"/></svg>Meta corrigida</span>
+            <span><svg width="26" height="10"><circle cx="13" cy="5" r="4" fill="none" stroke="var(--txt)" stroke-width="2"/></svg>Chegada prevista</span>
         </div>
         <div class="mis-chart" id="s-chart"></div>
+        <p class="mis-note" id="s-chart-nota"></p>
     </div>
     <div class="flex-row">
         <div class="card flex-col no-priv">
@@ -778,15 +795,22 @@ nav button.tab-link .ti{font-size:13px}
     </div>
     <div class="card no-priv">
         <h2>Comparador de ofertas</h2>
-        <p class="mis-note dica" style="margin:0 0 12px;">Recebeu uma oferta do banco? Coloque aqui e compare <strong>líquido de IR e de inflação</strong>. Usa o CDI e a inflação esperada atuais e o IR regressivo pelo prazo. Não é gravado.</p>
+        <p class="mis-note dica" style="margin:0 0 12px;">Recebeu uma oferta? Coloque aqui. O app compara <strong>líquido de IR e de inflação</strong>, no <strong>mesmo horizonte</strong> (o que sobra de prazo é reaplicado na Selic projetada), contra a Selic, o Tesouro IPCA+ e a sua carteira. As ofertas ficam guardadas neste navegador.</p>
         <div class="form-row">
             <div class="form-field" style="flex:2;min-width:180px;"><label>Nome</label><input id="k-nome" placeholder="Ex.: CDB Banco X 2028"></div>
             <div class="form-field"><label>Tipo</label><select id="k-tipo"><option value="cdi">% do CDI</option><option value="pre">Prefixado (% a.a.)</option><option value="ipca">IPCA + (% a.a.)</option></select></div>
             <div class="form-field"><label>Taxa</label><input id="k-taxa" inputmode="decimal" placeholder="Ex.: 110 ou 13,5 ou 7,2"></div>
             <div class="form-field" style="max-width:130px;"><label>Prazo (anos)</label><input id="k-prazo" inputmode="decimal" value="2"></div>
             <label class="check-field"><input type="checkbox" id="k-isento"> Isento de IR</label>
+        </div>
+        <div class="form-row" style="margin-top:10px;">
+            <div class="form-field"><label>Garantia</label><select id="k-gar"><option value="fgc">FGC</option><option value="tesouro">Tesouro Nacional</option><option value="nenhuma">Sem garantia</option></select></div>
+            <div class="form-field"><label>Instituição (para checar o FGC)</label><input id="k-inst" list="k-inst-lista" placeholder="Ex.: Banco X"><datalist id="k-inst-lista"></datalist></div>
+            <div class="form-field" style="max-width:190px;"><label>Simular com (R$)</label><input id="k-valor" inputmode="decimal" value="100.000,00"></div>
+            <div class="form-field" style="max-width:190px;"><label>Horizonte (anos) · opcional</label><input id="k-hor" inputmode="decimal" placeholder="o maior prazo" oninput="renderComparador()"></div>
             <button class="btn btn-primary" onclick="compAdd()">＋ Comparar</button>
         </div>
+        <div id="k-ref" style="margin-top:14px;"></div>
         <div id="k-tabela" style="margin-top:14px;"></div>
     </div>
 </section>
@@ -889,9 +913,17 @@ nav button.tab-link .ti{font-size:13px}
 //   1.1.0 (08/11/2026) Programação de recebimentos: totalizador mensal e geral
 //   2.0.0 (08/11/2026) 5 abas; Início novo; Fechamento vira "Conferir saldos" na Carteira;
 //                     saldo estimado por dia pela taxa de cada ativo; botão ＋; ajuda "?"; barra inferior no celular
+//   2.1.0 (09/11/2026) Início: gráfico em R$ de hoje (meta vira linha reta), eixo da direita com a renda mensal,
+//                     marco de R$ 1 mi e quadro "Como a meta é calculada"
+//   2.5.0 (09/11/2026) Alertas: textos curtos, botão de ação em cada um, esconder lembretes por 30 dias, resumo por gravidade,
+//                     alocação fora do alvo explicada quando é temporária
+//   2.4.0 (09/11/2026) Comparador: horizonte comum com reaplicação, referências (Selic, IPCA+, carteira), vs. Selic,
+//                     renda por mês, checagem do FGC, ofertas guardadas no navegador e botão "Usar" (cadastra o ativo)
+//   2.3.0 (09/11/2026) Início: "Como aplicar o dinheiro" (valor, origem aporte x transferência, ativo de destino por classe, FGC)
+//   2.2.0 (09/11/2026) Projeção, marco de R$ 1 mi e fases no mesmo padrão do Início: R$ de hoje, meta reta, eixo da renda
 // ══════════════════════════════════════════════════════
-const APP_VERSAO = '2.0.0';
-const APP_VERSAO_DATA = '08/11/2026';
+const APP_VERSAO = '2.5.0';
+const APP_VERSAO_DATA = '09/11/2026';
 document.querySelectorAll('[data-versao]').forEach(el => {
     el.textContent = el.dataset.versao === 'longa' ? `Missão · versão ${APP_VERSAO} · ${APP_VERSAO_DATA}` : `v${APP_VERSAO}`;
 });
@@ -1270,8 +1302,9 @@ function calc(){
     const plano = [p0Real];
     for (let k = 1, v = p0Real; k <= 360; k++) { v = v*(1 + taxaI(baseI+k)) + c.aporte; plano.push(v); }
     const planoChegK = plano.findIndex((p,k) => k > 0 && p >= metaNom(k));
-    const plano1miK  = plano.findIndex(p => p >= 1e6);
-    const plano2miK  = plano.findIndex(p => p >= 2e6);
+    const planoReal  = (p,k) => p / Math.pow(1 + ipcaM, k);          // R$ de hoje, como nos gráficos
+    const plano1miK  = plano.findIndex((p,k) => planoReal(p,k) >= 1e6);
+    const plano2miK  = plano.findIndex((p,k) => planoReal(p,k) >= 2e6);
 
     // Fechamentos
     const atvs = ativos();
@@ -1338,7 +1371,7 @@ function calc(){
     X.planoChegI = planoChegK > 0 ? baseI + planoChegK : null;
     X.feitos = CHECK.filter((_,i) => checks()[i]).length;
     if (estHoje >= metaNom(kHoje)) X.fase = 3;
-    else if (estHoje >= 1e6) X.fase = 2;
+    else if (patrReal >= 1e6) X.fase = 2;
     else if (X.feitos < CHECK.length && kHoje <= 3) X.fase = 0;
     else X.fase = 1;
     return X;
@@ -1362,15 +1395,22 @@ function projetar(X, { aporte, dSelic=0, extras=[], n=420 }){
 //  GRÁFICOS (SVG puro, sem biblioteca)
 // ══════════════════════════════════════════════════════
 // series: [{ pts:[{k,v,tip}], stroke, w, dash, dots }] — k = meses desde i0
-function grafLinhas({ i0, N, series, ymax, marks=[], selK=null }){
-    const W = 760, H = 290, L = 64, R = 16, T = 14, B = 32;
+// hlines: linhas horizontais com rótulo [{ v, label, stroke, w, dash }]
+// eixoDir: { titulo, fmt } desenha um segundo eixo, à direita, convertendo o valor da esquerda
+function grafLinhas({ i0, N, series, ymax, marks=[], selK=null, hlines=[], eixoDir=null }){
+    const W = 760, H = 290, L = 64, R = eixoDir ? 74 : 16, T = eixoDir ? 30 : 14, B = 32;
     const top = ymax * 1.06 || 1;
     const X = k => L + (W-L-R) * k / N;
     const Y = v => T + (H-T-B) * (1 - v/top);
     const passo = top > 12e6 ? 2e6 : top > 6e6 ? 1e6 : top > 2.5e6 ? 5e5 : top > 1e6 ? 2.5e5 : top > 4e5 ? 1e5 : 5e4;
     let g = '';
     for (let v = 0; v <= top; v += passo)
-        g += `<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--bor)"/><text x="${L-8}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--mut)">${v===0?'0':fmtMi(v).replace('R$ ','')}</text>`;
+        g += `<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--bor)"/><text x="${L-8}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--mut)">${v===0?'0':fmtMi(v).replace('R$ ','')}</text>`
+          + (eixoDir && v > 0 ? `<text x="${W-R+8}" y="${Y(v)+4}" text-anchor="start" font-size="11" fill="var(--mut)">${eixoDir.fmt(v)}</text>` : '');
+    if (eixoDir) g += `<text x="4" y="${T-14}" text-anchor="start" font-size="10.5" font-weight="700" fill="var(--mut)">PATRIMÔNIO</text><text x="${W-R+8}" y="${T-14}" text-anchor="start" font-size="10.5" font-weight="700" fill="var(--mut)">${eixoDir.titulo}</text>`;
+    hlines.filter(h => h.v <= top).forEach(h => {
+        g += `<line x1="${L}" x2="${W-R}" y1="${Y(h.v)}" y2="${Y(h.v)}" stroke="${h.stroke||'var(--txt)'}" stroke-width="${h.w||1.5}" ${h.dash?`stroke-dasharray="${h.dash}"`:''}/><text x="${h.dir ? W-R-8 : L+8}" y="${Y(h.v)-6}" ${h.dir ? 'text-anchor="end"' : ''} font-size="11.5" font-weight="700" fill="${h.stroke||'var(--txt)'}">${h.label}</text>`;
+    });
     // Eixo X: anos em horizontes longos; trimestres ou meses em horizontes curtos
     const passoM = N <= 16 ? 2 : N <= 40 ? 3 : N > 200 ? 24 : 12;
     for (let k = 0; k <= N; k++) {
@@ -1472,8 +1512,9 @@ function renderInicio(X){
             <div class="kpi-sub">
                 <div class="kpi-sub-row"><span>Meta</span><strong>${fmt(c.renda)}/mês</strong></div>
                 <div class="kpi-sub-row"><span>Caminho percorrido</span><strong>${fmtP(X.pctMeta,1)}</strong></div>
-                <div class="kpi-sub-row"><span>Juros brutos hoje (Selic)</span><strong>${fmt(X.rendPot)}/mês</strong></div>
-            </div></div>`,
+                <div class="kpi-sub-row"><span>Juros estimados hoje (Selic, líq. de IR)</span><strong>${fmt(X.rendPot)}/mês</strong></div>
+            </div>
+            <div class="sub-txt" style="margin-top:8px;">Renda sustentável = patrimônio × ${fmtN(c.saque,2)}% ao mês: o que dá para gastar sem perder poder de compra. O restante dos juros fica reinvestido, para cobrir a inflação.</div></div>`,
         kp('🎯 Chegada prevista', X.chegI == null ? '—' : faltam <= 0 ? '✓ Atingida' : iLbl(X.chegI), '', [
             ['Faltam', faltam == null ? '—' : faltam <= 0 ? '—' : mesesTxt(faltam)],
             ['vs plano', difPlano == null || faltam <= 0 ? '—' : difPlano === 0 ? 'no prazo' : `${seta(difPlano)} ${Math.abs(difPlano)} ${Math.abs(difPlano)===1?'mês':'meses'} ${difPlano > 0 ? 'adiantado' : 'atrasado'}`],
@@ -1482,7 +1523,9 @@ function renderInicio(X){
 
     renderEsteMes(X);
     renderAlertas(X);
+    renderAplicar(X);
     renderEvolucao(X);
+    renderComoMeta(X);
 
     // Distribuição + concentração
     const itens = X.porClasse.map(p => ({ n:p.n, v:p.v }));
@@ -1525,56 +1568,94 @@ function renderEsteMes(X){
     $('d-mes').innerHTML = h;
 }
 
+// ── Alertas ──
+// pri: 0 = urgente · 1 = atenção · 2 = lembrete · 3 = boa notícia. Cada alerta tem uma chave estável e, quando faz sentido, um botão de ação.
+// Atenção e lembretes podem ser escondidos por 30 dias (fica só neste navegador).
+const ALERTAS_LS = 'mis_alertas_off';
+let alertasOff = (() => { try { const v = JSON.parse(localStorage.getItem(ALERTAS_LS) || '{}'); return v && typeof v === 'object' ? v : {}; } catch(e) { return {}; } })();
+const salvaAlertasOff = () => { try { localStorage.setItem(ALERTAS_LS, JSON.stringify(alertasOff)); } catch(e) {} };
+function adiarAlerta(key, dias){
+    const d = new Date(); d.setDate(d.getDate() + dias); alertasOff[key] = d.toISOString().slice(0,10); salvaAlertasOff();
+    toast(`Alerta escondido por ${dias} dias (volta em ${dataBR(alertasOff[key])}).`, 'info'); render();
+}
+function limparAlertasOff(){ alertasOff = {}; salvaAlertasOff(); render(); }
+// Leva ao bloco "Como aplicar o dinheiro" com o ativo (vencido ou a vencer) já escolhido como origem
+function reaplicar(id){
+    const X = calc(), a = X.posAtivos.find(z => z.id === id); if (!a) return;
+    openTab('Inicio');
+    const inp = $('ap-valor'), sel = $('ap-origem');
+    inp.dataset.tocou = '1'; inp.value = fmtN(Math.max(0, a.saldo)); sel.value = id; renderAplicar(X);
+    setTimeout(() => $('d-aplicar-card').scrollIntoView({ behavior:'smooth', block:'start' }), 60);
+}
 function renderAlertas(X){
-    const { c, ix } = X, out = [];
-    // pri: 0 = urgente, 1 = atenção, 2 = lembrete, 3 = boa notícia
-    const add = (pri, ic, txt) => out.push({ pri, html:`<li class="${pri===0?'forte':pri===3?'bom':''}"><b class="ic">${ic}</b><span>${txt}</span></li>` });
-    const u = X.ultimo, hoje = hojeISO();
+    const { c, ix } = X, hoje = hojeISO(), out = [];
+    const add = (pri, key, ic, txt, act, dias) => out.push({ pri, key, ic, txt, act, dias: dias || 30 });
+    const u = X.ultimo, pend = mesPendente(X);
+    // ── Urgentes ──
     if (u) {
         const dp = (u.tot - u.plano) / u.plano;
-        if (dp < -0.05) add(0, '▼', `<strong>Patrimônio ${fmtN(Math.abs(dp)*100,1)}% abaixo do plano</strong> em ${iLbl(u.i)}. Confira aportes e rentabilidade dos últimos meses.`);
-        else if (dp > 0.05) add(3, '▲', `Patrimônio ${fmtN(dp*100,1)}% acima do plano. Mantenha o ritmo; não aumente o risco por isso.`);
+        if (dp < -0.05) add(0, 'dev-plano', '▼', `<strong>Patrimônio ${fmtN(Math.abs(dp)*100,1)}% abaixo do plano</strong> em ${iLbl(u.i)}. Veja se faltou aporte ou se a taxa de algum ativo está errada.`, ['Ver carteira', "openTab('Carteira')"]);
         if (u.rendPct != null && (u.rendPct < -0.03 || u.rendPct > 0.05))
-            add(0, '⚠', `<strong>Rendimento de ${fmtSigned(u.rend)} (${fmtPs(u.rendPct,1)}) em ${iLbl(u.i)} parece errado.</strong> Confira se os saldos incluem todos os aportes do período.`);
+            add(0, 'rend-estranho', '⚠', `<strong>Rendimento de ${fmtSigned(u.rend)} (${fmtPs(u.rendPct,1)}) em ${iLbl(u.i)} parece errado.</strong> Confira se os saldos incluem todos os aportes do período.`, ['Conferir', `abrirConferir(${u.i})`]);
     }
-    const pend = mesPendente(X);
-    if (pend != null) add(1, '○', `<strong>Saldos de ${iLbl(pend)} não conferidos.</strong> O app segue com a estimativa; confira em Carteira quando puder.`);
     if (X.hojeI > X.baseI) {
         const devido = c.aporte * (X.hojeI - 1 - X.baseI), feito = X.apAte(X.hojeI-1) - X.apAte(X.baseI);
-        if (devido > 0 && feito < devido) add(0, '▼', `<strong>Aportes atrasados:</strong> ${fmt(feito)} de ${fmt(devido)} previstos até ${iLbl(X.hojeI-1)}. Faltam ${fmt(devido-feito)}.`);
-        else if (feito > devido + c.aporte) add(3, '▲', `Aportes adiantados em ${fmt(feito - devido)} em relação à meta acumulada.`);
+        if (devido > 0 && feito < devido) add(0, 'aportes-atrasados', '▼', `<strong>Aportes atrasados:</strong> ${fmt(feito)} de ${fmt(devido)} previstos até ${iLbl(X.hojeI-1)}. Faltam ${fmt(devido-feito)}.`, ['Lançar aporte', 'atalhoAporte()']);
+        else if (feito > devido + c.aporte) add(3, 'aportes-adiantados', '▲', `Aportes adiantados em ${fmt(feito - devido)} em relação à meta acumulada.`);
     }
-    if (X.semAtivo > Math.max(1000, X.estHoje*0.01)) add(1, '◆', `${fmt(X.semAtivo)} do ponto de partida ainda não estão em nenhum ativo. Cadastre os ativos e confira os saldos.`);
-    const semTaxa = X.posAtivos.filter(a => !a.encerrado && a.semTaxa && a.saldo > 1);
-    if (semTaxa.length) add(2, '○', `${semTaxa.length} ativo(s) sem taxa cadastrada não rendem na estimativa: ${semTaxa.map(a => escH(a.nome)).join(', ')}.`);
+    X.posAtivos.filter(a => !a.encerrado && a.vencimento && a.saldo > 1 && a.vencimento < hoje).forEach(a =>
+        add(0, `venceu-${a.id}`, '⚠', `<strong>${escH(a.nome)}</strong> venceu em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Reaplique e lance como Transferência.`, ['Reaplicar', `reaplicar('${a.id}')`]));
+    fgcPorInst(X).filter(f => f.v > 250000).forEach(f => add(0, `fgc-${f.inst}`, '▲', `<strong>${escH(f.inst)}</strong> tem ${fmt(f.v)} com FGC: <strong>${fmt(f.v-250000)}</strong> passam do limite de R$ 250 mil.`, ['Ver FGC', "openTab('Carteira')"]));
+    const somaAlvo = Object.values(c.alvo).reduce((s,v) => s + (Number(v)||0), 0);
+    if (Math.abs(somaAlvo - 100) > 0.01) add(0, 'alvo-soma', '▼', `A alocação-alvo soma ${fmtN(somaAlvo,0)}%, e não 100%.`, ['Corrigir', 'irParametros()']);
+    // ── Atenção ──
+    if (pend != null) add(1, `conf-${pend}`, '○', `<strong>Saldos de ${iLbl(pend)} sem conferir.</strong> O app está usando a estimativa.`, ['Conferir', `abrirConferir(${pend})`], 7);
+    if (X.semAtivo > Math.max(1000, X.estHoje*0.01)) add(1, 'sem-ativo', '◆', `${fmt(X.semAtivo)} do ponto de partida ainda não estão em nenhum ativo.`, ['Ver carteira', "openTab('Carteira')"]);
     const lim = new Date(Date.now() + 60*864e5).toISOString().slice(0,10);
-    X.posAtivos.filter(a => !a.encerrado && a.vencimento && a.saldo > 1 && a.vencimento <= lim).forEach(a =>
-        add(a.vencimento < hoje ? 0 : 1, a.vencimento < hoje ? '⚠' : '◆', `<strong>${escH(a.nome)}</strong> ${a.vencimento < hoje ? 'venceu' : 'vence'} em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Reaplique e lance como Transferência.`));
-    fgcPorInst(X).filter(f => f.v > 250000).forEach(f => add(0, '▲', `<strong>${escH(f.inst)}</strong> tem ${fmt(f.v)} em produtos com FGC: ${fmt(f.v-250000)} acima da garantia de R$ 250 mil.`));
-    progs().filter(p => !p.efetivada && p.data < hoje).forEach(p => add(1, '○', `Recebimento "<strong>${escH(p.desc)}</strong>" (${fmt(p.valor)}) era para ${dataBR(p.data)}. Efetive ou ajuste a data.`));
+    X.posAtivos.filter(a => !a.encerrado && a.vencimento && a.saldo > 1 && a.vencimento >= hoje && a.vencimento <= lim).forEach(a =>
+        add(1, `venc-${a.id}`, '◆', `<strong>${escH(a.nome)}</strong> vence em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Planeje a reaplicação.`, ['Planejar', `reaplicar('${a.id}')`], 14));
+    progs().filter(p => !p.efetivada && p.data < hoje).forEach(p => add(1, `prog-${p.id}`, '○', `Recebimento "<strong>${escH(p.desc)}</strong>" (${fmt(p.valor)}) era para ${dataBR(p.data)}. Efetive ou ajuste a data.`, ['Ver', "openTab('Movimentos')"]));
     const tp = Number(ix.ipcaPlus);
-    if (tp) {
-        if (tp > 8) add(3, '▲', `Tesouro IPCA+ acima de IPCA + 8%: taxa excepcional. Considere aumentar a fatia travada.`);
-        else if (tp >= 7) add(3, '▲', `Tesouro IPCA+ a IPCA + ${fmtN(tp,2)}%: taxa real alta. Bom momento para aportes em IPCA+.`);
-        if (tp < 5) add(1, '▼', `Tesouro IPCA+ abaixo de IPCA + 5%: a renda sustentável futura cai. Gatilho de revisão.`);
-    }
+    if (tp && tp < 5) add(1, 'ipcaplus-baixo', '▼', `Tesouro IPCA+ abaixo de IPCA + 5%: a renda sustentável futura cai. Hora de rever o plano.`, ['Ver mercado', "openTab('Projecao')"]);
+    // ── Lembretes ──
+    const semTaxa = X.posAtivos.filter(a => !a.encerrado && a.semTaxa && a.saldo > 1);
+    if (semTaxa.length) add(2, 'sem-taxa', '○', `${semTaxa.length} ativo(s) sem taxa não rendem na estimativa: ${semTaxa.map(a => escH(a.nome)).join(', ')}.`, ['Ver carteira', "openTab('Carteira')"]);
     if (X.somaAtivos > 0) {
         const desal = X.porClasse.filter(a => a.pct != null && Math.abs(a.pct - a.alvo) > 0.10);
-        if (desal.length) add(2, '◆', `Alocação fora do alvo: ${desal.map(a => `${a.n} (${fmtP(a.pct,0)} × ${fmtP(a.alvo,0)})`).join(', ')}. Rebalanceie pelos próximos aportes.`);
+        if (desal.length) {
+            const lista = desal.map(a => `${a.n} ${fmtP(a.pct,0)} (alvo ${fmtP(a.alvo,0)})`).join(' · ');
+            const sobre = desal.filter(a => a.pct > a.alvo);
+            const temporario = sobre.length && sobre.every(cl => { const at = X.posAtivos.filter(a => (a.classe||'out') === cl.k && a.saldo > 1 && !a.encerrado);
+                return at.length && at.every(a => a.vencimento && dataI(a.vencimento) - X.hojeI <= 12); });
+            add(2, 'desalinhada', '◆', temporario ? `Alocação fora do alvo (${lista}), mas é temporária: o excesso está em ativo que vence em até 12 meses. Reaplicar no vencimento resolve.`
+                : `Alocação fora do alvo: ${lista}. Use os próximos aportes para rebalancear.`, ['Como aplicar', "document.getElementById('d-aplicar-card').scrollIntoView({behavior:'smooth'})"]);
+        }
     }
-    if (X.hojeI % 12 === 0 || X.hojeI % 12 === 6) add(2, '●', `${iLbl(X.hojeI)} é mês de <strong>revisão semestral</strong>: marcos, alocação e gatilhos.`);
-    if (X.feitos < CHECK.length) add(2, '○', `Fase 0: ${CHECK.length - X.feitos} de ${CHECK.length} tarefas pendentes (Ajustes).`);
+    if (X.hojeI % 12 === 0 || X.hojeI % 12 === 6) add(2, `semestral-${X.hojeI}`, '●', `${iLbl(X.hojeI)} é mês de <strong>revisão semestral</strong>: marcos, alocação e gatilhos.`);
+    if (X.feitos < CHECK.length) add(2, 'fase0', '○', `Fase 0: ${CHECK.length - X.feitos} de ${CHECK.length} tarefas pendentes.`, ['Ver tarefas', "openTab('Ajustes')"]);
     const dIdx = ix.data ? (Date.now() - new Date(ix.data + 'T12:00').getTime()) / 864e5 : 999;
-    if (dIdx > 45) add(2, '○', `Índices de mercado sem atualização há ${Math.round(dIdx)} dias (Projeção → Mercado).`);
-    const somaAlvo = Object.values(c.alvo).reduce((s,v) => s + (Number(v)||0), 0);
-    if (Math.abs(somaAlvo - 100) > 0.01) add(0, '▼', `A alocação-alvo soma ${fmtN(somaAlvo,0)}%, e não 100%. Ajuste em Ajustes → Parâmetros.`);
-    if (!out.length) add(3, '✓', 'Nenhum gatilho acionado. Siga o plano.');
-    out.sort((a,b) => a.pri - b.pri);
-    const mostra = alertasTodos ? out : out.slice(0,3);
-    $('d-alertas').innerHTML = mostra.map(o => o.html).join('');
-    const bm = $('d-alertas-mais');
-    bm.style.display = out.length > 3 ? '' : 'none';
-    bm.textContent = alertasTodos ? 'Mostrar menos' : `Ver todos (${out.length})`;
+    if (dIdx > 45) add(2, 'indices', '○', `Índices de mercado sem atualização há ${Math.round(dIdx)} dias.`, ['Atualizar', "openTab('Projecao')"], 14);
+    // ── Boas notícias (só uma) ──
+    if (u) { const dp = (u.tot - u.plano) / u.plano; if (dp > 0.05) add(3, 'acima-plano', '▲', `Patrimônio ${fmtN(dp*100,1)}% acima do plano. Mantenha o ritmo; não aumente o risco por causa disso.`); }
+    if (tp > 8) add(3, 'ipcaplus-alto', '▲', `Tesouro IPCA+ acima de IPCA + 8%: taxa excepcional. Considere aumentar a fatia travada.`);
+    else if (tp >= 7) add(3, 'ipcaplus-bom', '▲', `Tesouro IPCA+ a IPCA + ${fmtN(tp,2)}%: taxa real alta. Bom momento para aportar em IPCA+.`, ['Comparar', "openTab('Projecao')"]);
+
+    // Esconde o que foi adiado (nunca os urgentes) e deixa só uma boa notícia
+    const escondido = a => a.pri >= 1 && alertasOff[a.key] && alertasOff[a.key] >= hoje;
+    const nEsc = out.filter(escondido).length;
+    let vis = out.filter(a => !escondido(a));
+    const bons = vis.filter(a => a.pri === 3); if (bons.length > 1) vis = vis.filter(a => a.pri !== 3 || a === bons[0]);
+    vis.sort((a,b) => a.pri - b.pri);
+    if (!vis.length) vis.push({ pri:3, key:'ok', ic:'✓', txt:'Nenhum alerta. Siga o plano.', act:null, dias:0 });
+    const nUrg = vis.filter(a => a.pri === 0).length, nAt = vis.filter(a => a.pri === 1).length, nLem = vis.filter(a => a.pri === 2).length;
+    const mostra = alertasTodos ? vis : vis.slice(0, Math.max(3, nUrg));
+    $('d-alertas').innerHTML = mostra.map(a => `<li class="${a.pri===0?'forte':a.pri===3?'bom':''}"><b class="ic">${a.ic}</b><span class="alert-txt">${a.txt}</span>
+        <span class="alert-acts">${a.act ? `<button class="btn btn-ghost btn-sm" style="width:auto;padding:0 10px;height:28px;" onclick="${a.act[1]}">${a.act[0]}</button>` : ''}${a.pri === 1 || a.pri === 2 ? `<button class="btn btn-ghost btn-sm" style="width:28px;height:28px;padding:0;" title="Esconder por ${a.dias} dias" aria-label="Esconder por ${a.dias} dias" onclick="adiarAlerta('${escH(a.key).replace(/'/g,'')}',${a.dias})">✕</button>` : ''}</span></li>`).join('');
+    const partes = [nUrg ? `${nUrg} urgente${nUrg>1?'s':''}` : '', nAt ? `${nAt} de atenção` : '', nLem ? `${nLem} lembrete${nLem>1?'s':''}` : ''].filter(Boolean);
+    $('d-alertas-resumo').innerHTML = (partes.length ? partes.join(' · ') : 'Tudo em dia') + (nEsc ? ` · <a href="#" onclick="limparAlertasOff();return false;" style="color:var(--acc);">${nEsc} escondido${nEsc>1?'s':''} (mostrar)</a>` : '');
+    const bm = $('d-alertas-mais'), extra = vis.length - Math.max(3, nUrg);
+    bm.style.display = vis.length > Math.max(3, nUrg) ? '' : 'none';
+    bm.textContent = alertasTodos ? 'Mostrar menos' : `Ver todos (${vis.length})`;
     $('badge-conf').style.display = pend != null ? '' : 'none';
 }
 
@@ -1586,25 +1667,112 @@ function renderEvolucao(X){
     else fimI = X.hojeI + Number(horizonte);
     const N = Math.max(6, Math.min(420, fimI - X.baseI));
     const comMeta = horizonte === 'meta' || horizonte === '60';
-    const plano = X.plano.slice(0, N+1).map((v,k) => ({ k, v }));
-    const meta = [...Array(N+1)].map((_,k) => ({ k, v: X.metaNom(k) }));
+    // Tudo em R$ de hoje: a inflação sai da conta e a meta vira uma linha reta
+    const defl = k => Math.pow(1 + X.ipcaM, k);
+    const plano = X.plano.slice(0, N+1).map((v,k) => ({ k, v: v/defl(k) }));
     const real = [{ k:0, v:X.p0Real, tip:`${iLbl(X.baseI)}: ${fmt(X.p0Real)} (partida)` },
-        ...X.hist.map(h => ({ k:h.k, v:h.tot, tip:`${iLbl(h.i)}: ${fmt(h.tot)} conferido (plano ${fmt(h.plano)})` }))];
-    if (kHoje > (real[real.length-1].k)) real.push({ k:kHoje, v:X.estHoje, tip:`Hoje: ${fmt(X.estHoje)} (estimado)` });
-    const proj = X.proj.serie.slice(0, Math.max(0, N - kHoje) + 1).map((v,j) => ({ k:kHoje + j, v }));
-    const vals = [...plano, ...real, ...proj].map(p => p.v).concat(comMeta ? meta.map(m => m.v) : []);
+        ...X.hist.map(h => ({ k:h.k, v:h.tot/defl(h.k), tip:`${iLbl(h.i)}: ${fmt(h.tot)} conferido · em R$ de hoje ${fmt(h.tot/defl(h.k))} (plano ${fmt(h.plano/defl(h.k))})` }))];
+    if (kHoje > (real[real.length-1].k)) real.push({ k:kHoje, v:X.estHoje/defl(kHoje), tip:`Hoje: ${fmt(X.estHoje)} (estimado) · em R$ de hoje ${fmt(X.estHoje/defl(kHoje))}` });
+    const proj = X.proj.serie.slice(0, Math.max(0, N - kHoje) + 1).map((v,j) => ({ k:kHoje + j, v: v/defl(kHoje + j) }));
+    const vals = [...plano, ...real, ...proj].map(p => p.v).concat(comMeta ? [X.metaHoje] : []);
     const marks = [];
-    if (X.chegI != null && X.chegI - X.baseI <= N && X.chegI > X.hojeI) marks.push({ k:X.chegI - X.baseI, v:X.proj.serie[X.chegI - X.hojeI], tip:`Chegada prevista: ${iLbl(X.chegI)}` });
+    if (X.chegI != null && X.chegI - X.baseI <= N && X.chegI > X.hojeI) { const kc = X.chegI - X.baseI;
+        marks.push({ k:kc, v:X.proj.serie[X.chegI - X.hojeI]/defl(kc), tip:`Chegada prevista: ${iLbl(X.chegI)}` }); }
     $('d-legenda').innerHTML = `<span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--acc)" stroke-width="3"/><circle cx="13" cy="5" r="3.5" fill="var(--acc)"/></svg>Realizado</span>
         <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--acc)" stroke-width="2" stroke-dasharray="5 4"/></svg>Projeção</span>
         <span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--mut)" stroke-width="2" stroke-dasharray="2 3"/></svg>Plano original</span>
-        ${comMeta ? `<span><svg width="26" height="10"><line x1="0" y1="5" x2="26" y2="5" stroke="var(--txt)" stroke-width="1.5" stroke-dasharray="1 4"/></svg>Meta corrigida</span>` : `<span class="sub-txt">Meta de ${fmtMi(X.metaNom(kHoje))} fora da escala: veja em "5 anos" ou "Até a meta"</span>`}`;
-    const series = [
-        ...(comMeta ? [{ pts: meta, stroke:'var(--txt)', w:1.5, dash:'1 4' }] : []),
-        { pts: plano, stroke:'var(--mut)', w:2, dash:'2 3' },
-        { pts: proj, stroke:'var(--acc)', w:2, dash:'5 4' },
-        { pts: real, stroke:'var(--acc)', w:3, dots:true } ];
-    $('d-chart').innerHTML = grafLinhas({ i0: X.baseI, N, ymax: Math.max(...vals), series, marks, selK: kHoje });
+        <span><svg width="26" height="10"><circle cx="13" cy="5" r="4" fill="none" stroke="var(--txt)" stroke-width="2"/></svg>Chegada prevista</span>`;
+    const hlines = [
+        ...(comMeta ? [{ v:X.metaHoje, stroke:'var(--txt)', w:2, label:`META: ${fmt(X.c.renda).replace(',00','')}/mês = ${fmtMi(X.metaHoje)}` }] : []),
+        { v:1e6, stroke:'var(--mut)', w:1.2, dash:'3 4', dir:true, label:'Marco: R$ 1 mi' } ];
+    const eixoDir = { titulo:'RENDA/MÊS', fmt: v => { const r = v * X.c.saque/100; return r >= 1000 ? `${fmtN(r/1000,1)} mil` : fmtN(r,0); } };
+    $('d-chart').innerHTML = grafLinhas({ i0: X.baseI, N, ymax: Math.max(...vals), hlines, eixoDir, marks, selK: kHoje,
+        series: [ { pts: plano, stroke:'var(--mut)', w:2, dash:'2 3' },
+                  { pts: proj, stroke:'var(--acc)', w:2, dash:'5 4' },
+                  { pts: real, stroke:'var(--acc)', w:3, dots:true } ] });
+    $('d-chart-nota').innerHTML = `Valores em <strong>R$ de hoje</strong> (sem a inflação), por isso a meta não sobe. O eixo da direita mostra a renda mensal que cada patrimônio sustenta (${fmtN(X.c.saque,2)}% ao mês).`
+        + (comMeta ? '' : ` Meta de ${fmt(X.c.renda).replace(',00','')}/mês = ${fmtMi(X.metaHoje)}: aparece em "5 anos" ou "Até a meta".`);
+}
+
+// Quadro didático: de onde vem a meta de patrimônio
+function renderComoMeta(X){
+    const c = X.c, ix = X.ix, box = $('d-meta-card'); if (!box) return;
+    const saqueAA = s => Math.pow(1 + s/100, 12) - 1;
+    const taxas = [...new Set([Number(c.saque), 0.7, 1.0].map(v => Math.round(v*1000)/1000))].sort((a,b) => a-b);
+    const linhas = taxas.map(s => { const cap = c.renda/(s/100), atual = Math.abs(s - c.saque) < 1e-9;
+        return `<tr class="${atual ? 'row-starred' : ''}"><td><strong>${fmtN(s,2)}% ao mês</strong>${atual ? ' <span class="tag acc">usada no plano</span>' : ''}</td>
+            <td class="num-cell">${fmtP(saqueAA(s),1)}</td><td class="num-cell"><strong>${fmtMi(cap)}</strong></td><td class="num-cell">${fmtP(X.patrReal/cap,0)}</td></tr>`; }).join('');
+    let ref = '';
+    if (ix.ipcaPlus) { const ipca = ix.ipca12 != null ? ix.ipca12 : c.ipca;
+        const nb = (1 + ix.ipcaPlus/100)*(1 + ipca/100) - 1, nl = nb*(1 - c.ir/100), realLiq = (1 + nl)/(1 + ipca/100) - 1, m = Math.pow(1 + realLiq, 1/12) - 1;
+        ref = ` Para referência: o Tesouro IPCA+ a IPCA + ${fmtN(ix.ipcaPlus,2)}% rende hoje cerca de <strong>${fmtN(m*100,2)}% ao mês acima da inflação</strong>, já descontado o IR.`; }
+    const nomChegada = X.chegI != null && X.chegI > X.hojeI ? `Em dinheiro de ${iLbl(X.chegI)}, essa mesma meta vale <strong>${fmtMi(X.metaNom(X.chegI - X.baseI))}</strong>.` : '';
+    box.innerHTML = `<div class="card-head"><h2>Como a meta é calculada</h2><button class="btn btn-ghost btn-sm" style="width:auto;padding:0 12px;height:32px;" onclick="irParametros()">Mudar a taxa</button></div>
+        <p style="margin:0 0 8px;"><strong>Meta:</strong> ${fmt(c.renda).replace(',00','')} por mês, com o poder de compra de hoje.</p>
+        <p style="margin:0 0 8px;"><strong>Conta:</strong> ${fmt(c.renda).replace(',00','')} ÷ ${fmtN(c.saque,2)}% = <strong>${fmtMi(X.metaHoje)}</strong> de patrimônio, em valores de hoje. ${nomChegada}</p>
+        <p style="margin:0 0 12px;"><strong>Por que não 1% ao mês?</strong> Gastar 1% do patrimônio por mês exigiria só ${fmtMi(c.renda/0.01)}, mas com inflação de ${fmtN(c.ipca,1)}% ao ano o capital perderia valor e os ${fmt(c.renda).replace(',00','')} comprariam cada vez menos. O plano gasta só o que rende <strong>acima da inflação</strong>.${ref}</p>
+        <div style="overflow-x:auto;"><table>
+            <thead><tr><th>Se você gastar do patrimônio</th><th class="num-cell">Equivale a (ano)</th><th class="num-cell">Patrimônio necessário</th><th class="num-cell">Você tem hoje</th></tr></thead>
+            <tbody>${linhas}</tbody></table></div>
+        <p class="mis-note">Quanto maior a taxa gasta, menor a meta, mas maior o risco de o dinheiro render menos que o previsto ou de a inflação corroer o poder de compra.</p>`;
+}
+function irParametros(){ openTab('Ajustes'); const d = $('g-det'); if (d) { d.open = true; setTimeout(() => d.scrollIntoView({ behavior:'smooth', block:'start' }), 50); } }
+
+// ── Como aplicar o dinheiro ──
+// Divide um valor pelas classes mais abaixo do alvo (sem vender nada) e aponta o ativo de cada classe.
+// origemId = ativo de onde o dinheiro já sai (transferência); sem origem = dinheiro novo (aporte).
+function planoAporte(X, valor, origemId){
+    const hoje = hojeISO(), org = origemId ? X.posAtivos.find(a => a.id === origemId) : null;
+    const vals = X.porClasse.map(p => p.v);
+    if (org) { const j = X.porClasse.findIndex(p => p.k === (org.classe || 'out')); if (j >= 0) vals[j] -= Math.min(valor, Math.max(0, org.saldo)); }
+    const novo = vals.reduce((t,v) => t + v, 0) + valor;
+    const def = X.porClasse.map((a,j) => Math.max(0, a.alvo*novo - vals[j]));
+    const soma = def.reduce((t,v) => t + v, 0);
+    const dist = def.map((d,j) => soma >= valor ? d*valor/Math.max(soma, 1e-9) : d + (valor - soma)*X.porClasse[j].alvo);
+    const fgc = {}; X.posAtivos.filter(a => a.garantia === 'fgc' && a.saldo > 0).forEach(a => { const k = (a.inst||'').trim(); fgc[k] = (fgc[k]||0) + a.saldo; });
+    const linhas = X.porClasse.map((cl,j) => ({ k:cl.k, n:cl.n, v:dist[j] })).filter(l => l.v >= 1).sort((a,b) => b.v - a.v).map(l => {
+        const cands = X.posAtivos.filter(a => (a.classe||'out') === l.k && !a.encerrado && !(a.vencimento && a.vencimento < hoje) && a.id !== origemId)
+            .map(a => ({ a, folga: a.garantia === 'fgc' ? 250000 - (fgc[(a.inst||'').trim()]||0) : Infinity }));
+        const livres = cands.filter(x => x.folga >= l.v).sort((x,y) => x.a.saldo - y.a.saldo);
+        const fica = !livres[0] && org && l.k === (org.classe || 'out') && !cands.length;   // a classe de destino é a da própria origem: o dinheiro já está onde deve ficar
+        return { ...l, dest: livres[0] ? livres[0].a : null, folga: livres[0] ? livres[0].folga : null, fica, motivo: livres[0] ? '' : (cands.length ? 'fgc' : 'sem') };
+    });
+    return { linhas, org };
+}
+function apDigitou(){ $('ap-valor').dataset.tocou = '1'; renderAplicar(); }
+function cadastrarNaClasse(k){ abrirAtivo(); if ($('a-classe') && !$('modal-ativo').classList.contains('hidden')) { $('a-classe').value = k; $('a-classe').dispatchEvent(new Event('change', { bubbles:true })); } }
+function renderAplicar(Xin){
+    const X = Xin && Xin.c ? Xin : calc(), c = X.c, hoje = hojeISO();
+    const inp = $('ap-valor'), sel = $('ap-origem'); if (!inp || !sel) return;
+    const apMes = X.apEntre(X.hojeI-1, X.hojeI), restante = Math.max(0, c.aporte - apMes);
+    if (inp.dataset.tocou !== '1') inp.value = restante > 0 ? fmtN(restante) : '';
+    const vSel = sel.value, origens = X.posAtivos.filter(a => !a.encerrado && a.saldo > 1);
+    sel.innerHTML = '<option value="">Dinheiro novo, de fora da Missão (aporte)</option>'
+        + origens.map(a => `<option value="${a.id}">Já está na Missão: ${escH(a.nome)} (${fmt(a.saldo)}) · transferência</option>`).join('');
+    sel.value = origens.some(a => a.id === vSel) ? vSel : '';
+    const valor = parseBR(inp.value), box = $('d-aplicar');
+    if (!(valor > 0)) { box.innerHTML = `<p class="mis-note" style="margin:0;">${apMes >= c.aporte ? '✓ A meta de aportes deste mês está cumprida. ' : ''}Digite quanto você vai aplicar para ver como dividir.</p>`; return; }
+    const { linhas, org } = planoAporte(X, valor, sel.value || null);
+    const tipo = org ? 'transf' : 'aporte';
+    const avisos = [];
+    if (org && valor > org.saldo + 1) avisos.push(`▲ "${escH(org.nome)}" tem só ${fmt(org.saldo)} de saldo estimado, menos que os ${fmt(valor)} a aplicar.`);
+    X.posAtivos.filter(a => !a.encerrado && a.vencimento && a.saldo > 1 && a.id !== sel.value && dataI(a.vencimento) - X.hojeI <= 6 && a.vencimento >= hoje)
+        .sort((a,b) => a.vencimento.localeCompare(b.vencimento))
+        .forEach(a => avisos.push(`⏳ <strong>${escH(a.nome)}</strong> vence em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Esse dinheiro também precisa ser alocado: lance como <strong>Transferência</strong>, não como aporte.`));
+    const maior = X.posAtivos.filter(a => a.saldo > 0).sort((a,b) => b.saldo - a.saldo)[0];
+    if (maior && X.estHoje > 0 && maior.saldo/X.estHoje > 0.30) avisos.push(`◆ <strong>${escH(maior.nome)}</strong> concentra ${fmtP(maior.saldo/X.estHoje,0)} da Missão${maior.garantia === 'nenhuma' ? ', sem garantia' : ''}. Por isso a divisão acima favorece as classes onde você tem pouco.`);
+    box.innerHTML = `<div style="overflow-x:auto;"><table>
+        <thead><tr><th>Classe</th><th class="num-cell">Aplicar</th><th class="num-cell">%</th><th>Onde</th><th style="width:130px;"></th></tr></thead><tbody>
+        ${linhas.map(l => `<tr><td><strong>${l.n}</strong></td><td class="num-cell"><strong>${fmt(l.v)}</strong></td><td class="num-cell">${fmtP(l.v/valor,0)}</td>
+            <td>${l.fica ? `Deixe em <strong>${escH(org.nome)}</strong><div class="sub-txt">A parte desta classe já está nesse ativo: não precisa mexer.</div>` : l.dest ? `${escH(l.dest.nome)}<div class="sub-txt">${[l.dest.inst, fmtTaxa(l.dest), LIQUIDEZ[l.dest.liquidez], GARANTIAS[l.dest.garantia], l.folga !== Infinity ? `folga FGC ${fmtMi(l.folga)}` : ''].filter(x => x && x !== '—').map(escH).join(' · ')}</div>`
+                : l.motivo === 'fgc' ? `<span class="sub-txt">Os ativos desta classe já estão no limite do FGC (R$ 250 mil por instituição). Use outra instituição.</span>`
+                : `<span class="sub-txt">Você ainda não tem ativo nesta classe. Cadastre um e escolha pelo comparador (Projeção → Mercado).</span>`}</td>
+            <td>${l.fica ? '' : l.dest ? `<button class="btn btn-primary btn-sm" style="width:auto;padding:0 12px;height:30px;" onclick="atalhoMov('${tipo}','${tipo === 'transf' ? org.id : l.dest.id}','${tipo === 'transf' ? l.dest.id : ''}',${Math.round(l.v*100)/100})">${tipo === 'transf' ? '⇄ Transferir' : '＋ Lançar aporte'}</button>`
+                : `<button class="btn btn-ghost btn-sm" style="width:auto;padding:0 12px;height:30px;" onclick="cadastrarNaClasse('${l.k}')">＋ Cadastrar ativo</button>`}</td></tr>`).join('')}
+        <tr><td style="color:var(--mut);">Total</td><td class="num-cell"><strong>${fmt(valor)}</strong></td><td></td><td colspan="2" class="sub-txt">${tipo === 'transf' ? 'Transferência: o dinheiro já conta no patrimônio e <strong>não</strong> entra como aporte.' : 'Aporte: dinheiro novo, conta para a meta de aportes do mês.'}</td></tr>
+        </tbody></table></div>
+        ${avisos.length ? `<ul class="alert-list" style="margin-top:12px;">${avisos.map(t => `<li><b class="ic">○</b><span>${t}</span></li>`).join('')}</ul>` : ''}
+        <p class="mis-note">A divisão segue a <strong>alocação-alvo</strong> (Ajustes → Parâmetros): o dinheiro vai para as classes mais abaixo do alvo, sem vender nada. O app aponta a classe e o ativo que você já tem; ele não escolhe produto nem banco. Compare as ofertas em Projeção → Mercado.</p>`;
 }
 
 function renderEventos(X){
@@ -1714,13 +1882,11 @@ function renderCarteira(X){
     $('c-aloc').innerHTML = !tot ? '<p class="mis-note" style="margin:0;">Cadastre ativos com saldo para comparar com o alvo.</p>'
         : X.porClasse.filter(a => a.v > 0 || a.alvo > 0).map(a => barra(a.n, a.v, a.pct||0, `<strong>${fmtP(a.pct,1)}</strong> · alvo ${fmtP(a.alvo,0)}`, a.alvo)).join('') + '<p class="mis-note">Barra = atual · traço vertical = alvo.</p>';
     // Sugestão
-    const aporte = X.c.aporte, novo = X.estHoje + aporte;
-    const def = X.porClasse.map(a => Math.max(0, a.alvo*novo - a.v));
-    const soma = def.reduce((s,v) => s+v, 0);
-    const dist = def.map((d,j) => soma >= aporte ? d*aporte/soma : d + (aporte - soma)*X.porClasse[j].alvo);
-    const linhas = X.porClasse.map((a,j) => ({ n:a.n, v:dist[j] })).filter(l => l.v >= 1).sort((a,b) => b.v - a.v);
+    const aporte = X.c.aporte;
+    const linhas = planoAporte(X, aporte, null).linhas;
     $('c-sugestao').innerHTML = (X.semAtivo > 1 ? `<p class="mis-note" style="margin:0 0 8px;">Com ${fmt(X.semAtivo)} ainda sem ativo, a sugestão é aproximada.</p>` : '') +
-        `<table><tbody>${linhas.map(l => `<tr><td>${l.n}</td><td class="num-cell"><strong>${fmt(l.v)}</strong></td></tr>`).join('')}<tr><td style="color:var(--mut);">Total</td><td class="num-cell">${fmt(aporte)}</td></tr></tbody></table>`;
+        `<table><tbody>${linhas.map(l => `<tr><td>${l.n}</td><td class="num-cell"><strong>${fmt(l.v)}</strong></td></tr>`).join('')}<tr><td style="color:var(--mut);">Total (aporte meta)</td><td class="num-cell">${fmt(aporte)}</td></tr></tbody></table>
+        <p class="mis-note">Para aplicar um valor específico, ou dinheiro que já está na Missão, use <strong>Início → Como aplicar o dinheiro</strong>.</p>`;
     // FGC
     const fg = fgcPorInst(X);
     $('c-fgc').innerHTML = fg.length ? fg.map(f => barra(escH(f.inst), f.v, f.v/250000, `<strong>${fmtMi(f.v)}</strong>`, null, f.v > 250000 ? ` · <strong>▲ ${fmtMi(f.v-250000)} acima</strong>` : ` · folga ${fmtMi(250000-f.v)}`)).join('')
@@ -1926,6 +2092,15 @@ async function excluirMov(id){
 function atalhoAporte(ativoId){
     openTab('Movimentos'); cancelarMov(); setMovTipo('aporte');
     if (ativoId) { $('m-ativo').value = ativoId; movAtualizaAjuda(); }
+    setTimeout(() => $('m-valor').focus(), 80);
+}
+// Abre o formulário de Movimentos já preenchido: aporte (ativo = destino) ou transferência (ativo = origem, destId = destino)
+function atalhoMov(tipo, ativoId, destId, valor){
+    openTab('Movimentos'); cancelarMov(); setMovTipo(tipo);
+    if (ativoId) $('m-ativo').value = ativoId;
+    if (destId) $('m-dest').value = destId;
+    if (valor) $('m-valor').value = fmtN(valor);
+    movAtualizaAjuda();
     setTimeout(() => $('m-valor').focus(), 80);
 }
 
@@ -2182,7 +2357,7 @@ function renderPrevisao(Xin){
     const pp = v => `${v>=0?'+':'−'} ${fmtN(Math.abs(v),1)} p.p.`;
     $('s-kpis').innerHTML = [
         kp('🔻 Pessimista', pess.chegI ? iLbl(pess.chegI) : '—', '', [['Em', emQuanto(pess)], ['Selic', pp(cen.pessS)], ['Aporte', `${fmtN(cen.pessA,0)}%`]]),
-        kp('🎯 Base', base.chegI ? iLbl(base.chegI) : '—', 'c-primary', [['Em', emQuanto(base)], ['Meta na chegada', base.chegI ? fmtMi(X.metaNom(base.chegI - X.baseI)) : '—'],
+        kp('🎯 Base', base.chegI ? iLbl(base.chegI) : '—', 'c-primary', [['Em', emQuanto(base)], ['Meta (R$ de hoje)', fmtMi(X.metaHoje)], ['Em dinheiro da época', base.chegI ? fmtMi(X.metaNom(base.chegI - X.baseI)) : '—'],
             ['vs plano', base.chegI && X.planoChegI ? `${seta(X.planoChegI - base.chegI)} ${Math.abs(X.planoChegI - base.chegI)} meses` : '—']], 'kpi-highlight'),
         kp('🔺 Otimista', otim.chegI ? iLbl(otim.chegI) : '—', '', [['Em', emQuanto(otim)], ['Selic', pp(cen.otimS)], ['Aporte', `${fmtN(cen.otimA,0)}%`]]),
         kp(`📅 Em 5 anos (${iLbl(X.hojeI+k5)})`, fmt(base.serie[k5]), '', [['Pessimista', fmt(pess.serie[k5])], ['Otimista', fmt(otim.serie[k5])], ['Juros/mês (base)', fmt(base.serie[k5]*X.taxaI(X.hojeI+k5, sp.dSelic))]]),
@@ -2192,12 +2367,17 @@ function renderPrevisao(Xin){
     // Gráfico
     const fimK = Math.max(...[base, pess, otim].map(p => p.chegI ? p.chegI - X.hojeI : 0));
     const N = Math.min(420, Math.max(60, fimK + 12));
-    const serie = (p) => p.serie.slice(0, N+1).map((v,k) => ({ k, v }));
-    const meta = [...Array(N+1)].map((_,k) => ({ k, v: X.metaNom(X.hojeI + k - X.baseI) }));
-    const marks = [base, pess, otim].filter(p => p.chegI && p.chegI > X.hojeI && p.chegI - X.hojeI <= N).map(p => ({ k:p.chegI - X.hojeI, v:p.serie[p.chegI - X.hojeI], tip:`Chega em ${iLbl(p.chegI)}` }));
-    $('s-chart').innerHTML = grafLinhas({ i0: X.hojeI, N, ymax: Math.max(...otim.serie.slice(0,N+1), ...meta.map(m => m.v)), marks,
-        series: [ { pts: meta, stroke:'var(--txt)', w:1.5, dash:'1 4' }, { pts: serie(pess), stroke:'var(--mut)', w:2, dash:'2 3' },
-                  { pts: serie(otim), stroke:'var(--mut)', w:2, dash:'8 4' }, { pts: serie(base), stroke:'var(--acc)', w:3 } ] });
+    // Tudo em R$ de hoje: a meta é uma linha reta e o eixo da direita mostra a renda mensal
+    const dfl = k => Math.pow(1 + X.ipcaM, X.hojeI - X.baseI + k);
+    const serie = p => p.serie.slice(0, N+1).map((v,k) => ({ k, v: v/dfl(k) }));
+    const marks = [base, pess, otim].filter(p => p.chegI && p.chegI > X.hojeI && p.chegI - X.hojeI <= N).map(p => { const k = p.chegI - X.hojeI; return { k, v:p.serie[k]/dfl(k), tip:`Chega em ${iLbl(p.chegI)}` }; });
+    const sOtim = serie(otim);
+    $('s-chart').innerHTML = grafLinhas({ i0: X.hojeI, N, ymax: Math.max(...sOtim.map(q => q.v), X.metaHoje), marks,
+        hlines: [ { v:X.metaHoje, stroke:'var(--txt)', w:2, label:`META: ${fmt(X.c.renda).replace(',00','')}/mês = ${fmtMi(X.metaHoje)}` },
+                  { v:1e6, stroke:'var(--mut)', w:1.2, dash:'3 4', dir:true, label:'Marco: R$ 1 mi' } ],
+        eixoDir: { titulo:'RENDA/MÊS', fmt: v => { const r = v * X.c.saque/100; return r >= 1000 ? `${fmtN(r/1000,1)} mil` : fmtN(r,0); } },
+        series: [ { pts: serie(pess), stroke:'var(--mut)', w:2, dash:'2 3' }, { pts: sOtim, stroke:'var(--mut)', w:2, dash:'8 4' }, { pts: serie(base), stroke:'var(--acc)', w:3 } ] });
+    $('s-chart-nota').innerHTML = `Valores em <strong>R$ de hoje</strong> (sem a inflação), por isso a meta é uma linha reta. A Selic projetada e o aporte do simulador acima valem para os três cenários; o pessimista e o otimista usam os ajustes de Ajustes → Parâmetros.`;
     // Ano a ano
     const anoFim = Math.floor((Math.max(base.chegI || 0, X.hojeI + 120)) / 12) + 2;
     const rows = [];
@@ -2236,7 +2416,7 @@ function renderCalcAporte(Xin){
         let lo = 0, hi = Math.max(1e5, meta);
         for (let j = 0; j < 60; j++) { const m = (lo+hi)/2; if (chega(m)) hi = m; else lo = m; }
         const dif = hi - X.c.aporte;
-        html = `<div class="calc-res">Para ter <strong>${fmtMi(meta)}</strong> (a meta corrigida) em <strong>${iLbl(alvoI)}</strong>, daqui a ${mesesTxt(n)}:<br>
+        html = `<div class="calc-res">Para atingir a meta (<strong>${fmtMi(X.metaHoje)}</strong> de hoje, que em dinheiro de ${iLbl(alvoI)} vale <strong>${fmtMi(meta)}</strong>) até <strong>${iLbl(alvoI)}</strong>, daqui a ${mesesTxt(n)}:<br>
             <span class="big">${fmt(Math.ceil(hi/100)*100)}</span> por mês<br>
             <span class="sub-txt">${seta(dif)} ${fmtSigned(dif)} em relação ao aporte meta de ${fmt(X.c.aporte)} · usa a Selic projetada${sp.dSelic ? ` ${sp.dSelic>0?'+':''}${fmtN(sp.dSelic,1)} p.p.` : ''}${sp.extras.length ? ' e os extras do simulador' : ''}</span></div>`;
     }
@@ -2264,7 +2444,7 @@ function renderMercado(X){
         ${row('IPCA+ real líquido de IR', realLiq != null ? `${fmtP(realLiq)} a.a. · ${fmtP(saqueIpca,3)} a.m.` : '—')}
         ${row('Renda que essa taxa real sustenta hoje', saqueIpca != null ? `${fmt(X.patrReal*saqueIpca)}/mês` : '—')}
         ${row('Saque usado no plano', `${fmtN(c.saque,2)}% a.m.`)}</div>`;
-    renderComparador();
+    renderComparador(X);
 }
 async function salvarIndices(){
     const reg = { selic:numOuNull($('i-selic').value), cdi:numOuNull($('i-cdi').value), ipca12:numOuNull($('i-ipca12').value), ipcaPlus:numOuNull($('i-ipcaplus').value), data:$('i-data').value || hojeISO() };
@@ -2286,40 +2466,118 @@ async function buscarBCB(){
     if (n) { $('i-data').value = hojeISO(); idxDirty = true; toast(`${n} de 3 índices do Banco Central. Confira, digite a taxa do IPCA+ e clique em Salvar índices.`, 'success', 8000); }
     else toast('Não foi possível consultar o Banco Central a partir do navegador. Digite os valores.', 'error', 8000);
 }
-// Comparador (só em memória)
-let ofertas = [];
+// Comparador — as ofertas ficam guardadas neste navegador (não vão para o Sheets)
+let ofertas = (() => { try { const v = JSON.parse(localStorage.getItem('mis_ofertas') || '[]'); return Array.isArray(v) ? v : []; } catch(e) { return []; } })();
+const salvaOfertas = () => { try { localStorage.setItem('mis_ofertas', JSON.stringify(ofertas)); } catch(e) {} };
 function compAdd(){
     const nome = $('k-nome').value.trim() || `Oferta ${ofertas.length+1}`, tipo = $('k-tipo').value, taxa = parseBR($('k-taxa').value), prazo = parseBR($('k-prazo').value);
+    let valor = parseBR($('k-valor').value); if (isNaN(valor) || valor <= 0) valor = 100000;
     if (isNaN(taxa) || taxa <= 0) return toast('Informe a taxa.', 'error');
     if (isNaN(prazo) || prazo <= 0) return toast('Informe o prazo em anos.', 'error');
-    ofertas.push({ id: Date.now(), nome, tipo, taxa, prazo, isento: $('k-isento').checked });
+    ofertas.push({ id: Date.now(), nome, tipo, taxa, prazo, valor, isento: $('k-isento').checked, garantia: $('k-gar').value, inst: $('k-inst').value.trim() });
+    salvaOfertas();
     $('k-nome').value = ''; $('k-taxa').value = '';
     renderComparador();
 }
-function compDel(id){ ofertas = ofertas.filter(o => o.id !== id); renderComparador(); }
+function compDel(id){ ofertas = ofertas.filter(o => o.id !== id); salvaOfertas(); renderComparador(); }
+// Transforma a oferta num ativo (abre o cadastro já preenchido)
+function compUsar(id){
+    const o = ofertas.find(z => z.id === id); if (!o) return;
+    abrirAtivo();
+    if ($('modal-ativo').classList.contains('hidden')) return;
+    $('a-classe').value = o.tipo === 'ipca' ? 'ipca' : o.tipo === 'pre' ? 'pre' : (o.isento ? 'pos' : 'liq');
+    $('a-nome').value = o.nome; $('a-inst').value = o.inst || '';
+    $('a-garantia').value = o.garantia || 'nenhuma'; $('a-liq').value = 'venc';
+    $('a-index').value = o.tipo; $('a-taxa').value = fmtN(o.taxa); $('a-isento').checked = !!o.isento;
+    const d = new Date(); d.setDate(d.getDate() + Math.round(o.prazo*365)); $('a-venc').value = d.toISOString().slice(0,10);
+    ativoAjustaTaxa();
+    toast('Cadastro preenchido com a oferta. Confira o vencimento e salve; depois lance o aporte ou a transferência.', 'info', 8000);
+}
 const irPrazo = anos => { const d = anos*365; return d <= 180 ? .225 : d <= 360 ? .20 : d <= 720 ? .175 : .15; };
-function compCalc(o){
+// H = horizonte comum (anos). Oferta mais curta: o resto é reaplicado na Selic projetada, líquida de IR.
+function compCalc(o, H){
     const ix = idx(), c = cfg();
-    const cdi = (ix.cdi || (ix.selic ? ix.selic - 0.1 : 10)) / 100, ipca = c.ipca/100;
-    const bruto = o.tipo === 'cdi' ? cdi*o.taxa/100 : o.tipo === 'pre' ? o.taxa/100 : (1+ipca)*(1+o.taxa/100) - 1;
+    const ipca = c.ipca/100;
+    const agora = new Date(), hI = agora.getFullYear()*12 + agora.getMonth();
+    // Pós-fixado segue a Selic projetada em Ajustes (CDI ≈ Selic − 0,10 p.p.), a mesma trilha usada na reaplicação e na referência
+    const cdiAno = y => (selicAno(c, y) - 0.1)/100;
+    let fatorBruto;
+    if (o.tipo === 'cdi') { fatorBruto = 1; const n = Math.round(o.prazo*12); for (let m = 1; m <= n; m++) fatorBruto *= Math.pow(1 + cdiAno(Math.floor((hI+m)/12))*o.taxa/100, 1/12); }
+    else fatorBruto = Math.pow(o.tipo === 'pre' ? 1 + o.taxa/100 : (1+ipca)*(1+o.taxa/100), o.prazo);
+    const bruto = Math.pow(fatorBruto, 1/o.prazo) - 1;
+    const cdi = cdiAno(Math.floor(hI/12));
     const ir = o.isento ? 0 : irPrazo(o.prazo);
-    const ganhoLiq = (Math.pow(1+bruto, o.prazo) - 1) * (1 - ir);
+    const ganhoLiq = (fatorBruto - 1) * (1 - ir);
     const liqAA = Math.pow(1+ganhoLiq, 1/o.prazo) - 1;
     const realAA = (1+liqAA)/(1+ipca) - 1;
     let equiv = null;
     if (o.isento) { const irT = irPrazo(o.prazo), gb = ganhoLiq/(1-irT), bAA = Math.pow(1+gb, 1/o.prazo) - 1; equiv = { aa: bAA, cdi: bAA/cdi }; }
-    return { bruto, ir, liqAA, realAA, equiv, fim: 100000*(1+ganhoLiq) };
+    const V = o.valor > 0 ? o.valor : 100000;
+    const Ho = Math.max(H, o.prazo);                      // oferta mais longa que o horizonte vale no próprio prazo
+    const mRest = Math.round((Ho - o.prazo)*12);
+    let fim = V*(1+ganhoLiq);
+    for (let m = 1; m <= mRest; m++) { const i = hI + Math.round(o.prazo*12) + m; fim *= 1 + taxaMes(selicAno(c, Math.floor(i/12)), c.ir); }
+    const fimReal = fim / Math.pow(1+ipca, Ho);
+    const realHor = Math.pow(fimReal/V, 1/Ho) - 1;
+    return { bruto, ir, liqAA, realAA, equiv, V, Ho, reinv: mRest > 0, fim, fimReal, realHor, rendeMes: V*(Math.pow(1+liqAA, 1/12) - 1), foraHor: o.prazo > H + 1e-9 };
 }
-function renderComparador(){
+// Deixar tudo na Selic projetada durante o horizonte (líquida de IR), em ganho real ao ano
+function compSelicHor(H){
+    const c = cfg(), agora = new Date(), hI = agora.getFullYear()*12 + agora.getMonth();
+    let f = 1; const n = Math.round(H*12);
+    for (let m = 1; m <= n; m++) f *= 1 + taxaMes(selicAno(c, Math.floor((hI+m)/12)), c.ir);
+    return Math.pow(f / Math.pow(1 + c.ipca/100, H), 1/H) - 1;
+}
+// Referências: quanto rende, acima da inflação e líquido de IR, o que você já tem ou poderia ter sem esforço
+function compRefs(X){
+    const c = X.c, ix = X.ix, ipca = (ix.ipca12 != null ? ix.ipca12 : c.ipca)/100;
+    const real = nom => (1+nom)/(1+ipca) - 1;
+    const selic = ix.selic || selicAno(c, new Date().getFullYear());
+    const refs = [{ n:'Selic de hoje (100%, líquida de IR)', v: real(selic/100*(1 - c.ir/100)), id:'selic' }];
+    if (ix.ipcaPlus) { const nb = (1 + ix.ipcaPlus/100)*(1 + ipca) - 1; refs.push({ n:`Tesouro IPCA+ (IPCA + ${fmtN(ix.ipcaPlus,2)}%)`, v: real(nb*(1 - c.ir/100)), id:'ipcaplus' }); }
+    const gar = X.posAtivos.filter(a => !a.encerrado && a.saldo > 0 && !a.semTaxa && (a.garantia === 'fgc' || a.garantia === 'tesouro'));
+    const pesoG = gar.reduce((t,a) => t + a.saldo, 0);
+    if (pesoG > 1) refs.push({ n:'Sua carteira com garantia (FGC/Tesouro)', v: real(gar.reduce((t,a) => t + taxaLiqAA(a, ix, c)*a.saldo, 0)/pesoG), id:'carteira' });
+    const semG = X.posAtivos.filter(a => !a.encerrado && a.saldo > 1 && a.garantia === 'nenhuma').reduce((t,a) => t + a.saldo, 0);
+    return { refs, semG };
+}
+function renderComparador(Xin){
     const box = $('k-tabela'); if (!box) return;
-    if (!ofertas.length) { box.innerHTML = '<p class="mis-note" style="margin:0;">Exemplo: "LCA 92% do CDI, 2 anos, isento" contra "CDB 110% do CDI, 2 anos" contra "Tesouro IPCA+ 7,5%, 10 anos".</p>'; return; }
-    const ls = ofertas.map(o => ({ o, r: compCalc(o) })).sort((a,b) => b.r.realAA - a.r.realAA);
+    const X = Xin && Xin.c ? Xin : calc();
+    $('k-inst-lista').innerHTML = [...new Set(ativos().map(a => a.inst).filter(Boolean))].map(t => `<option value="${escH(t)}">`).join('');
+    const { refs, semG } = compRefs(X);
+    const pp = v => `${v >= 0 ? '+' : '−'} ${fmtN(Math.abs(v)*100,2)}%`;
+    $('k-ref').innerHTML = `<div class="summary-strip" style="flex-direction:column;align-items:stretch;gap:6px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);">Referências · ganho real líquido ao ano (acima da inflação, já descontado o IR)</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px 22px;">${refs.map(r => `<span>${r.n}: <strong>${pp(r.v)}</strong></span>`).join('')}</div>
+        ${semG > 1 ? `<div class="sub-txt">Não inclui ${fmt(semG)} em ativos sem garantia (por exemplo, empréstimo): a taxa maior deles paga pelo risco.</div>` : ''}</div>`;
+    if (!ofertas.length) { box.innerHTML = '<p class="mis-note" style="margin:0;">Exemplo: "LCA 92% do CDI, 2 anos, isento" contra "CDB 110% do CDI, 2 anos" contra "Tesouro IPCA+ 7,5%, 10 anos". Ofertas de prazos diferentes são comparadas no mesmo horizonte.</p>'; return; }
+    const Hin = parseBR($('k-hor').value), H = Hin > 0 ? Hin : Math.max(...ofertas.map(o => o.prazo));
+    const selicRef = compSelicHor(H);
+    const ls = ofertas.map(o => ({ o, r: compCalc(o, H) })).sort((a,b) => b.r.realHor - a.r.realHor);
+    const fg = fgcPorInst(X);
     const tipoTxt = o => o.tipo === 'cdi' ? `${fmtN(o.taxa,0)}% do CDI` : o.tipo === 'pre' ? `${fmtN(o.taxa)}% a.a.` : `IPCA + ${fmtN(o.taxa)}%`;
-    box.innerHTML = `<div style="overflow-x:auto;"><table><thead><tr><th>#</th><th>Oferta</th><th>Taxa</th><th class="num-cell">Prazo</th><th class="num-cell">IR</th><th class="num-cell">Bruto a.a.</th><th class="num-cell">Líquido a.a.</th><th class="num-cell">Real líquido a.a.</th><th class="num-cell">R$ 100 mil viram</th><th>Equivale a (tributado)</th><th></th></tr></thead><tbody>
-        ${ls.map(({o,r},j) => `<tr class="${j===0?'row-starred':''}"><td><strong>${j+1}${j===0?' ★':''}</strong></td><td>${escH(o.nome)}</td><td style="white-space:nowrap;">${tipoTxt(o)}${o.isento?' · isento':''}</td><td class="num-cell">${fmtN(o.prazo,1)} a</td>
-            <td class="num-cell">${fmtP(r.ir,1)}</td><td class="num-cell">${fmtP(r.bruto)}</td><td class="num-cell"><strong>${fmtP(r.liqAA)}</strong></td><td class="num-cell"><strong>${fmtP(r.realAA)}</strong></td><td class="num-cell">${fmt(r.fim)}</td>
-            <td style="white-space:nowrap;">${r.equiv ? `${fmtP(r.equiv.aa)} a.a. · ${fmtN(r.equiv.cdi*100,0)}% do CDI` : '—'}</td><td><button class="btn btn-danger btn-sm" onclick="compDel(${o.id})">×</button></td></tr>`).join('')}
-        </tbody></table></div><p class="mis-note">Ordenado pelo ganho real líquido. Simplificações: CDI constante no prazo todo; inflação = a esperada em Parâmetros; prefixados e IPCA+ vendidos antes do vencimento podem render mais ou menos (marcação a mercado). Prazos diferentes não são diretamente comparáveis: o mais curto tem risco de reinvestir a uma taxa menor.</p>`;
+    const fgcTxt = ({ o, r }) => {
+        if (o.garantia !== 'fgc') return o.garantia === 'tesouro' ? 'Tesouro Nacional' : 'Sem garantia';
+        if (!o.inst) return 'FGC · informe a instituição para checar o limite';
+        const cur = (fg.find(f => f.inst.toLowerCase() === o.inst.toLowerCase()) || {}).v || 0, folga = 250000 - cur;
+        return r.V > folga ? `FGC · <strong>▲ passa do limite em ${fmt(r.V - folga)}</strong> (já tem ${fmt(cur)} em ${escH(o.inst)})` : `FGC · cabe: sobra ${fmt(folga - r.V)} de folga em ${escH(o.inst)}`;
+    };
+    box.innerHTML = `<p class="mis-note" style="margin:0 0 8px;">Horizonte de comparação: <strong>${fmtN(H,1)} anos</strong>${Hin > 0 ? '' : ' (o maior prazo)'}. Deixar tudo na Selic projetada nesse horizonte rende <strong>${pp(selicRef)}</strong> real líquido ao ano. Ordenado pelo ganho real líquido ao ano.</p>
+        <div style="overflow-x:auto;"><table><thead><tr><th>#</th><th style="min-width:300px;">Oferta</th><th class="num-cell">Prazo · IR</th><th class="num-cell">Líquido a.a.</th><th class="num-cell">Real líq. a.a.</th><th class="num-cell">vs. Selic</th><th class="num-cell">Rende/mês</th><th class="num-cell">Vira (R$ de hoje)</th><th style="width:120px;"></th></tr></thead><tbody>
+        ${ls.map(({o,r},j) => `<tr class="${j===0?'row-starred':''}"><td><strong>${j+1}${j===0?' ★':''}</strong></td>
+            <td style="min-width:300px;"><strong>${escH(o.nome)}</strong> <span class="tag">${tipoTxt(o)}${o.isento?' · isento':''}</span>
+                <div class="sub-txt">${fgcTxt({o,r})}</div>
+                ${r.equiv ? `<div class="sub-txt">Isento: equivale a ${fmtP(r.equiv.aa)} a.a. tributado (${fmtN(r.equiv.cdi*100,0)}% do CDI)</div>` : ''}
+                ${r.reinv ? `<div class="sub-txt">Depois de ${fmtN(o.prazo,1)} a, reaplica na Selic até ${fmtN(r.Ho,1)} a</div>` : ''}
+                ${r.foraHor ? '<div class="sub-txt"><strong>▲ prazo maior que o horizonte: vale no próprio prazo</strong></div>' : ''}</td>
+            <td class="num-cell" style="white-space:nowrap;">${fmtN(o.prazo,1)} a · ${fmtP(r.ir,1)}</td>
+            <td class="num-cell">${fmtP(r.liqAA)}</td><td class="num-cell"><strong>${fmtPs(r.realHor)}</strong></td>
+            <td class="num-cell" style="white-space:nowrap;"><strong>${r.realHor - selicRef >= 0 ? '▲' : '▼'} ${fmtN(Math.abs(r.realHor - selicRef)*100,2)} p.p.</strong></td>
+            <td class="num-cell" style="white-space:nowrap;">${fmt(r.rendeMes)}<div class="sub-txt">sobre ${fmt(r.V)}</div></td><td class="num-cell" style="white-space:nowrap;">${fmt(r.fimReal)}</td>
+            <td><div style="display:flex;gap:4px;justify-content:flex-end;"><button class="btn btn-primary btn-sm" style="width:auto;padding:0 10px;white-space:nowrap;" onclick="compUsar(${o.id})" title="Cadastrar esta oferta como ativo">＋ Usar</button><button class="btn btn-danger btn-sm" onclick="compDel(${o.id})" title="Remover">×</button></div></td></tr>`).join('')}
+        </tbody></table></div>
+        <p class="mis-note"><strong>Real líq. a.a.</strong> = ganho acima da inflação esperada (${fmtN(X.c.ipca,1)}% a.a.), já descontado o IR, médio no horizonte. <strong>vs. Selic</strong> = quanto a oferta rende a mais (▲) ou a menos (▼) que deixar tudo na Selic projetada, no mesmo horizonte. <strong>Vira</strong> = valor final em R$ de hoje. Simplificações: o CDI acompanha a Selic projetada em Ajustes; prefixados e IPCA+ levados até o vencimento (vender antes pode render mais ou menos, pela marcação a mercado); a reaplicação usa a Selic projetada em Ajustes. Taxa maior costuma significar risco maior: o ranking não mede risco de crédito.</p>`;
 }
 
 // ══════════════════════════════════════════════════════
@@ -2330,8 +2588,8 @@ function renderPlano(X){
     const p = k => k > 0 ? iLbl(X.baseI + k) : '—';
     const fases = [
         ['Fase 0 · Fundação', `${X.feitos}/${CHECK.length} tarefas`],
-        ['Fase 1 · Acumulação', `até R$ 1 mi · plano ${p(X.plano1miK)}`],
-        ['Fase 2 · Blindagem', `até ${fmtMi(X.metaNom(X.planoChegK > 0 ? X.planoChegK : 0))} · plano ${p(X.planoChegK)}`],
+        ['Fase 1 · Acumulação', `até R$ 1 mi de hoje · plano ${p(X.plano1miK)}`],
+        ['Fase 2 · Blindagem', `até ${fmtMi(X.metaHoje)} de hoje · plano ${p(X.planoChegK)}`],
         ['Fase 3 · Renda', `saque de até ${fmtN(X.c.saque,2)}% a.m. real`],
     ];
     $('pl-fases').innerHTML = fases.map((f,j) => `<tr class="${j === X.fase ? 'row-starred' : (j < X.fase ? 'row-paid' : '')}"><td style="width:28px;font-weight:700;">${j < X.fase ? '✓' : j === X.fase ? '●' : '○'}</td><td><strong>${f[0]}</strong></td><td style="color:var(--mut);">${f[1]}</td></tr>`).join('');
