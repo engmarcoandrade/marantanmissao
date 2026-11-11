@@ -433,6 +433,7 @@ nav button.tab-link .ti{font-size:13px}
 .h-barra{height:14px;border-radius:8px;margin:16px 0 6px}
 .h-barra-lbl{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;font-weight:600;color:var(--mut)}
 .h-frase{font-size:15px;line-height:1.6;margin:14px 0 0}
+.wz-pres{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .h-link{display:inline;color:var(--acc);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px;background:none;border:none;padding:0;font-size:inherit;font-family:inherit;text-align:left}
 .h-sep{border:none;border-top:1px solid var(--bor);margin:20px 0 18px}
 .h-acoes{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:14px}
@@ -1038,6 +1039,7 @@ nav button.tab-link .ti{font-size:13px}
 //                     saldo estimado por dia pela taxa de cada ativo; botão ＋; ajuda "?"; barra inferior no celular
 //   2.1.0 (09/11/2026) Início: gráfico em R$ de hoje (meta vira linha reta), eixo da direita com a renda mensal,
 //                     marco de R$ 1 mi e quadro "Como a meta é calculada"
+//   3.0.2 (11/11/2026) "Meu plano" passa a editar também o percentual de retirada (antes só em Avançado → Parâmetros), com atalhos 0,45/0,70/1,00
 //   3.0.1 (11/11/2026) App passa a se chamar Planejamento (antes: Missão). Dados, planilha e backups continuam os mesmos
 //   3.0.0 (10/11/2026) Tela inicial em três blocos (onde estou, o que fazer agora, quando chego), botões de tarefa com
 //                     passo a passo (Entrou dinheiro, Venceu uma aplicação, Conferir o mês), entradas previstas na frente,
@@ -1049,7 +1051,7 @@ nav button.tab-link .ti{font-size:13px}
 //   2.3.0 (09/11/2026) Início: "Como aplicar o dinheiro" (valor, origem aporte x transferência, ativo de destino por classe, FGC)
 //   2.2.0 (09/11/2026) Projeção, marco de R$ 1 mi e fases no mesmo padrão do Início: R$ de hoje, meta reta, eixo da renda
 // ══════════════════════════════════════════════════════
-const APP_VERSAO = '3.0.1';
+const APP_VERSAO = '3.0.2';
 const APP_VERSAO_DATA = '11/11/2026';
 document.querySelectorAll('[data-versao]').forEach(el => {
     el.textContent = el.dataset.versao === 'longa' ? `Planejamento · versão ${APP_VERSAO} · ${APP_VERSAO_DATA}` : `v${APP_VERSAO}`;
@@ -1838,7 +1840,7 @@ function renderComoMeta(X){
         const nb = (1 + ix.ipcaPlus/100)*(1 + ipca/100) - 1, nl = nb*(1 - c.ir/100), realLiq = (1 + nl)/(1 + ipca/100) - 1, m = Math.pow(1 + realLiq, 1/12) - 1;
         ref = ` Para referência: o Tesouro IPCA+ a IPCA + ${fmtN(ix.ipcaPlus,2)}% rende hoje cerca de <strong>${fmtN(m*100,2)}% ao mês acima da inflação</strong>, já descontado o IR.`; }
     const nomChegada = X.chegI != null && X.chegI > X.hojeI ? `Em dinheiro de ${iLbl(X.chegI)}, essa mesma meta vale <strong>${fmtMi(X.metaNom(X.chegI - X.baseI))}</strong>.` : '';
-    box.innerHTML = `<div class="card-head"><h2>Como a meta é calculada</h2><button class="btn btn-ghost btn-sm" style="width:auto;padding:0 12px;height:32px;" onclick="irParametros()">Mudar a taxa</button></div>
+    box.innerHTML = `<div class="card-head"><h2>Como a meta é calculada</h2><button class="btn btn-ghost btn-sm" style="width:auto;padding:0 12px;height:32px;" onclick="wzAbrir('plano')">Mudar a taxa</button></div>
         <p style="margin:0 0 8px;"><strong>Meta:</strong> ${fmt(c.renda).replace(',00','')} por mês, com o poder de compra de hoje.</p>
         <p style="margin:0 0 8px;"><strong>Conta:</strong> ${fmt(c.renda).replace(',00','')} ÷ ${fmtN(c.saque,2)}% = <strong>${fmtMi(X.metaHoje)}</strong> de patrimônio, em valores de hoje. ${nomChegada}</p>
         <p style="margin:0 0 12px;"><strong>Por que não 1% ao mês?</strong> Gastar 1% do patrimônio por mês exigiria só ${fmtMi(c.renda/0.01)}, mas com inflação de ${fmtN(c.ipca,1)}% ao ano o capital perderia valor e os ${fmt(c.renda).replace(',00','')} comprariam cada vez menos. O plano gasta só o que rende <strong>acima da inflação</strong>.${ref}</p>
@@ -2892,14 +2894,15 @@ function renderHome(X){
     const pct = Math.max(0, Math.min(1, X.pctMeta)), falta = Math.max(0, X.metaHoje - X.patrReal);
     const faltam = X.chegI != null ? X.chegI - X.hojeI : null;
     const chegou = faltam != null && faltam <= 0;
+    const seguro = c.saque <= 0.4501, comoTira = seguro ? 'para sempre, sem o dinheiro perder valor para a inflação' : `(com ${fmtN(c.saque,2)}% ao mês, acima do ritmo seguro de 0,45%: o total vai diminuindo com o tempo)`;
     $('h-onde').innerHTML = `<div class="h-eyebrow">Onde estou</div>
         <div class="h-big">${fmt(X.estHoje)}</div>
         <div class="h-sub">é o que você tem hoje no Planejamento${estimado ? ' <span class="tag" title="Calculado pelo app a partir da última conferência. Fica exato quando você confere o mês.">valor estimado</span>' : ''}</div>
         <div class="hbar h-barra"><i style="width:${(pct*100).toFixed(1)}%"></i></div>
         <div class="h-barra-lbl"><span>${fmtP(X.pctMeta,1)} do caminho</span><span>Meta: ${fmtMi(X.metaHoje)}</span></div>
         <p class="h-frase">${chegou
-            ? `Você chegou: esse valor já sustenta <strong>${semCent(c.renda)} por mês</strong> sem o dinheiro perder valor.`
-            : `Com esse valor você já poderia tirar <strong>${semCent(Math.round(X.rendaSust))} por mês</strong> para sempre, sem o dinheiro perder valor para a inflação. A meta é tirar <strong>${semCent(c.renda)} por mês</strong>. Para isso é preciso juntar <strong>${fmtMi(X.metaHoje)}</strong>, em dinheiro de hoje: faltam <strong>${fmtMi(falta)}</strong>.`}
+            ? `Você chegou: esse valor já sustenta <strong>${semCent(c.renda)} por mês</strong>${seguro ? ' sem o dinheiro perder valor' : `, retirando ${fmtN(c.saque,2)}% ao mês`}.`
+            : `Com esse valor você já poderia tirar <strong>${semCent(Math.round(X.rendaSust))} por mês</strong> ${comoTira}. A meta é tirar <strong>${semCent(c.renda)} por mês</strong>. Para isso é preciso juntar <strong>${fmtMi(X.metaHoje)}</strong>, em dinheiro de hoje: faltam <strong>${fmtMi(falta)}</strong>.`}
             <button class="h-link" onclick="irDetalhe('d-meta-card')">Por que esse valor?</button></p>
         <hr class="h-sep">
         <div class="h-eyebrow">Quando chego</div>
@@ -3358,15 +3361,15 @@ WZ.prever = {
 
 // ── 🎯 Meu plano: quanto coloco por mês, quanto quero de renda, quando quero chegar ──
 function wzPlanoX(d, X){
-    const renda = wzNum(d.renda), metaHoje = renda / (X.c.saque/100);
-    return { ...X, metaHoje, metaNom: k => metaHoje * Math.pow(1 + X.ipcaM, k) };
+    const renda = wzNum(d.renda), sq = wzNum(d.saque) > 0 ? wzNum(d.saque) : X.c.saque, metaHoje = renda / (sq/100);
+    return { ...X, c:{ ...X.c, saque:sq }, metaHoje, metaNom: k => metaHoje * Math.pow(1 + X.ipcaM, k) };
 }
 function wzPlanoVivo(){
     const el = $('wz-plano-res'); if (!el || !wz) return;
     const d = wz.d, X = calc(), ap = wzNum(d.aporte), renda = wzNum(d.renda);
-    if (!(ap > 0) || !(renda > 0)) { el.innerHTML = '<div>Preencha os dois valores para ver a data.</div>'; return; }
+    if (!(ap > 0) || !(renda > 0) || !(wzNum(d.saque) > 0)) { el.innerHTML = '<div>Preencha os dois valores para ver a data.</div>'; return; }
     const X2 = wzPlanoX(d, X), ch = projetar(X2, { aporte:ap }).chegI;
-    let h = wzLin('É preciso juntar (dinheiro de hoje)', fmtMi(X2.metaHoje)) + wzLin('Chegada prevista', ch == null ? 'além de 35 anos' : ch <= X.hojeI ? 'já atingida' : `${iLbl(ch)} · ${mesesTxt(ch - X.hojeI)}`);
+    let h = wzLin('Retirando ' + fmtN(wzNum(d.saque),2) + '% ao mês, é preciso juntar (dinheiro de hoje)', fmtMi(X2.metaHoje)) + wzLin('Chegada prevista', ch == null ? 'além de 35 anos' : ch <= X.hojeI ? 'já atingida' : `${iLbl(ch)} · ${mesesTxt(ch - X.hojeI)}`);
     const alvoI = mesI(d.quando);
     d.precisa = null;
     if (alvoI != null) {
@@ -3381,10 +3384,11 @@ function wzPlanoVivo(){
     }
     el.innerHTML = h;
 }
+function wzSaque(v){ if (!wz) return; wz.d.saque = v; wz.sujo = true; wzRender(); }
 function wzPlanoUsa(){ if (!wz || !wz.d.precisa) return; wz.d.aporte = fmtN(wz.d.precisa); wz.sujo = true; wzRender(); }
 WZ.plano = {
     nome:'🎯 Meu plano',
-    ini(d, X){ d.aporte = fmtN(X.c.aporte); d.renda = fmtN(X.c.renda); d.quando = ''; },
+    ini(d, X){ d.aporte = fmtN(X.c.aporte); d.renda = fmtN(X.c.renda); d.saque = fmtN(X.c.saque, 2); d.quando = ''; },
     passos(){ return ['dados']; },
     vivo(){ wzPlanoVivo(); },
     tela(pid, d, X){
@@ -3393,6 +3397,9 @@ WZ.plano = {
                     <div class="form-field"><label>Quanto você coloca por mês (R$)</label><input data-k="aporte" data-foco inputmode="decimal" value="${escH(d.aporte)}"></div>
                     <div class="form-field"><label>Renda mensal que você quer (R$)</label><input data-k="renda" inputmode="decimal" value="${escH(d.renda)}"></div>
                 </div>
+                <div class="form-field" style="margin-top:12px;max-width:260px;"><label>Quanto posso retirar por mês do total (% ao mês)</label><input data-k="saque" inputmode="decimal" value="${escH(d.saque)}"></div>
+                <div class="wz-pres">${[['0,45','Seguro: o dinheiro nunca perde valor'],['0,70','Médio: aceita gastar um pouco do principal'],['1,00','Ousado: meta menor, mas o total vai diminuindo']].map(([v,t]) => `<button class="btn btn-ghost" style="height:30px;padding:0 10px;" title="${t}" onclick="wzSaque('${v}')">${v}%</button>`).join('')}</div>
+                <p class="wz-nota" style="margin:6px 0 0!important;">É a regra que transforma renda em meta: <strong>renda ÷ esse percentual = quanto você precisa juntar</strong>. Com 0,45% o total acompanha a inflação para sempre; quanto maior o percentual, menor a meta, mas o dinheiro pode acabar mais cedo. ${wzNum(d.saque) > 0 ? `Equivale a <strong>${fmtP(Math.pow(1 + wzNum(d.saque)/100, 12) - 1, 1)} ao ano</strong> acima da inflação.` : ''}</p>
                 <div class="form-field" style="margin-top:12px;max-width:260px;"><label>Quer chegar até quando? (opcional)</label><input type="month" data-k="quando" value="${escH(d.quando)}"></div>
                 <div class="wz-res" id="wz-plano-res" style="margin-top:14px;"></div>
                 <p class="wz-nota" style="margin:0!important;">A renda é em dinheiro de hoje: o plano já corrige pela inflação. Você tem hoje <strong>${fmt(X.estHoje)}</strong>. Juros, inflação e imposto ficam em Avançado.</p>` };
@@ -3400,16 +3407,17 @@ WZ.plano = {
     valida(pid, d){
         if (!(wzNum(d.aporte) > 0)) return 'Digite quanto você coloca por mês.';
         if (!(wzNum(d.renda) > 0)) return 'Digite a renda mensal que você quer.';
+        if (!(wzNum(d.saque) > 0) || wzNum(d.saque) > 3) return 'Digite o percentual de retirada, entre 0,1 e 3% ao mês.';
         return null;
     },
     async grava(d){
-        const ap = r2(wzNum(d.aporte)), renda = r2(wzNum(d.renda));
-        const ok = await commit(dd => { upsert(dd, 'cfg', 'cfg', o => { o.aporte = ap; o.renda = renda; }); });
+        const ap = r2(wzNum(d.aporte)), renda = r2(wzNum(d.renda)), sq = r2(wzNum(d.saque));
+        const ok = await commit(dd => { upsert(dd, 'cfg', 'cfg', o => { o.aporte = ap; o.renda = renda; o.saque = sq; }); });
         if (ok) { cfgDirty = false; const s = $('s-aporte'); if (s) s.dataset.pronto = ''; render(); }
         return ok;
     },
     fim(d, X){
-        return { tit:'✓ Plano salvo', html:`<div class="wz-res">${wzLin('Por mês', semCent(X.c.aporte))}${wzLin('Renda desejada', semCent(X.c.renda) + ' por mês')}${wzLin('É preciso juntar', fmtMi(X.metaHoje))}
+        return { tit:'✓ Plano salvo', html:`<div class="wz-res">${wzLin('Por mês', semCent(X.c.aporte))}${wzLin('Renda desejada', semCent(X.c.renda) + ' por mês')}${wzLin('Retirada sobre o total', fmtN(X.c.saque,2) + '% ao mês')}${wzLin('É preciso juntar', fmtMi(X.metaHoje))}
             ${wzLin('Chegada prevista', X.chegI == null ? 'além de 35 anos' : X.chegI <= X.hojeI ? 'já atingida' : iLbl(X.chegI))}</div>` };
     },
 };
