@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Missão R$ 10 mil</title>
+    <title>Planejamento R$ 10 mil</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -259,7 +259,7 @@ td select{padding:3px 6px;font-size:12px}
 .modal-btns{display:flex;flex-direction:column;gap:8px}
 .modal-btns .btn{width:100%}
 
-/* ── Missão R$ 10 mil ──
+/* ── Planejamento R$ 10 mil ──
    Mesmo cuidado de deuteranopia: plano x realizado se distinguem por
    traço (tracejado x contínuo) e marcador, não só pela cor; acima/abaixo
    do plano sempre com ▲/▼ e sinal. */
@@ -338,7 +338,7 @@ details.mis-cfg[open] summary::before{content:'▾ ';}
 }
 
 /* ══════════════════════════════════════════════════════════════
-   Acréscimos do app Missão
+   Acréscimos do app Planejamento
    ══════════════════════════════════════════════════════════════ */
 /* Tons para gráficos de fatias: só azuis e grafites; a leitura não depende
    da cor — cada fatia tem número, nome e % na legenda. */
@@ -423,6 +423,86 @@ nav button.tab-link .ti{font-size:13px}
   .hero-grid .kpi-value{font-size:24px}
   .seg button{padding:8px 10px;font-size:12px}
 }
+/* ── v3.0: tela inicial em três blocos e passo a passo ── */
+.h-renda{white-space:nowrap}
+.h-eyebrow{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:6px}
+.h-big{font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+.h-big2{font-size:30px}
+.h-big small{font-size:15px;font-weight:600;color:var(--mut);letter-spacing:0;margin-left:6px;white-space:nowrap}
+.h-sub{font-size:14px;color:var(--mut);margin-top:4px}
+.h-barra{height:14px;border-radius:8px;margin:16px 0 6px}
+.h-barra-lbl{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;font-weight:600;color:var(--mut)}
+.h-frase{font-size:15px;line-height:1.6;margin:14px 0 0}
+.h-link{display:inline;color:var(--acc);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px;background:none;border:none;padding:0;font-size:inherit;font-family:inherit;text-align:left}
+.h-sep{border:none;border-top:1px solid var(--bor);margin:20px 0 18px}
+.h-acoes{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:14px}
+.h-mes{margin-top:16px;padding-top:14px;border-top:1px solid var(--bor)}
+.h-mes .hbar{margin:6px 0 6px}
+.h-tarefas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.h-tarefa{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;padding:18px;border-radius:16px;border:2px solid var(--acc);background:var(--sup);color:var(--txt);cursor:pointer;transition:transform .12s,background .12s;min-height:122px;box-shadow:var(--sombra)}
+.h-tarefa:hover{background:var(--acc-soft);transform:translateY(-1px)}
+.h-tarefa .ico{font-size:28px;line-height:1}
+.h-tarefa strong{font-size:17px}
+.h-tarefa small{font-size:12.5px;color:var(--mut);line-height:1.4;white-space:normal}
+.h-tarefa.pend{background:var(--acc);color:var(--acc-txt)}
+.h-tarefa.pend small{color:var(--acc-txt);opacity:.9}
+.h-ent-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bor);font-size:14px}
+.h-ent-data{width:96px;flex:none;white-space:nowrap}
+.h-ent-desc{flex:1;min-width:0}
+.h-ent-v{white-space:nowrap;font-variant-numeric:tabular-nums}
+@media (max-width:680px){ .h-ent-row{flex-wrap:wrap;row-gap:4px} .h-ent-data{width:auto} .h-ent-desc{flex-basis:calc(100% - 110px)} .h-ent-v{flex:1} }
+.h-rodape{text-align:center;font-size:14px;margin:6px 0 0}
+.mais-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.mais-item{display:flex;gap:14px;align-items:flex-start;text-align:left;padding:18px;border-radius:16px;border:1px solid var(--bor);background:var(--sup);color:var(--txt);cursor:pointer;box-shadow:var(--sombra)}
+.mais-item:hover{border-color:var(--acc)}
+.mais-item .ico{font-size:26px;line-height:1.1}
+.mais-item strong{display:block;font-size:16px;margin-bottom:3px}
+.mais-item small{display:block;font-size:12.5px;color:var(--mut);line-height:1.45;white-space:normal}
+.voltar-bar{display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:15px}
+.voltar-bar .btn{height:34px;padding:0 12px}
+#wz{position:fixed;inset:0;background:rgba(10,14,20,.55);backdrop-filter:blur(3px);display:grid;place-items:center;padding:16px;z-index:9980;overflow-y:auto}
+#wz.hidden{display:none}
+#wz .modal-card{max-width:560px}
+.wz-top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:var(--mut);letter-spacing:.03em}
+.wz-x{border:none;background:none;font-size:18px;line-height:1;color:var(--mut);cursor:pointer;padding:4px 6px;border-radius:8px}
+.wz-x:hover{color:var(--txt)}
+.wz-prog{height:5px;background:var(--bor);border-radius:3px;margin:10px 0 18px;overflow:hidden}
+.wz-prog>i{display:block;height:100%;background:var(--acc);transition:width .2s}
+#wz h3{font-size:21px;line-height:1.3;margin-bottom:14px}
+#wz .modal-card p{color:var(--txt)}
+.wz-big{font-size:26px;font-weight:700;padding:12px 14px}
+#wz .modal-card p.wz-nota{font-size:13px;color:var(--mut);line-height:1.55;margin:12px 0 0}
+.wz-op{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;padding:13px 15px;margin-bottom:8px;border-radius:12px;border:1.5px solid var(--bor);background:var(--sup);color:var(--txt);cursor:pointer}
+.wz-op:hover{border-color:var(--acc);background:var(--acc-soft)}
+.wz-op strong{font-size:15px}
+.wz-op span{font-size:12.5px;color:var(--mut)}
+.wz-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.wz-row select{flex:2;min-width:0}
+.wz-row input{flex:1;min-width:0;text-align:right;font-variant-numeric:tabular-nums}
+.wz-soma{font-size:13.5px;font-weight:700;margin:10px 0}
+.wz-res{border:1px solid var(--bor);border-radius:12px;padding:2px 14px;margin-bottom:12px}
+.wz-res>div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid var(--bor);font-size:14px}
+.wz-res>div:last-child{border-bottom:none}
+.wz-res>div>strong{text-align:right;font-variant-numeric:tabular-nums}
+.wz-clic{cursor:pointer}
+.wz-clic:hover span{color:var(--acc)}
+.wz-mes{display:inline-flex;align-items:center;gap:10px;border:1.5px solid var(--bor);border-radius:10px;padding:6px 10px;margin-bottom:14px;font-weight:700}
+.wz-mes span{min-width:90px;text-align:center}
+.wz-mes button{border:none;background:none;color:var(--txt);font-size:15px;cursor:pointer;padding:2px 6px}
+.wz-mes button:disabled{opacity:.25;cursor:default}
+.wz-erro{font-weight:700;font-size:13.5px;min-height:20px;margin:8px 0}
+.wz-btns{display:flex;justify-content:space-between;gap:10px}
+.wz-btns .btn{min-width:120px}
+#wz-ok:disabled{opacity:.6}
+@media (max-width:680px){
+  .h-big{font-size:30px} .h-big2{font-size:24px}
+  .h-tarefas{grid-template-columns:1fr;gap:10px}
+  .h-tarefa{flex-direction:row;flex-wrap:wrap;align-items:center;min-height:0;padding:14px 16px;column-gap:12px;row-gap:2px}
+  .h-tarefa small{flex-basis:100%;padding-left:40px}
+  .mais-grid{grid-template-columns:1fr}
+  #wz{place-items:start center;padding:12px}
+  .wz-row{flex-wrap:wrap} .wz-row select{flex:1 1 100%} 
+}
     </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -432,7 +512,7 @@ nav button.tab-link .ti{font-size:13px}
 <div id="login-screen">
     <div class="login-card">
         <div class="login-logo">🎯</div>
-        <h2>Missão</h2>
+        <h2>Planejamento</h2>
         <p style="margin-bottom:6px;">Insira a senha para acessar</p>
         <p style="font-size:12px;margin-bottom:12px;"><span class="ver-badge" data-versao="curta"></span></p>
         <input type="password" id="login-pass" placeholder="Senha" onkeydown="if(event.key==='Enter')checkLogin()">
@@ -445,9 +525,9 @@ nav button.tab-link .ti{font-size:13px}
 <div id="setup-wizard" class="hidden">
     <div class="wizard-card">
         <h2>🔗 Conectar a uma planilha própria</h2>
-        <p>A Missão guarda os dados numa planilha <strong>só dela</strong>. <strong>Não use a planilha do CGG</strong>: os dois apps se sobrescreveriam.</p>
+        <p>O Planejamento guarda os dados numa planilha <strong>só dela</strong>. <strong>Não use a planilha do CGG</strong>: os dois apps se sobrescreveriam.</p>
         <ol>
-            <li>Crie uma planilha nova no Google Sheets (ex.: "Missão")</li>
+            <li>Crie uma planilha nova no Google Sheets (ex.: "Planejamento")</li>
             <li>Vá em <strong>Extensões → Apps Script</strong>, apague o código e cole o script</li>
             <li><strong>Implantar → Novo implante</strong> · Tipo <strong>App Web</strong> · Acesso <strong>Qualquer pessoa</strong></li>
             <li>Copie a URL que termina em <code>/exec</code> e cole aqui</li>
@@ -458,6 +538,18 @@ nav button.tab-link .ti{font-size:13px}
             <button class="btn btn-primary" onclick="saveUrl()">Salvar</button>
         </div>
         <button class="btn btn-ghost" style="margin-top:10px;width:100%;" onclick="$('setup-wizard').classList.add('hidden')">Fechar</button>
+    </div>
+</div>
+
+<!-- PASSO A PASSO (v3.0) -->
+<div id="wz" class="hidden">
+    <div class="modal-card">
+        <div class="wz-top"><span id="wz-nome"></span><span style="display:flex;align-items:center;gap:6px;"><span id="wz-passo"></span><button class="wz-x" onclick="wzFechar()" title="Fechar" aria-label="Fechar">✕</button></span></div>
+        <div class="wz-prog"><i id="wz-barra"></i></div>
+        <h3 id="wz-tit"></h3>
+        <div id="wz-corpo"></div>
+        <div class="wz-erro" id="wz-erro" role="alert"></div>
+        <div class="wz-btns"><button class="btn btn-ghost" id="wz-voltar" onclick="wzVoltar()">← Voltar</button><button class="btn btn-primary" id="wz-ok" onclick="wzAvancar()">Continuar →</button></div>
     </div>
 </div>
 
@@ -506,7 +598,7 @@ nav button.tab-link .ti{font-size:13px}
 <header>
     <div class="header-inner">
         <div class="header-brand">
-            <h1>🎯 Missão <span id="h-renda">R$ 10 mil</span></h1>
+            <h1>🎯 Planejamento <span id="h-renda" class="h-renda">R$ 10 mil</span></h1>
             <span class="ver-badge" data-versao="curta" title="Versão do app"></span>
             <span class="status-pill"><span id="status-dot" class="status-dot dot-offline"></span><span id="status-text">Offline</span></span>
         </div>
@@ -519,11 +611,9 @@ nav button.tab-link .ti{font-size:13px}
     </div>
     <nav>
     <div class="nav-inner">
-        <button class="tab-link active" data-tab="Inicio" onclick="openTab('Inicio')"><span class="ti">🏠</span><span class="tl">Início</span></button>
-        <button class="tab-link" data-tab="Carteira" onclick="openTab('Carteira')"><span class="ti">🧩</span><span class="tl">Carteira</span> <span id="badge-conf" class="pending-badge" style="display:none">!</span></button>
-        <button class="tab-link" data-tab="Movimentos" onclick="openTab('Movimentos')"><span class="ti">💰</span><span class="tl">Movimentos</span></button>
-        <button class="tab-link" data-tab="Projecao" onclick="openTab('Projecao')"><span class="ti">🔮</span><span class="tl">Projeção</span></button>
-        <button class="tab-link" data-tab="Ajustes" onclick="openTab('Ajustes')"><span class="ti">⚙</span><span class="tl">Ajustes</span></button>
+        <button class="tab-link active" data-tab="Inicio" onclick="openTab('Inicio')"><span class="ti">🏠</span><span class="tl">Início</span> <span id="badge-conf" class="pending-badge" style="display:none">!</span></button>
+        <button class="tab-link" data-tab="Mais" onclick="openTab('Mais')"><span class="ti">☰</span><span class="tl">Ver mais</span></button>
+        <button class="tab-link" data-tab="Ajustes" onclick="openTab('Ajustes')"><span class="ti">⚙</span><span class="tl">Avançado</span></button>
     </div>
     </nav>
 </header>
@@ -536,12 +626,42 @@ nav button.tab-link .ti{font-size:13px}
         <ol id="d-inicio-lista"></ol>
     </div>
 
+    <div class="card h-onde" id="h-onde"></div>
+
+    <div class="card" id="h-fazer"></div>
+
+    <div class="h-tarefas">
+        <button class="h-tarefa" id="h-t-entrou" onclick="wzAbrir('entrou')"><span class="ico">💰</span><strong>Entrou dinheiro</strong><small>Salário, bônus, venda: dinheiro novo para aplicar</small></button>
+        <button class="h-tarefa" id="h-t-venceu" onclick="wzAbrir('venceu')"><span class="ico">⏳</span><strong>Venceu uma aplicação</strong><small id="h-t-venceu-sub">Um título acabou e o dinheiro voltou para a conta</small></button>
+        <button class="h-tarefa" id="h-t-conferir" onclick="wzAbrir('conferir')"><span class="ico">📋</span><strong>Conferir o mês</strong><small id="h-t-conferir-sub">Uma vez por mês: acertar os saldos com o banco</small></button>
+    </div>
+
+    <div class="card" id="h-entradas"></div>
+
+    <p class="h-rodape"><button class="h-link" onclick="openTab('Mais')">Ver mais: gráfico, aplicações, lançamentos, simulador</button></p>
+</section>
+
+<!-- ═════════════ VER MAIS (menu) ═════════════ -->
+<section id="Mais" class="tab-content">
+    <div class="mais-grid">
+        <button class="mais-item" onclick="openTab('Detalhes')"><span class="ico">📊</span><span><strong>Gráfico e painel completo</strong><small>Evolução do dinheiro, como a meta é calculada, todos os avisos, histórico mês a mês</small></span></button>
+        <button class="mais-item" onclick="openTab('Carteira')"><span class="ico">🧩</span><span><strong>Minhas aplicações</strong><small>Saldo de cada uma, cadastrar ou editar, garantia do FGC, vencimentos</small></span></button>
+        <button class="mais-item" onclick="openTab('Movimentos')"><span class="ico">🧾</span><span><strong>Lançamentos e entradas previstas</strong><small>Tudo o que já foi registrado: corrigir, apagar ou lançar à mão</small></span></button>
+        <button class="mais-item" onclick="openTab('Projecao')"><span class="ico">🔮</span><span><strong>Simulador e mercado</strong><small>E se eu colocar mais por mês? Cenários, juros do dia, comparar ofertas</small></span></button>
+        <button class="mais-item" onclick="openTab('Ajustes')"><span class="ico">⚙</span><span><strong>Avançado</strong><small>Juros projetados, inflação, imposto, divisão planejada, planilha e backup</small></span></button>
+    </div>
+</section>
+
+<!-- ═════════════ DETALHES (o Início antigo) ═════════════ -->
+<section id="Detalhes" class="tab-content">
+    <div class="voltar-bar"><button class="btn btn-ghost" onclick="openTab('Mais')">← Ver mais</button><strong>Gráfico e painel completo</strong></div>
+
     <div class="hero-grid" id="d-hero"></div>
 
     <div class="flex-row">
         <div class="card flex-col" id="d-mes-card"><div id="d-mes"></div></div>
-        <div class="card flex-col">
-            <div class="card-head"><h2>Atenção</h2><button class="btn btn-ghost btn-sm" id="d-alertas-mais" style="width:auto;padding:0 10px;display:none;" onclick="alternarAlertas()"></button></div>
+        <div class="card flex-col" id="d-alertas-card">
+            <div class="card-head"><h2>Todos os avisos</h2><button class="btn btn-ghost btn-sm" id="d-alertas-mais" style="width:auto;padding:0 10px;display:none;" onclick="alternarAlertas()"></button></div>
             <div class="sub-txt" id="d-alertas-resumo" style="margin:-4px 0 10px;"></div>
             <ul class="alert-list" id="d-alertas"></ul>
         </div>
@@ -556,7 +676,7 @@ nav button.tab-link .ti{font-size:13px}
         <div id="d-aplicar" style="margin-top:14px;"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="d-evol-card">
         <div class="card-head">
             <h2>Evolução do patrimônio</h2>
             <div class="seg" id="d-hor">
@@ -602,6 +722,7 @@ nav button.tab-link .ti{font-size:13px}
 
 <!-- ═════════════ CARTEIRA ═════════════ -->
 <section id="Carteira" class="tab-content">
+    <div class="voltar-bar"><button class="btn btn-ghost" onclick="openTab('Mais')">← Ver mais</button><strong>Minhas aplicações</strong></div>
     <div class="kpi-grid" id="c-kpis"></div>
 
     <!-- Conferir saldos (antigo Fechamento) -->
@@ -622,7 +743,7 @@ nav button.tab-link .ti{font-size:13px}
             </div>
             <div id="f-wrap">
                 <div id="f-form"></div>
-                <div class="mis-total"><span>Patrimônio da Missão no fim do mês</span><strong id="f-total">R$ 0,00</strong></div>
+                <div class="mis-total"><span>Patrimônio do Planejamento no fim do mês</span><strong id="f-total">R$ 0,00</strong></div>
                 <div class="mis-conf" id="f-conf"></div>
                 <div class="form-row" style="margin-top:12px;justify-content:flex-end;">
                     <button class="btn btn-ghost" onclick="abrirAtivo()">＋ Ativo que faltou</button>
@@ -659,7 +780,7 @@ nav button.tab-link .ti{font-size:13px}
             <div id="c-aloc"></div>
             <h2 style="margin-top:18px;">Próximo aporte sugerido</h2>
             <div id="c-sugestao"></div>
-            <p class="mis-note dica">Direciona o aporte para as classes mais abaixo do alvo: rebalanceia sem vender nada. O alvo se muda em Ajustes → Parâmetros.</p>
+            <p class="mis-note dica">Direciona o aporte para as classes mais abaixo do alvo: rebalanceia sem vender nada. O alvo se muda em Avançado → Parâmetros.</p>
         </div>
         <div class="card flex-col">
             <h2>Proteção do FGC por instituição</h2>
@@ -673,6 +794,7 @@ nav button.tab-link .ti{font-size:13px}
 
 <!-- ═════════════ MOVIMENTOS ═════════════ -->
 <section id="Movimentos" class="tab-content">
+    <div class="voltar-bar"><button class="btn btn-ghost" onclick="openTab('Mais')">← Ver mais</button><strong>Lançamentos e entradas previstas</strong></div>
     <div class="card no-priv" id="m-form-card">
         <div class="card-head">
             <h2 id="m-form-tit">Lançar movimento</h2>
@@ -701,7 +823,7 @@ nav button.tab-link .ti{font-size:13px}
             <h2>Programação de recebimentos</h2>
             <span id="p-resumo" class="sub-txt"></span>
         </div>
-        <p class="mis-note dica" style="margin:0 0 12px;">Dinheiro <strong>novo</strong> que você espera colocar na Missão (venda de imóvel, bônus, 13º...). Entra nas projeções. Ao receber, use <strong>✓ Efetivar</strong>: vira um aporte. Não lance aqui resgates de algo que já está na carteira — isso contaria o dinheiro duas vezes.</p>
+        <p class="mis-note dica" style="margin:0 0 12px;">Dinheiro <strong>novo</strong> que você espera colocar no Planejamento (venda de imóvel, bônus, 13º...). Entra nas projeções. Ao receber, use <strong>✓ Efetivar</strong>: vira um aporte. Não lance aqui resgates de algo que já está na carteira — isso contaria o dinheiro duas vezes.</p>
         <div class="form-row no-priv">
             <div class="form-field" style="flex:2;min-width:180px;"><label>Descrição</label><input id="p-desc" placeholder="Ex.: Venda da casa"></div>
             <div class="form-field" style="max-width:170px;"><label>Data prevista</label><input type="date" id="p-data"></div>
@@ -731,9 +853,10 @@ nav button.tab-link .ti{font-size:13px}
 
 <!-- ═════════════ PROJEÇÃO ═════════════ -->
 <section id="Projecao" class="tab-content">
+    <div class="voltar-bar"><button class="btn btn-ghost" onclick="openTab('Mais')">← Ver mais</button><strong>Simulador e mercado</strong></div>
     <div class="card no-priv">
         <h2>Simulador</h2>
-        <p class="mis-note dica" style="margin:0 0 12px;">Parte do <strong>patrimônio estimado de hoje</strong>. Mexa nos campos e tudo abaixo recalcula na hora (nada é gravado). Os cenários pessimista e otimista usam os ajustes de Ajustes → Parâmetros.</p>
+        <p class="mis-note dica" style="margin:0 0 12px;">Parte do <strong>patrimônio estimado de hoje</strong>. Mexa nos campos e tudo abaixo recalcula na hora (nada é gravado). Os cenários pessimista e otimista usam os ajustes de Avançado → Parâmetros.</p>
         <div class="form-row">
             <div class="form-field"><label>Aporte mensal (R$)</label><input id="s-aporte" inputmode="decimal" oninput="renderPrevisao()"></div>
             <div class="form-field"><label>Ajuste na Selic projetada (p.p.)</label><input id="s-dselic" inputmode="decimal" value="0" oninput="renderPrevisao()"></div>
@@ -875,7 +998,7 @@ nav button.tab-link .ti{font-size:13px}
     </div>
     <div class="card">
         <h2>Conexão Google Sheets</h2>
-        <p class="mis-note dica" style="margin:0 0 12px;">Planilha <strong>própria da Missão</strong> — não é a do CGG. O app recusa gravar se a URL apontar para a planilha do CGG.</p>
+        <p class="mis-note dica" style="margin:0 0 12px;">Planilha <strong>própria do Planejamento</strong> — não é a do CGG. O app recusa gravar se a URL apontar para a planilha do CGG.</p>
         <div class="form-row" style="max-width:760px;">
             <div class="form-field" style="flex:3;"><label>URL do Web App</label><input type="url" id="config-url" placeholder="https://script.google.com/macros/s/.../exec"></div>
             <button class="btn btn-primary" onclick="saveUrl()">Salvar e conectar</button>
@@ -902,19 +1025,23 @@ nav button.tab-link .ti{font-size:13px}
     </div>
 </section>
 </main>
-<button id="fab" onclick="atalhoAporte()" title="Lançar aporte">＋</button>
+<button id="fab" onclick="wzAbrir('entrou')" title="Entrou dinheiro">＋</button>
 <footer class="app-rodape" data-versao="longa"></footer>
 
 <script>
 // ══════════════════════════════════════════════════════
 //  VERSÃO DO APP — ATUALIZE A CADA ALTERAÇÃO PUBLICADA
 //  MAIOR.MENOR.AJUSTE (nova função = MENOR+1; correção = AJUSTE+1)
-//   1.0.0 (01/11/2026) app próprio da Missão, separado do CGG
+//   1.0.0 (01/11/2026) app próprio do Planejamento, separado do CGG
 //   1.1.0 (08/11/2026) Programação de recebimentos: totalizador mensal e geral
 //   2.0.0 (08/11/2026) 5 abas; Início novo; Fechamento vira "Conferir saldos" na Carteira;
 //                     saldo estimado por dia pela taxa de cada ativo; botão ＋; ajuda "?"; barra inferior no celular
 //   2.1.0 (09/11/2026) Início: gráfico em R$ de hoje (meta vira linha reta), eixo da direita com a renda mensal,
 //                     marco de R$ 1 mi e quadro "Como a meta é calculada"
+//   3.0.1 (11/11/2026) App passa a se chamar Planejamento (antes: Missão). Dados, planilha e backups continuam os mesmos
+//   3.0.0 (10/11/2026) Tela inicial em três blocos (onde estou, o que fazer agora, quando chego), botões de tarefa com
+//                     passo a passo (Entrou dinheiro, Venceu uma aplicação, Conferir o mês), entradas previstas na frente,
+//                     "Meu plano" em dois números; o resto vai para Ver mais e Avançado
 //   2.5.0 (09/11/2026) Alertas: textos curtos, botão de ação em cada um, esconder lembretes por 30 dias, resumo por gravidade,
 //                     alocação fora do alvo explicada quando é temporária
 //   2.4.0 (09/11/2026) Comparador: horizonte comum com reaplicação, referências (Selic, IPCA+, carteira), vs. Selic,
@@ -922,20 +1049,20 @@ nav button.tab-link .ti{font-size:13px}
 //   2.3.0 (09/11/2026) Início: "Como aplicar o dinheiro" (valor, origem aporte x transferência, ativo de destino por classe, FGC)
 //   2.2.0 (09/11/2026) Projeção, marco de R$ 1 mi e fases no mesmo padrão do Início: R$ de hoje, meta reta, eixo da renda
 // ══════════════════════════════════════════════════════
-const APP_VERSAO = '2.5.0';
-const APP_VERSAO_DATA = '09/11/2026';
+const APP_VERSAO = '3.0.1';
+const APP_VERSAO_DATA = '11/11/2026';
 document.querySelectorAll('[data-versao]').forEach(el => {
-    el.textContent = el.dataset.versao === 'longa' ? `Missão · versão ${APP_VERSAO} · ${APP_VERSAO_DATA}` : `v${APP_VERSAO}`;
+    el.textContent = el.dataset.versao === 'longa' ? `Planejamento · versão ${APP_VERSAO} · ${APP_VERSAO_DATA}` : `v${APP_VERSAO}`;
 });
 
 // ⚙️ CONFIGURAÇÃO
-// URL fixa da planilha da Missão (opcional — pode colar só pela tela).
+// URL fixa da planilha do Planejamento (opcional — pode colar só pela tela).
 const SCRIPT_URL = '';
 // URL do CGG, usada só para LER e importar a aba Missão antiga.
 const CGG_URL_PADRAO = 'https://script.google.com/macros/s/AKfycbx5ccP8JL2Wn_szIQai0yOP2900XTOpBwmCdAJzfn_Prxwqnbi1ZqiyKOCXskAcpboNUw/exec';
 // Chaves do localStorage com prefixo próprio: no GitHub Pages o CGG e a
-// Missão ficam no mesmo domínio e dividem o localStorage. Sem o prefixo, a
-// Missão leria a URL do CGG e gravaria por cima da planilha dele.
+// Planejamento ficam no mesmo domínio e dividem o localStorage. Sem o prefixo, a
+// Planejamento leria a URL do CGG e gravaria por cima da planilha dele.
 const LS = { url:'mis_scriptUrl', senha:'mis_password', cgg:'mis_cggUrl' };
 window._runtimeUrl = localStorage.getItem(LS.url) || null;
 const url = () => window._runtimeUrl || SCRIPT_URL;
@@ -1108,8 +1235,8 @@ async function loadFromSheets(){
         const d = Array.isArray(res.data) ? res.data : [];
         if (pareceCGG(d)) {
             dataLoaded = false; setStatus('offline');
-            showBlockedBanner(true, '⛔ Esta URL é da planilha do CGG. A Missão precisa de uma planilha própria — gravação BLOQUEADA para proteger o CGG.');
-            toast('Esta URL aponta para a planilha do CGG. Crie uma planilha nova para a Missão (Config. → Conexão).', 'error', 15000);
+            showBlockedBanner(true, '⛔ Esta URL é da planilha do CGG. O Planejamento precisa de uma planilha própria — gravação BLOQUEADA para proteger o CGG.');
+            toast('Esta URL aponta para a planilha do CGG. Crie uma planilha nova para o Planejamento (Config. → Conexão).', 'error', 15000);
             abrirWizard(); render(); return;
         }
         dados = d;
@@ -1468,8 +1595,9 @@ function render(){
     let X;
     try { X = calc(); } catch(e) { console.error('calc', e); return; }
     $('h-renda').textContent = `R$ ${fmtN(X.c.renda/1000,0)} mil`;
-    [renderInicio, renderCarteira, renderFechamento, renderMovimentos, renderProg, renderPrevisao, renderMercado, renderPlano, renderUso]
+    [renderHome, renderInicio, renderCarteira, renderFechamento, renderMovimentos, renderProg, renderPrevisao, renderMercado, renderPlano, renderUso]
         .forEach(f => { try { f(X); } catch(e) { console.error(f.name, e); } });
+    if (wz) { try { wzRender(); } catch(e) { console.error('wzRender', e); } }
 }
 function mesExtenso(){ const s = currentDate.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}); return s.charAt(0).toUpperCase() + s.slice(1); }
 
@@ -1487,10 +1615,10 @@ function renderInicio(X){
     const { c } = X;
     // Guia inicial (some quando tudo estiver feito)
     const passos = [
-        [dados.some(i => i.type === 'mov' || i.type === 'fech'), 'Traga os dados do CGG em <strong>Ajustes → Importar do CGG</strong> (ou comece do zero em Ajustes → Parâmetros)'],
-        [ativos().some(a => !String(a.id).startsWith('at_mig_')), 'Cadastre suas aplicações reais em <strong>Carteira → ＋ Novo ativo</strong>, com a taxa de cada uma'],
-        [X.semAtivo <= 1 || X.estHoje <= 0, 'Distribua o ponto de partida: <strong>Carteira → Conferir saldos</strong> com o saldo de cada ativo'],
-        [dados.some(i => i.type === 'idx'), 'Atualize os índices em <strong>Projeção → Mercado → Buscar no Banco Central</strong>'],
+        [dados.some(i => i.type === 'mov' || i.type === 'fech'), 'Traga os dados do CGG em <strong>Avançado → Importar do CGG</strong> (ou comece do zero em Avançado → Parâmetros)'],
+        [ativos().some(a => !String(a.id).startsWith('at_mig_')), 'Cadastre suas aplicações reais em <strong>Ver mais → Minhas aplicações → ＋ Novo ativo</strong>, com a taxa de cada uma'],
+        [X.semAtivo <= 1 || X.estHoje <= 0, 'Diga quanto há em cada aplicação: botão <strong>Conferir o mês</strong>, logo abaixo'],
+        [dados.some(i => i.type === 'idx'), 'Atualize os índices em <strong>Ver mais → Simulador e mercado → Buscar no Banco Central</strong>'],
     ];
     $('d-inicio').style.display = passos.some(p => !p[0]) ? '' : 'none';
     $('d-inicio-lista').innerHTML = passos.map(p => `<li class="${p[0]?'ok':''}">${p[1]}</li>`).join('');
@@ -1506,7 +1634,7 @@ function renderInicio(X){
             ['+ Movimentos depois', fmtSigned(X.netDepois)],
             ['+ Rendimento estimado', fmtSigned(X.rendEst)],
             ...(X.semAtivo > 1 ? [['Ainda sem ativo', fmt(X.semAtivo)]] : []) ], 'kpi-highlight clicavel', "openTab('Carteira')"),
-        `<div class="kpi clicavel" onclick="openTab('Projecao')"><div class="kpi-label">🌱 Renda que a Missão sustenta hoje</div>
+        `<div class="kpi clicavel" onclick="openTab('Projecao')"><div class="kpi-label">🌱 Renda que o Planejamento sustenta hoje</div>
             <div class="kpi-value">${fmt(X.rendaSust)} <small>/ mês</small></div>
             <div class="hbar" title="${fmtP(X.pctMeta,1)} da meta"><i style="width:${Math.min(100, X.pctMeta*100).toFixed(1)}%"></i></div>
             <div class="kpi-sub">
@@ -1533,7 +1661,7 @@ function renderInicio(X){
     $('d-donut').innerHTML = donut(itens, 'HOJE');
     const maior = X.posAtivos.filter(a => a.saldo > 0).sort((a,b) => b.saldo - a.saldo)[0];
     const pm = maior && X.estHoje > 0 ? maior.saldo / X.estHoje : 0;
-    $('d-conc').innerHTML = pm > 0.30 ? `<div class="conc">◆ <strong>${escH(maior.nome)}</strong> concentra ${fmtP(pm,0)} da Missão${maior.garantia === 'nenhuma' ? ', sem garantia' : ''}${maior.vencimento ? ` · vence em ${dataBR(maior.vencimento)}` : ''}.</div>` : '';
+    $('d-conc').innerHTML = pm > 0.30 ? `<div class="conc">◆ <strong>${escH(maior.nome)}</strong> concentra ${fmtP(pm,0)} do Planejamento${maior.garantia === 'nenhuma' ? ', sem garantia' : ''}${maior.vencimento ? ` · vence em ${dataBR(maior.vencimento)}` : ''}.</div>` : '';
     renderEventos(X);
 
     // Rendimento mês a mês só com histórico suficiente
@@ -1582,12 +1710,12 @@ function limparAlertasOff(){ alertasOff = {}; salvaAlertasOff(); render(); }
 // Leva ao bloco "Como aplicar o dinheiro" com o ativo (vencido ou a vencer) já escolhido como origem
 function reaplicar(id){
     const X = calc(), a = X.posAtivos.find(z => z.id === id); if (!a) return;
-    openTab('Inicio');
+    openTab('Detalhes');
     const inp = $('ap-valor'), sel = $('ap-origem');
     inp.dataset.tocou = '1'; inp.value = fmtN(Math.max(0, a.saldo)); sel.value = id; renderAplicar(X);
     setTimeout(() => $('d-aplicar-card').scrollIntoView({ behavior:'smooth', block:'start' }), 60);
 }
-function renderAlertas(X){
+function listaAlertas(X){
     const { c, ix } = X, hoje = hojeISO(), out = [];
     const add = (pri, key, ic, txt, act, dias) => out.push({ pri, key, ic, txt, act, dias: dias || 30 });
     const u = X.ultimo, pend = mesPendente(X);
@@ -1596,25 +1724,25 @@ function renderAlertas(X){
         const dp = (u.tot - u.plano) / u.plano;
         if (dp < -0.05) add(0, 'dev-plano', '▼', `<strong>Patrimônio ${fmtN(Math.abs(dp)*100,1)}% abaixo do plano</strong> em ${iLbl(u.i)}. Veja se faltou aporte ou se a taxa de algum ativo está errada.`, ['Ver carteira', "openTab('Carteira')"]);
         if (u.rendPct != null && (u.rendPct < -0.03 || u.rendPct > 0.05))
-            add(0, 'rend-estranho', '⚠', `<strong>Rendimento de ${fmtSigned(u.rend)} (${fmtPs(u.rendPct,1)}) em ${iLbl(u.i)} parece errado.</strong> Confira se os saldos incluem todos os aportes do período.`, ['Conferir', `abrirConferir(${u.i})`]);
+            add(0, 'rend-estranho', '⚠', `<strong>Rendimento de ${fmtSigned(u.rend)} (${fmtPs(u.rendPct,1)}) em ${iLbl(u.i)} parece errado.</strong> Confira se os saldos incluem todos os aportes do período.`, ['Conferir', `wzAbrir('conferir',{i:${u.i}})`]);
     }
     if (X.hojeI > X.baseI) {
         const devido = c.aporte * (X.hojeI - 1 - X.baseI), feito = X.apAte(X.hojeI-1) - X.apAte(X.baseI);
-        if (devido > 0 && feito < devido) add(0, 'aportes-atrasados', '▼', `<strong>Aportes atrasados:</strong> ${fmt(feito)} de ${fmt(devido)} previstos até ${iLbl(X.hojeI-1)}. Faltam ${fmt(devido-feito)}.`, ['Lançar aporte', 'atalhoAporte()']);
-        else if (feito > devido + c.aporte) add(3, 'aportes-adiantados', '▲', `Aportes adiantados em ${fmt(feito - devido)} em relação à meta acumulada.`);
+        if (devido > 0 && feito < devido) add(0, 'aportes-atrasados', '▼', `<strong>Você colocou menos que o combinado:</strong> ${fmt(feito)} de ${fmt(devido)} até ${iLbl(X.hojeI-1)}. Faltam ${fmt(devido-feito)}.`, ['Entrou dinheiro', "wzAbrir('entrou')"]);
+        else if (feito > devido + c.aporte) add(3, 'aportes-adiantados', '▲', `Você já colocou ${fmt(feito - devido)} a mais que o combinado até aqui.`);
     }
     X.posAtivos.filter(a => !a.encerrado && a.vencimento && a.saldo > 1 && a.vencimento < hoje).forEach(a =>
-        add(0, `venceu-${a.id}`, '⚠', `<strong>${escH(a.nome)}</strong> venceu em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Reaplique e lance como Transferência.`, ['Reaplicar', `reaplicar('${a.id}')`]));
+        add(0, `venceu-${a.id}`, '⚠', `<strong>${escH(a.nome)}</strong> venceu em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Diga o que fez com o dinheiro.`, ['Resolver', `wzAbrir('venceu',{id:'${a.id}'})`]));
     fgcPorInst(X).filter(f => f.v > 250000).forEach(f => add(0, `fgc-${f.inst}`, '▲', `<strong>${escH(f.inst)}</strong> tem ${fmt(f.v)} com FGC: <strong>${fmt(f.v-250000)}</strong> passam do limite de R$ 250 mil.`, ['Ver FGC', "openTab('Carteira')"]));
     const somaAlvo = Object.values(c.alvo).reduce((s,v) => s + (Number(v)||0), 0);
     if (Math.abs(somaAlvo - 100) > 0.01) add(0, 'alvo-soma', '▼', `A alocação-alvo soma ${fmtN(somaAlvo,0)}%, e não 100%.`, ['Corrigir', 'irParametros()']);
     // ── Atenção ──
-    if (pend != null) add(1, `conf-${pend}`, '○', `<strong>Saldos de ${iLbl(pend)} sem conferir.</strong> O app está usando a estimativa.`, ['Conferir', `abrirConferir(${pend})`], 7);
+    if (pend != null) add(1, `conf-${pend}`, '○', `<strong>Falta conferir ${iLbl(pend)}.</strong> Até lá o app usa um valor estimado.`, ['Conferir', `wzAbrir('conferir',{i:${pend}})`], 7);
     if (X.semAtivo > Math.max(1000, X.estHoje*0.01)) add(1, 'sem-ativo', '◆', `${fmt(X.semAtivo)} do ponto de partida ainda não estão em nenhum ativo.`, ['Ver carteira', "openTab('Carteira')"]);
     const lim = new Date(Date.now() + 60*864e5).toISOString().slice(0,10);
     X.posAtivos.filter(a => !a.encerrado && a.vencimento && a.saldo > 1 && a.vencimento >= hoje && a.vencimento <= lim).forEach(a =>
-        add(1, `venc-${a.id}`, '◆', `<strong>${escH(a.nome)}</strong> vence em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Planeje a reaplicação.`, ['Planejar', `reaplicar('${a.id}')`], 14));
-    progs().filter(p => !p.efetivada && p.data < hoje).forEach(p => add(1, `prog-${p.id}`, '○', `Recebimento "<strong>${escH(p.desc)}</strong>" (${fmt(p.valor)}) era para ${dataBR(p.data)}. Efetive ou ajuste a data.`, ['Ver', "openTab('Movimentos')"]));
+        add(1, `venc-${a.id}`, '◆', `<strong>${escH(a.nome)}</strong> vence em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Planeje a reaplicação.`, ['Ver sugestão', `reaplicar('${a.id}')`], 14));
+    progs().filter(p => !p.efetivada && p.data < hoje).forEach(p => add(1, `prog-${p.id}`, '○', `<strong>${escH(p.desc)}</strong> (${fmt(p.valor)}) estava previsto para ${dataBR(p.data)}. Já entrou?`, ['Recebi', `wzAbrir('entrou',{prog:'${p.id}',progFixo:true})`]));
     const tp = Number(ix.ipcaPlus);
     if (tp && tp < 5) add(1, 'ipcaplus-baixo', '▼', `Tesouro IPCA+ abaixo de IPCA + 5%: a renda sustentável futura cai. Hora de rever o plano.`, ['Ver mercado', "openTab('Projecao')"]);
     // ── Lembretes ──
@@ -1627,8 +1755,8 @@ function renderAlertas(X){
             const sobre = desal.filter(a => a.pct > a.alvo);
             const temporario = sobre.length && sobre.every(cl => { const at = X.posAtivos.filter(a => (a.classe||'out') === cl.k && a.saldo > 1 && !a.encerrado);
                 return at.length && at.every(a => a.vencimento && dataI(a.vencimento) - X.hojeI <= 12); });
-            add(2, 'desalinhada', '◆', temporario ? `Alocação fora do alvo (${lista}), mas é temporária: o excesso está em ativo que vence em até 12 meses. Reaplicar no vencimento resolve.`
-                : `Alocação fora do alvo: ${lista}. Use os próximos aportes para rebalancear.`, ['Como aplicar', "document.getElementById('d-aplicar-card').scrollIntoView({behavior:'smooth'})"]);
+            add(2, 'desalinhada', '◆', temporario ? `Seu dinheiro está dividido diferente do planejado (${lista}), mas é temporário: o excesso está em ativo que vence em até 12 meses. Reaplicar no vencimento resolve.`
+                : `Seu dinheiro está dividido diferente do planejado: ${lista}. Os próximos valores que entrarem corrigem isso.`, ['Como aplicar', "irDetalhe('d-aplicar-card')"]);
         }
     }
     if (X.hojeI % 12 === 0 || X.hojeI % 12 === 6) add(2, `semestral-${X.hojeI}`, '●', `${iLbl(X.hojeI)} é mês de <strong>revisão semestral</strong>: marcos, alocação e gatilhos.`);
@@ -1647,13 +1775,16 @@ function renderAlertas(X){
     const bons = vis.filter(a => a.pri === 3); if (bons.length > 1) vis = vis.filter(a => a.pri !== 3 || a === bons[0]);
     vis.sort((a,b) => a.pri - b.pri);
     if (!vis.length) vis.push({ pri:3, key:'ok', ic:'✓', txt:'Nenhum alerta. Siga o plano.', act:null, dias:0 });
+    return { vis, nEsc, pend };
+}
+function renderAlertas(X){
+    const { vis, nEsc, pend } = listaAlertas(X);
     const nUrg = vis.filter(a => a.pri === 0).length, nAt = vis.filter(a => a.pri === 1).length, nLem = vis.filter(a => a.pri === 2).length;
     const mostra = alertasTodos ? vis : vis.slice(0, Math.max(3, nUrg));
-    $('d-alertas').innerHTML = mostra.map(a => `<li class="${a.pri===0?'forte':a.pri===3?'bom':''}"><b class="ic">${a.ic}</b><span class="alert-txt">${a.txt}</span>
-        <span class="alert-acts">${a.act ? `<button class="btn btn-ghost btn-sm" style="width:auto;padding:0 10px;height:28px;" onclick="${a.act[1]}">${a.act[0]}</button>` : ''}${a.pri === 1 || a.pri === 2 ? `<button class="btn btn-ghost btn-sm" style="width:28px;height:28px;padding:0;" title="Esconder por ${a.dias} dias" aria-label="Esconder por ${a.dias} dias" onclick="adiarAlerta('${escH(a.key).replace(/'/g,'')}',${a.dias})">✕</button>` : ''}</span></li>`).join('');
+    $('d-alertas').innerHTML = mostra.map(alertaLi).join('');
     const partes = [nUrg ? `${nUrg} urgente${nUrg>1?'s':''}` : '', nAt ? `${nAt} de atenção` : '', nLem ? `${nLem} lembrete${nLem>1?'s':''}` : ''].filter(Boolean);
     $('d-alertas-resumo').innerHTML = (partes.length ? partes.join(' · ') : 'Tudo em dia') + (nEsc ? ` · <a href="#" onclick="limparAlertasOff();return false;" style="color:var(--acc);">${nEsc} escondido${nEsc>1?'s':''} (mostrar)</a>` : '');
-    const bm = $('d-alertas-mais'), extra = vis.length - Math.max(3, nUrg);
+    const bm = $('d-alertas-mais');
     bm.style.display = vis.length > Math.max(3, nUrg) ? '' : 'none';
     bm.textContent = alertasTodos ? 'Mostrar menos' : `Ver todos (${vis.length})`;
     $('badge-conf').style.display = pend != null ? '' : 'none';
@@ -1747,8 +1878,8 @@ function renderAplicar(Xin){
     const apMes = X.apEntre(X.hojeI-1, X.hojeI), restante = Math.max(0, c.aporte - apMes);
     if (inp.dataset.tocou !== '1') inp.value = restante > 0 ? fmtN(restante) : '';
     const vSel = sel.value, origens = X.posAtivos.filter(a => !a.encerrado && a.saldo > 1);
-    sel.innerHTML = '<option value="">Dinheiro novo, de fora da Missão (aporte)</option>'
-        + origens.map(a => `<option value="${a.id}">Já está na Missão: ${escH(a.nome)} (${fmt(a.saldo)}) · transferência</option>`).join('');
+    sel.innerHTML = '<option value="">Dinheiro novo, de fora do Planejamento (aporte)</option>'
+        + origens.map(a => `<option value="${a.id}">Já está no Planejamento: ${escH(a.nome)} (${fmt(a.saldo)}) · transferência</option>`).join('');
     sel.value = origens.some(a => a.id === vSel) ? vSel : '';
     const valor = parseBR(inp.value), box = $('d-aplicar');
     if (!(valor > 0)) { box.innerHTML = `<p class="mis-note" style="margin:0;">${apMes >= c.aporte ? '✓ A meta de aportes deste mês está cumprida. ' : ''}Digite quanto você vai aplicar para ver como dividir.</p>`; return; }
@@ -1760,19 +1891,19 @@ function renderAplicar(Xin){
         .sort((a,b) => a.vencimento.localeCompare(b.vencimento))
         .forEach(a => avisos.push(`⏳ <strong>${escH(a.nome)}</strong> vence em ${dataBR(a.vencimento)} (${fmt(a.saldo)}). Esse dinheiro também precisa ser alocado: lance como <strong>Transferência</strong>, não como aporte.`));
     const maior = X.posAtivos.filter(a => a.saldo > 0).sort((a,b) => b.saldo - a.saldo)[0];
-    if (maior && X.estHoje > 0 && maior.saldo/X.estHoje > 0.30) avisos.push(`◆ <strong>${escH(maior.nome)}</strong> concentra ${fmtP(maior.saldo/X.estHoje,0)} da Missão${maior.garantia === 'nenhuma' ? ', sem garantia' : ''}. Por isso a divisão acima favorece as classes onde você tem pouco.`);
+    if (maior && X.estHoje > 0 && maior.saldo/X.estHoje > 0.30) avisos.push(`◆ <strong>${escH(maior.nome)}</strong> concentra ${fmtP(maior.saldo/X.estHoje,0)} do Planejamento${maior.garantia === 'nenhuma' ? ', sem garantia' : ''}. Por isso a divisão acima favorece as classes onde você tem pouco.`);
     box.innerHTML = `<div style="overflow-x:auto;"><table>
         <thead><tr><th>Classe</th><th class="num-cell">Aplicar</th><th class="num-cell">%</th><th>Onde</th><th style="width:130px;"></th></tr></thead><tbody>
         ${linhas.map(l => `<tr><td><strong>${l.n}</strong></td><td class="num-cell"><strong>${fmt(l.v)}</strong></td><td class="num-cell">${fmtP(l.v/valor,0)}</td>
             <td>${l.fica ? `Deixe em <strong>${escH(org.nome)}</strong><div class="sub-txt">A parte desta classe já está nesse ativo: não precisa mexer.</div>` : l.dest ? `${escH(l.dest.nome)}<div class="sub-txt">${[l.dest.inst, fmtTaxa(l.dest), LIQUIDEZ[l.dest.liquidez], GARANTIAS[l.dest.garantia], l.folga !== Infinity ? `folga FGC ${fmtMi(l.folga)}` : ''].filter(x => x && x !== '—').map(escH).join(' · ')}</div>`
                 : l.motivo === 'fgc' ? `<span class="sub-txt">Os ativos desta classe já estão no limite do FGC (R$ 250 mil por instituição). Use outra instituição.</span>`
-                : `<span class="sub-txt">Você ainda não tem ativo nesta classe. Cadastre um e escolha pelo comparador (Projeção → Mercado).</span>`}</td>
+                : `<span class="sub-txt">Você ainda não tem ativo nesta classe. Cadastre um e escolha pelo comparador (Ver mais → Simulador e mercado).</span>`}</td>
             <td>${l.fica ? '' : l.dest ? `<button class="btn btn-primary btn-sm" style="width:auto;padding:0 12px;height:30px;" onclick="atalhoMov('${tipo}','${tipo === 'transf' ? org.id : l.dest.id}','${tipo === 'transf' ? l.dest.id : ''}',${Math.round(l.v*100)/100})">${tipo === 'transf' ? '⇄ Transferir' : '＋ Lançar aporte'}</button>`
                 : `<button class="btn btn-ghost btn-sm" style="width:auto;padding:0 12px;height:30px;" onclick="cadastrarNaClasse('${l.k}')">＋ Cadastrar ativo</button>`}</td></tr>`).join('')}
         <tr><td style="color:var(--mut);">Total</td><td class="num-cell"><strong>${fmt(valor)}</strong></td><td></td><td colspan="2" class="sub-txt">${tipo === 'transf' ? 'Transferência: o dinheiro já conta no patrimônio e <strong>não</strong> entra como aporte.' : 'Aporte: dinheiro novo, conta para a meta de aportes do mês.'}</td></tr>
         </tbody></table></div>
         ${avisos.length ? `<ul class="alert-list" style="margin-top:12px;">${avisos.map(t => `<li><b class="ic">○</b><span>${t}</span></li>`).join('')}</ul>` : ''}
-        <p class="mis-note">A divisão segue a <strong>alocação-alvo</strong> (Ajustes → Parâmetros): o dinheiro vai para as classes mais abaixo do alvo, sem vender nada. O app aponta a classe e o ativo que você já tem; ele não escolhe produto nem banco. Compare as ofertas em Projeção → Mercado.</p>`;
+        <p class="mis-note">A divisão segue a <strong>alocação-alvo</strong> (Avançado → Parâmetros): o dinheiro vai para as classes mais abaixo do alvo, sem vender nada. O app aponta a classe e o ativo que você já tem; ele não escolhe produto nem banco. Compare as ofertas em Ver mais → Simulador e mercado.</p>`;
 }
 
 function renderEventos(X){
@@ -1886,7 +2017,7 @@ function renderCarteira(X){
     const linhas = planoAporte(X, aporte, null).linhas;
     $('c-sugestao').innerHTML = (X.semAtivo > 1 ? `<p class="mis-note" style="margin:0 0 8px;">Com ${fmt(X.semAtivo)} ainda sem ativo, a sugestão é aproximada.</p>` : '') +
         `<table><tbody>${linhas.map(l => `<tr><td>${l.n}</td><td class="num-cell"><strong>${fmt(l.v)}</strong></td></tr>`).join('')}<tr><td style="color:var(--mut);">Total (aporte meta)</td><td class="num-cell">${fmt(aporte)}</td></tr></tbody></table>
-        <p class="mis-note">Para aplicar um valor específico, ou dinheiro que já está na Missão, use <strong>Início → Como aplicar o dinheiro</strong>.</p>`;
+        <p class="mis-note">Para aplicar um valor específico, ou dinheiro que já está no Planejamento, use <strong>Início → Como aplicar o dinheiro</strong>.</p>`;
     // FGC
     const fg = fgcPorInst(X);
     $('c-fgc').innerHTML = fg.length ? fg.map(f => barra(escH(f.inst), f.v, f.v/250000, `<strong>${fmtMi(f.v)}</strong>`, null, f.v > 250000 ? ` · <strong>▲ ${fmtMi(f.v-250000)} acima</strong>` : ` · folga ${fmtMi(250000-f.v)}`)).join('')
@@ -1995,9 +2126,9 @@ function setMovTipo(t){
 function movAtualizaAjuda(){
     const t = movTipo, a = $('m-ativo').value, X = calc();
     const s = X.posAtivos.find(z => z.id === a);
-    const txt = { aporte:'<strong>Dinheiro novo</strong> entrando na Missão. Conta para a meta de aportes.',
-        resgate:'Dinheiro <strong>saindo</strong> da Missão (para gastar ou para outra finalidade). Reduz o patrimônio.',
-        transf:'Dinheiro mudando de um ativo para outro <strong>dentro</strong> da Missão — ex.: título venceu e foi reaplicado. Não conta como aporte nem como resgate.' }[t];
+    const txt = { aporte:'<strong>Dinheiro novo</strong> entrando no Planejamento. Conta para a meta de aportes.',
+        resgate:'Dinheiro <strong>saindo</strong> do Planejamento (para gastar ou para outra finalidade). Reduz o patrimônio.',
+        transf:'Dinheiro mudando de um ativo para outro <strong>dentro</strong> do Planejamento — ex.: título venceu e foi reaplicado. Não conta como aporte nem como resgate.' }[t];
     $('m-ajuda').innerHTML = txt + (s ? ` · Saldo estimado de "${escH(s.nome)}": <strong>${fmt(s.saldo)}</strong>` : '');
 }
 function setFiltroMov(f){ filtroMov = f; document.querySelectorAll('#m-filtro button').forEach(b => b.classList.toggle('active', b.dataset.f === f)); render(); }
@@ -2169,7 +2300,7 @@ async function salvarProg(){
     if (isNaN(valor) || valor <= 0) return toast('Informe um valor maior que zero.', 'error');
     const id = progEditId || novoId('pg'), novo = !progEditId;
     const ok = await commit(d => { upsert(d, id, 'prog', o => { Object.assign(o, { desc, data, valor: Math.round(valor*100)/100, ativo }); if (novo) o.efetivada = false; }); });
-    if (ok) { cancelarProg(); toast(novo ? 'Recebimento programado. Já entra na aba Previsão.' : 'Programação atualizada.', 'success'); }
+    if (ok) { cancelarProg(); toast(novo ? 'Recebimento programado. Já conta na previsão de chegada.' : 'Programação atualizada.', 'success'); }
 }
 function editarProg(id){
     const p = progs().find(z => z.id === id); if (!p || p.efetivada) return;
@@ -2235,7 +2366,7 @@ function renderFechamento(X){
     const nb = $('f-bloqueado'); nb.style.display = bloq ? '' : 'none';
     if (bloq) {
         nb.innerHTML = X.selI === X.baseI
-            ? `${iLbl(X.baseI)} é o <strong>ponto de partida</strong>: ${fmt(X.c.p0)} (Ajustes → Parâmetros)${X.netBase ? ` + ${fmt(X.netBase)} de movimentos até este mês = <strong>${fmt(X.p0Real)}</strong>` : ''}. As conferências começam em ${iLbl(X.baseI+1)} (use ▶ acima).`
+            ? `${iLbl(X.baseI)} é o <strong>ponto de partida</strong>: ${fmt(X.c.p0)} (Avançado → Parâmetros)${X.netBase ? ` + ${fmt(X.netBase)} de movimentos até este mês = <strong>${fmt(X.p0Real)}</strong>` : ''}. As conferências começam em ${iLbl(X.baseI+1)} (use ▶ acima).`
             : `${iLbl(X.selI)} é anterior ao ponto de partida (${iLbl(X.baseI)}). Use ▶ acima para avançar.`;
         if (confAberto) $('f-status').textContent = ''; fCtx = null;
     } else {
@@ -2248,7 +2379,7 @@ function renderFechamento(X){
         const precisa = fMk !== mk || !fDirty || $('f-form').dataset.ids !== fCtx.ids.join(',');
         if (precisa) {
             const valores = {};
-            visiveis.forEach(a => { const v = r ? saldosReg[a.id] : esp.map[a.id]; valores[a.id] = v ? fmtN(v) : ''; });
+            visiveis.forEach(a => { const v = r ? saldosReg[a.id] : esp.map[a.id]; valores[a.id] = v > 0 ? fmtN(v) : ''; });
             if (fMk === mk && fDirty) visiveis.forEach(a => { const el = $(`f-s-${a.id}`); if (el) valores[a.id] = el.value; });
             if (!visiveis.length) $('f-form').innerHTML = '<p class="mis-note" style="margin:0 0 10px;">Nenhum ativo cadastrado. Clique em <strong>＋ Ativo que faltou</strong> para cadastrar o primeiro.</p>';
             else {
@@ -2377,7 +2508,7 @@ function renderPrevisao(Xin){
                   { v:1e6, stroke:'var(--mut)', w:1.2, dash:'3 4', dir:true, label:'Marco: R$ 1 mi' } ],
         eixoDir: { titulo:'RENDA/MÊS', fmt: v => { const r = v * X.c.saque/100; return r >= 1000 ? `${fmtN(r/1000,1)} mil` : fmtN(r,0); } },
         series: [ { pts: serie(pess), stroke:'var(--mut)', w:2, dash:'2 3' }, { pts: sOtim, stroke:'var(--mut)', w:2, dash:'8 4' }, { pts: serie(base), stroke:'var(--acc)', w:3 } ] });
-    $('s-chart-nota').innerHTML = `Valores em <strong>R$ de hoje</strong> (sem a inflação), por isso a meta é uma linha reta. A Selic projetada e o aporte do simulador acima valem para os três cenários; o pessimista e o otimista usam os ajustes de Ajustes → Parâmetros.`;
+    $('s-chart-nota').innerHTML = `Valores em <strong>R$ de hoje</strong> (sem a inflação), por isso a meta é uma linha reta. A Selic projetada e o aporte do simulador acima valem para os três cenários; o pessimista e o otimista usam os ajustes de Avançado → Parâmetros.`;
     // Ano a ano
     const anoFim = Math.floor((Math.max(base.chegI || 0, X.hojeI + 120)) / 12) + 2;
     const rows = [];
@@ -2668,9 +2799,9 @@ function converterMissao(m){
     return out;
 }
 async function aplicarImportacao(novos, origem){
-    if (!dataLoaded) return toast('Conecte primeiro a planilha própria da Missão (e espere carregar).', 'error', 8000);
+    if (!dataLoaded) return toast('Conecte primeiro a planilha própria do Planejamento (e espere carregar).', 'error', 8000);
     const resumo = `${novos.filter(i => i.type==='ativo').length} ativo(s), ${novos.filter(i => i.type==='mov').length} movimento(s), ${novos.filter(i => i.type==='fech').length} conferência(s), ${novos.filter(i => i.type==='prog').length} programação(ões)`;
-    if (!confirm(`Importar de ${origem}: ${resumo}.\n\n${dados.length ? 'ATENÇÃO: isso SUBSTITUI tudo que está na planilha da Missão.\n\n' : ''}Continuar?`)) return;
+    if (!confirm(`Importar de ${origem}: ${resumo}.\n\n${dados.length ? 'ATENÇÃO: isso SUBSTITUI tudo que está na planilha do Planejamento.\n\n' : ''}Continuar?`)) return;
     showLoading('Importando e gravando...');
     const ok = await commit(d => { d.length = 0; novos.forEach(i => d.push(i)); });
     hideLoading();
@@ -2679,7 +2810,7 @@ async function aplicarImportacao(novos, origem){
 async function importarCGG(){
     const u = $('cgg-url').value.trim();
     if (!u) return toast('Cole a URL do Web App do CGG.', 'error');
-    if (u === url()) return toast('Essa é a URL da própria Missão. Use a URL do CGG.', 'error');
+    if (u === url()) return toast('Essa é a URL da próprio Planejamento. Use a URL do CGG.', 'error');
     localStorage.setItem(LS.cgg, u);
     showLoading('Lendo o CGG (somente leitura)...');
     try {
@@ -2697,7 +2828,7 @@ function importarArquivo(e){
     r.onload = async ev => {
         try {
             const p = JSON.parse(ev.target.result);
-            if (p.app === 'missao' && Array.isArray(p.dados)) await aplicarImportacao(p.dados, 'backup da Missão');
+            if (p.app === 'missao' && Array.isArray(p.dados)) await aplicarImportacao(p.dados, 'backup do Planejamento');
             else {
                 const arr = Array.isArray(p) ? p : (p.financialData || []);
                 const m = arr.find(i => i && i.type === 'missao');
@@ -2715,7 +2846,7 @@ function baixar(nome, conteudo, tipo){
 const dataArq = () => new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
 function exportBackup(){
     if (!dados.length) return toast('Nenhum dado.', 'error');
-    baixar(`Missao_backup_${dataArq()}.json`, JSON.stringify({ app:'missao', versao:APP_VERSAO, geradoEm:new Date().toISOString(), dados }, null, 2), 'application/json');
+    baixar(`Planejamento_backup_${dataArq()}.json`, JSON.stringify({ app:'missao', versao:APP_VERSAO, geradoEm:new Date().toISOString(), dados }, null, 2), 'application/json');
 }
 function exportExcel(){
     if (typeof XLSX === 'undefined') return toast('Biblioteca do Excel não carregou (sem internet?).', 'error');
@@ -2732,7 +2863,7 @@ function exportExcel(){
     for (let y = Math.floor(X.hojeI/12); y <= Math.floor(X.hojeI/12)+30; y++) { const i = y*12+11, k = i - X.hojeI; if (k < 0 || k > 420) continue; const v = pr.serie[k], r = v/Math.pow(1+X.ipcaM, i-X.baseI); anual.push([y, v, r, v*X.taxaI(i), r*X.c.saque/100, r/X.metaHoje]); }
     add('Projeção (base)', anual);
     if (progs().length) add('Programação', [['Data prevista','Descrição','Valor (R$)','Situação'], ...progs().map(p => [dataBR(p.data), p.desc, Number(p.valor), p.efetivada ? 'Efetivada' : 'A receber'])], [12,40,14,12]);
-    XLSX.writeFile(wb, `Missao_${dataArq()}.xlsx`);
+    XLSX.writeFile(wb, `Planejamento_${dataArq()}.xlsx`);
     toast('Excel exportado.', 'success');
 }
 function renderUso(){
@@ -2746,13 +2877,554 @@ function renderUso(){
 }
 
 // ══════════════════════════════════════════════════════
+//  TELA INICIAL (v3.0) — três perguntas: onde estou, o que faço agora, quando chego
+// ══════════════════════════════════════════════════════
+const semCent = v => fmt(v).replace(/,00$/, '');
+function irDetalhe(id){ openTab('Detalhes'); const el = $(id); if (el) setTimeout(() => el.scrollIntoView({ behavior:'smooth', block:'start' }), 60); }
+function alertaLi(a){
+    return `<li class="${a.pri===0?'forte':a.pri===3?'bom':''}"><b class="ic">${a.ic}</b><span class="alert-txt">${a.txt}</span>
+        <span class="alert-acts">${a.act ? `<button class="btn btn-ghost btn-sm" style="width:auto;padding:0 10px;height:28px;" onclick="${a.act[1]}">${a.act[0]}</button>` : ''}${a.pri === 1 || a.pri === 2 ? `<button class="btn btn-ghost btn-sm" style="width:28px;height:28px;padding:0;" title="Esconder por ${a.dias} dias" aria-label="Esconder por ${a.dias} dias" onclick="adiarAlerta('${escH(a.key).replace(/'/g,'')}',${a.dias})">✕</button>` : ''}</span></li>`;
+}
+function renderHome(X){
+    const c = X.c, hoje = hojeISO();
+    // ── Onde estou + Quando chego ──
+    const estimado = Math.abs(X.rendEst) > 0.5 || Math.abs(X.netDepois) > 0.5;
+    const pct = Math.max(0, Math.min(1, X.pctMeta)), falta = Math.max(0, X.metaHoje - X.patrReal);
+    const faltam = X.chegI != null ? X.chegI - X.hojeI : null;
+    const chegou = faltam != null && faltam <= 0;
+    $('h-onde').innerHTML = `<div class="h-eyebrow">Onde estou</div>
+        <div class="h-big">${fmt(X.estHoje)}</div>
+        <div class="h-sub">é o que você tem hoje no Planejamento${estimado ? ' <span class="tag" title="Calculado pelo app a partir da última conferência. Fica exato quando você confere o mês.">valor estimado</span>' : ''}</div>
+        <div class="hbar h-barra"><i style="width:${(pct*100).toFixed(1)}%"></i></div>
+        <div class="h-barra-lbl"><span>${fmtP(X.pctMeta,1)} do caminho</span><span>Meta: ${fmtMi(X.metaHoje)}</span></div>
+        <p class="h-frase">${chegou
+            ? `Você chegou: esse valor já sustenta <strong>${semCent(c.renda)} por mês</strong> sem o dinheiro perder valor.`
+            : `Com esse valor você já poderia tirar <strong>${semCent(Math.round(X.rendaSust))} por mês</strong> para sempre, sem o dinheiro perder valor para a inflação. A meta é tirar <strong>${semCent(c.renda)} por mês</strong>. Para isso é preciso juntar <strong>${fmtMi(X.metaHoje)}</strong>, em dinheiro de hoje: faltam <strong>${fmtMi(falta)}</strong>.`}
+            <button class="h-link" onclick="irDetalhe('d-meta-card')">Por que esse valor?</button></p>
+        <hr class="h-sep">
+        <div class="h-eyebrow">Quando chego</div>
+        ${chegou ? `<div class="h-big h-big2">✓ Meta atingida</div>`
+          : X.chegI == null ? `<div class="h-big h-big2">Ainda sem data</div><p class="h-frase">Colocando <strong>${semCent(c.aporte)}</strong> por mês, a meta não é alcançada nos próximos 35 anos. Aumente o valor mensal ou reveja a renda desejada.</p>`
+          : `<div class="h-big h-big2">${iLbl(X.chegI)} <small>faltam ${mesesTxt(faltam)}</small></div>
+             <p class="h-frase">Isso vale se você colocar <strong>${semCent(c.aporte)}</strong> de dinheiro novo todo mês e os juros caírem como o esperado.</p>`}
+        <div class="h-acoes no-priv"><button class="h-link" onclick="wzAbrir('plano')">Mudar meu plano</button><button class="h-link" onclick="irDetalhe('d-evol-card')">Ver o gráfico</button></div>`;
+
+    // ── O que fazer agora: no máximo dois avisos ──
+    const vis = listaAlertas(X).vis.filter(a => a.pri <= 2);
+    const apMes = X.apEntre(X.hojeI-1, X.hojeI), pm = c.aporte > 0 ? Math.min(1, apMes/c.aporte) : 0;
+    $('h-fazer').innerHTML = `<div class="h-eyebrow">O que fazer agora</div>
+        ${vis.length ? `<ul class="alert-list">${vis.slice(0,2).map(alertaLi).join('')}</ul>`
+            : `<p class="h-frase" style="margin-top:0;">✓ Nada pendente. Quando entrar dinheiro ou vencer uma aplicação, use os botões abaixo.</p>`}
+        ${vis.length > 2 ? `<div style="margin-top:8px;"><button class="h-link" onclick="irDetalhe('d-alertas-card')">${vis.length === 3 ? 'Ver o outro aviso' : `Ver os outros ${vis.length - 2} avisos`}</button></div>` : ''}
+        <div class="h-mes"><div class="h-barra-lbl"><span>Dinheiro novo em ${iLbl(X.hojeI)}</span><span>${semCent(apMes)} de ${semCent(c.aporte)}</span></div>
+            <div class="hbar"><i style="width:${(pm*100).toFixed(1)}%"></i></div>
+            <div class="sub-txt">${apMes >= c.aporte ? '✓ Você já colocou o combinado deste mês.' : `Faltam ${semCent(c.aporte - apMes)} para o combinado deste mês.`}</div></div>`;
+
+    // ── Botões de tarefa: destaca o que está pendente ──
+    const pend = mesPendente(X);
+    const venceu = X.posAtivos.some(a => !a.encerrado && a.vencimento && a.saldo > 1 && a.vencimento <= hoje);
+    $('h-t-conferir').classList.toggle('pend', pend != null);
+    $('h-t-venceu').classList.toggle('pend', venceu);
+    $('h-t-conferir-sub').textContent = pend != null ? `${iLbl(pend)} está esperando: leva uns 5 minutos` : 'Uma vez por mês: acertar os saldos com o banco';
+    $('h-t-venceu-sub').textContent = venceu ? 'Tem aplicação vencida: diga o que fez com o dinheiro' : 'Um título acabou e o dinheiro voltou para a conta';
+
+    // ── Próximas entradas previstas ──
+    const pr = progs().filter(p => !p.efetivada).sort((a,b) => a.data.localeCompare(b.data));
+    const total = pr.reduce((s,p) => s + (Number(p.valor)||0), 0);
+    let efeito = '';
+    if (pr.length && X.chegI != null && !chegou) {
+        const cp = projetar(X, { aporte:c.aporte, extras:X.progPend }).chegI;
+        if (cp != null && cp < X.chegI) efeito = `Se tudo isso entrar, a chegada passa de ${iLbl(X.chegI)} para <strong>${iLbl(cp)}</strong> (${mesesTxt(X.chegI - cp)} antes).`;
+        else efeito = 'Essas entradas não mudam o mês de chegada, mas reforçam o caminho.';
+    }
+    $('h-entradas').innerHTML = `<div class="card-head"><h2>Próximas entradas previstas</h2>
+            <button class="btn btn-ghost no-priv" style="height:34px;padding:0 12px;" onclick="wzAbrir('prever')">＋ Prever entrada</button></div>
+        ${pr.length ? `<div class="h-ent">${pr.slice(0,5).map(p => `<div class="h-ent-row">
+                <span class="h-ent-data">${p.data < hoje ? '<strong>▲ ' : ''}${dataBR(p.data)}${p.data < hoje ? '</strong>' : ''}</span>
+                <span class="h-ent-desc">${escH(p.desc)}</span><strong class="h-ent-v">${fmt(Number(p.valor))}</strong>
+                <button class="btn btn-primary btn-sm no-priv" style="width:auto;padding:0 12px;height:30px;background:var(--acc);color:var(--acc-txt);border-radius:8px;" onclick="wzAbrir('entrou',{prog:'${p.id}',progFixo:true})">✓ Recebi</button></div>`).join('')}
+            </div>
+            <p class="mis-note">${pr.length > 5 ? `Mostrando 5 de ${pr.length}. ` : ''}Total a receber: <strong>${fmt(total)}</strong>. ${efeito} Quando o dinheiro entrar, toque em <strong>Recebi</strong>. <button class="h-link" onclick="openTab('Movimentos')">Editar ou apagar</button></p>`
+        : `<p class="mis-note" style="margin:0;">Nenhuma entrada prevista. Sabe de um dinheiro que vai entrar (13º, bônus, venda de imóvel)? Anote aqui: ele já passa a contar na previsão de chegada.</p>`}`;
+}
+
+// ══════════════════════════════════════════════════════
+//  PASSO A PASSO (v3.0) — uma pergunta por tela; grava tudo de uma vez no fim
+// ══════════════════════════════════════════════════════
+let wz = null;
+const WZ = {};
+const wzNum = v => { const n = parseBR(v); return isNaN(n) ? 0 : n; };
+const r2 = v => Math.round(v*100)/100;
+function wzAbrir(tipo, d){
+    if (!dataLoaded) return toast('Os dados ainda não foram carregados do Sheets.', 'error');
+    wz = { tipo, pid:null, d:Object.assign({}, d || {}), busy:false, sujo:false, novo:null };
+    if (WZ[tipo].ini) WZ[tipo].ini(wz.d, calc());
+    $('wz').classList.remove('hidden'); wzRender();
+}
+function wzFechar(forcar){
+    if (!wz || wz.busy) return;
+    if (!forcar && wz.pid !== 'fim' && wz.sujo && !confirm('Sair sem gravar? O que você preencheu aqui será perdido.')) return;
+    wz = null; $('wz').classList.add('hidden');
+}
+// Ativo cadastrado no meio do passo a passo: entra na linha (ou na conferência) que pediu
+function wzNovoAtivo(){
+    if (!wz.novo || !$('modal-ativo').classList.contains('hidden')) return;
+    const id = ativos().map(a => a.id).find(i => !wz.novo.antes.includes(i));
+    if (id) {
+        if (wz.novo.row != null && wz.d.rows && wz.d.rows[wz.novo.row]) wz.d.rows[wz.novo.row].a = id;
+        if (wz.novo.conf) { if (!wz.d.ids.includes(id)) wz.d.ids.push(id); wz.d.s[id] = ''; wz.pid = 'a:' + id; }
+    }
+    wz.novo = null;
+}
+function wzRender(){
+    if (!wz) return;
+    const X = calc(), def = WZ[wz.tipo];
+    wzNovoAtivo();
+    const ps = def.passos(wz.d, X), fim = wz.pid === 'fim';
+    if (!fim && !ps.includes(wz.pid)) wz.pid = ps[0];
+    const k = ps.indexOf(wz.pid);
+    const t = fim ? def.fim(wz.d, X) : def.tela(wz.pid, wz.d, X);
+    $('wz-nome').textContent = def.nome;
+    $('wz-passo').textContent = fim ? 'Pronto' : ps.length > 1 ? `Passo ${k+1} de ${ps.length}` : '';
+    $('wz-barra').style.width = fim ? '100%' : `${Math.round((k+1)/(ps.length+1)*100)}%`;
+    $('wz-tit').innerHTML = t.tit; $('wz-corpo').innerHTML = t.html; $('wz-erro').textContent = '';
+    $('wz-voltar').style.visibility = (!fim && k > 0) ? '' : 'hidden';
+    const ok = $('wz-ok'); ok.style.display = t.semOk ? 'none' : ''; ok.textContent = fim ? 'Fechar' : (t.ok || 'Continuar →');
+    if (t.depois) t.depois();
+    const f = $('wz-corpo').querySelector('[data-foco]');
+    if (f && wz.focoEm !== wz.pid) { wz.focoEm = wz.pid; setTimeout(() => { try { f.focus(); if (f.select) f.select(); } catch(e) {} }, 60); }
+}
+async function wzAvancar(){
+    if (!wz || wz.busy) return;
+    if (wz.pid === 'fim') return wzFechar(true);
+    const def = WZ[wz.tipo];
+    const err = def.valida ? def.valida(wz.pid, wz.d, calc()) : null;
+    if (err) { $('wz-erro').textContent = err; return; }
+    const X = calc(), ps = def.passos(wz.d, X), k = ps.indexOf(wz.pid);
+    if (k < ps.length - 1) { wz.pid = ps[k+1]; return wzRender(); }
+    wz.busy = true; $('wz-ok').disabled = true; $('wz-ok').textContent = 'Gravando…';
+    let ok = false;
+    try { ok = await def.grava(wz.d, X); } catch(e) { console.error('wz.grava', e); toast('Não consegui gravar. Nada foi alterado.', 'error', 7000); }
+    if (!wz) return;
+    wz.busy = false; $('wz-ok').disabled = false;
+    if (ok) { wz.pid = 'fim'; wz.sujo = false; }
+    wzRender();
+}
+function wzVoltar(){
+    if (!wz || wz.busy || wz.pid === 'fim') return;
+    const ps = WZ[wz.tipo].passos(wz.d, calc()), k = ps.indexOf(wz.pid);
+    if (k > 0) { wz.pid = ps[k-1]; wzRender(); }
+}
+function wzIr(pid){ if (!wz || wz.busy) return; wz.pid = pid; wzRender(); }
+function wzEntrada(e){
+    if (!wz) return;
+    const t = e.target; if (!t || !t.closest || !t.closest('#wz-corpo')) return;
+    const sel = t.tagName === 'SELECT', chk = t.type === 'checkbox';
+    if (e.type === 'change' && !sel && !chk) return;
+    if (e.type === 'input' && (sel || chk)) return;
+    wz.sujo = true; $('wz-erro').textContent = '';
+    if (t.dataset.row != null) {
+        const j = Number(t.dataset.row), r = wz.d.rows[j]; if (!r) return;
+        if (t.dataset.f === 'a' && t.value === '__novo') { t.value = r.a || ''; wz.novo = { row:j, antes: ativos().map(a => a.id) }; abrirAtivo(); return; }
+        r[t.dataset.f] = t.value; wzSoma(); return;
+    }
+    if (t.dataset.s) { wz.d.s[t.dataset.s] = t.value; return; }
+    if (t.dataset.k) { wz.d[t.dataset.k] = chk ? t.checked : t.value; if (WZ[wz.tipo].vivo) WZ[wz.tipo].vivo(wz.d); }
+}
+document.addEventListener('input', wzEntrada);
+document.addEventListener('change', wzEntrada);
+document.addEventListener('keydown', e => {
+    if (!wz || !$('modal-ativo').classList.contains('hidden')) return;
+    if (e.key === 'Enter' && e.target && e.target.tagName === 'INPUT' && e.target.closest('#wz-corpo')) { e.preventDefault(); wzAvancar(); }
+});
+
+// ── Linhas "onde o dinheiro foi": aplicação + valor, já preenchidas com a sugestão do app ──
+function wzRowsIni(d, X, valor, origemId){
+    const chave = `${r2(valor)}|${origemId || ''}`;
+    if (d.rowsDe === chave) return;
+    const { linhas } = planoAporte(X, valor, origemId || null);
+    d.rows = []; d.semDest = [];
+    linhas.forEach(l => { if (l.dest) d.rows.push({ a:l.dest.id, v:r2(l.v) }); else d.semDest.push({ k:l.k, n:l.n, v:l.v, motivo:l.motivo }); });
+    if (d.rows.length) { const s = d.rows.reduce((t,r) => t + r.v, 0); d.rows[0].v = r2(d.rows[0].v + valor - s); d.sobraEm = d.semDest.length ? d.rows[0].a : null; }
+    d.rows = d.rows.map(r => ({ a:r.a, v:fmtN(r.v) }));
+    if (!d.rows.length) d.rows.push({ a:'', v:fmtN(valor) });
+    d.rowsDe = chave;
+}
+const wzOps = (sel, excl, saiu) => `<option value="">Escolha a aplicação…</option>${saiu ? `<option value="__saiu"${sel === '__saiu' ? ' selected' : ''}>💸 Não reapliquei: tirei do Planejamento</option>` : ''}`
+    + ativos().filter(a => (!a.encerrado || a.id === sel) && a.id !== excl).sort((a,b) => a.nome.localeCompare(b.nome))
+        .map(a => `<option value="${a.id}"${a.id === sel ? ' selected' : ''}>${escH(a.nome)}${a.inst ? ' · ' + escH(a.inst) : ''}</option>`).join('')
+    + '<option value="__novo">➕ Cadastrar outra aplicação…</option>';
+function wzRowsHtml(d, excl, saiu){
+    const notas = (d.semDest || []).map(s => `<li><b class="ic">○</b><span class="alert-txt">A sugestão era colocar <strong>${semCent(Math.round(s.v))}</strong> em <strong>${s.n}</strong>, ${s.motivo === 'fgc'
+            ? 'mas as suas aplicações desse tipo já estão no limite de garantia do FGC (R$ 250 mil por banco).' : 'mas você ainda não tem aplicação desse tipo cadastrada.'}${d.sobraEm ? ` Por enquanto somei esse valor em ${escH(nomeAtivo(d.sobraEm))}.` : ''}</span>
+        <span class="alert-acts"><button class="btn btn-ghost btn-sm" style="width:auto;padding:0 10px;height:28px;" onclick="wzCadClasse('${s.k}')">Cadastrar</button></span></li>`).join('');
+    return `<div id="wz-rows">${d.rows.map((r,j) => `<div class="wz-row"><select data-row="${j}" data-f="a" aria-label="Aplicação">${wzOps(r.a, excl, saiu)}</select>
+            <input data-row="${j}" data-f="v" inputmode="decimal" placeholder="0,00" aria-label="Valor" value="${escH(r.v)}">
+            <button class="wz-x" title="Tirar esta linha" onclick="wzRowDel(${j})"${d.rows.length < 2 ? ' style="visibility:hidden"' : ''}>×</button></div>`).join('')}</div>
+        <div class="wz-soma" id="wz-soma"></div>
+        <button class="btn btn-ghost" style="height:34px;padding:0 12px;" onclick="wzRowAdd()">＋ Dividir com outra aplicação</button>
+        ${notas ? `<ul class="alert-list" style="margin-top:12px;">${notas}</ul>` : ''}`;
+}
+function wzSoma(){
+    const el = $('wz-soma'); if (!el || !wz) return;
+    const tot = wzNum(wz.d.valor), s = wz.d.rows.reduce((t,r) => t + wzNum(r.v), 0), dif = r2(tot - s);
+    el.innerHTML = Math.abs(dif) < 0.01 ? `✓ ${fmt(tot)} distribuídos`
+        : dif > 0 ? `Falta dizer onde estão <strong>${fmt(dif)}</strong> · <button class="h-link" onclick="wzResto()">colocar na última linha</button>`
+        : `Passou <strong>${fmt(-dif)}</strong> do valor de ${fmt(tot)}. Corrija as linhas.`;
+}
+function wzRowAdd(){ wz.d.rows.push({ a:'', v:'' }); wz.sujo = true; wzRender(); }
+function wzRowDel(j){ wz.d.rows.splice(j,1); wzRender(); }
+function wzResto(){
+    const tot = wzNum(wz.d.valor), s = wz.d.rows.reduce((t,r) => t + wzNum(r.v), 0), r = wz.d.rows[wz.d.rows.length-1];
+    r.v = fmtN(Math.max(0, r2(wzNum(r.v) + tot - s))); wzRender();
+}
+function wzCadClasse(k){
+    const tot = wzNum(wz.d.valor), s = wz.d.rows.reduce((t,r) => t + wzNum(r.v), 0);
+    const vazia = wz.d.rows.findIndex(r => !r.a);
+    const j = vazia >= 0 ? vazia : wz.d.rows.push({ a:'', v: tot - s > 0 ? fmtN(r2(tot - s)) : '' }) - 1;
+    wz.novo = { row:j, antes: ativos().map(a => a.id) };
+    wzRender(); cadastrarNaClasse(k);
+}
+function wzRowsValida(d, valor){
+    const rows = d.rows.filter(r => wzNum(r.v) > 0);
+    if (!rows.length) return 'Diga em qual aplicação o dinheiro está.';
+    if (rows.some(r => !r.a)) return 'Escolha a aplicação em cada linha que tem valor.';
+    if (rows.some(r => r.a !== '__saiu' && !ativoPor(r.a))) return 'Uma das aplicações escolhidas não existe mais. Escolha de novo.';
+    const s = rows.reduce((t,r) => t + wzNum(r.v), 0);
+    if (Math.abs(s - valor) > 0.009) return `As linhas somam ${fmt(s)}, mas o valor é ${fmt(valor)}. Acerte a diferença de ${fmt(Math.abs(valor - s))}.`;
+    return null;
+}
+// Junta linhas repetidas da mesma aplicação
+function wzRowsFinal(d){
+    const m = new Map();
+    d.rows.forEach(r => { const v = wzNum(r.v); if (v > 0 && r.a) m.set(r.a, r2((m.get(r.a) || 0) + v)); });
+    return [...m.entries()].map(([a,v]) => ({ a, v }));
+}
+function wzAvisosFgc(rows, X){
+    const tot = {}; fgcPorInst(X).forEach(f => { tot[f.inst] = f.v; });
+    const add = {};
+    rows.forEach(r => { const a = ativoPor(r.a); if (a && a.garantia === 'fgc') { const k = (a.inst || '').trim(); add[k] = (add[k] || 0) + r.v; } });
+    return Object.entries(add).filter(([k,v]) => (tot[k] || 0) + v > 250000)
+        .map(([k,v]) => `Com isso, <strong>${escH(k || 'essa instituição')}</strong> fica com ${fmt((tot[k] || 0) + v)} em produtos com FGC. A garantia cobre só R$ 250 mil por banco.`);
+}
+const wzAvisos = l => l.length ? `<ul class="alert-list" style="margin-bottom:12px;">${l.map(t => `<li><b class="ic">▲</b><span class="alert-txt">${t}</span></li>`).join('')}</ul>` : '';
+const wzLin = (a, b) => `<div><span>${a}</span><strong>${b}</strong></div>`;
+function wzValorData(d, limiteFuturo){
+    const v = wzNum(d.valor);
+    if (!(v > 0)) return 'Digite o valor.';
+    if (dataI(d.data) == null) return 'Informe o dia.';
+    if (d.data > hojeISO()) return limiteFuturo;
+    return null;
+}
+// Transferência em mês já conferido: acerta os saldos conferidos (tira da origem, põe no destino). O total não muda.
+function wzAjustaFech(dd, data, origem, dest, valor){
+    dd.filter(f => f.type === 'fech' && mkI(f.mk) >= dataI(data)).forEach(f => {
+        const s = f.saldos = f.saldos || {}, sai = Math.min(valor, Number(s[origem]) || 0);
+        if (!sai) return;
+        s[origem] = r2(Number(s[origem]) - sai); if (s[origem] <= 0) delete s[origem];
+        s[dest] = r2((Number(s[dest]) || 0) + sai);
+    });
+}
+const wzMesConferido = (X, data) => X.hist.some(h => h.i >= dataI(data));
+
+// ── 💰 Entrou dinheiro ──
+function wzProg(id){
+    const d = wz.d; wz.sujo = true;
+    if (id) { const p = progs().find(z => z.id === id); if (!p) return;
+        d.prog = id; d.valor = fmtN(Number(p.valor)); d.obs = p.desc; d.data = p.data <= hojeISO() ? p.data : hojeISO(); }
+    else { if (d.prog) { d.valor = ''; d.obs = ''; d.data = hojeISO(); } d.prog = ''; }
+    wz.pid = 'valor'; wzRender();
+}
+WZ.entrou = {
+    nome:'💰 Entrou dinheiro',
+    ini(d){
+        d.data = hojeISO(); d.valor = d.valor || ''; d.obs = '';
+        if (d.prog) { const p = progs().find(z => z.id === d.prog && !z.efetivada);
+            if (p) { d.valor = fmtN(Number(p.valor)); d.obs = p.desc; d.data = p.data <= hojeISO() ? p.data : hojeISO(); } else { d.prog = ''; d.progFixo = false; } }
+    },
+    passos(d){ return [...(!d.progFixo && progs().some(p => !p.efetivada) ? ['prev'] : []), 'valor', 'onde', 'conf']; },
+    tela(pid, d, X){
+        if (pid === 'prev') return { tit:'É um dinheiro que você já tinha previsto?', semOk:true,
+            html: progs().filter(p => !p.efetivada).sort((a,b) => a.data.localeCompare(b.data)).map(p => `<button class="wz-op" onclick="wzProg('${p.id}')"><strong>${escH(p.desc)}</strong><span>${fmt(Number(p.valor))} · previsto para ${dataBR(p.data)}</span></button>`).join('')
+                + `<button class="wz-op" onclick="wzProg('')"><strong>Não, é outro dinheiro</strong><span>Salário, sobra do mês, bônus…</span></button>` };
+        if (pid === 'valor') return { tit:'Quanto entrou?',
+            html:`<input class="wz-big" data-k="valor" data-foco inputmode="decimal" placeholder="0,00" aria-label="Valor em reais" value="${escH(d.valor)}">
+                <div class="form-row" style="margin-top:12px;">
+                    <div class="form-field" style="max-width:180px;"><label>Em que dia?</label><input type="date" data-k="data" value="${escH(d.data)}" max="${hojeISO()}"></div>
+                    <div class="form-field"><label>De onde veio? (opcional)</label><input data-k="obs" placeholder="Ex.: salário, 13º, bônus" value="${escH(d.obs)}"></div>
+                </div>
+                <p class="wz-nota">Conte só <strong>dinheiro novo</strong>, que veio de fora do Planejamento. Se foi uma aplicação que venceu e você reaplicou, feche aqui e use <strong>Venceu uma aplicação</strong>.</p>` };
+        if (pid === 'onde') { const v = wzNum(d.valor); wzRowsIni(d, X, v, null);
+            return { tit:`Onde você colocou os ${semCent(v)}?`, depois:wzSoma,
+                html:`<p class="wz-nota" style="margin:0 0 12px!important;">O app já sugeriu uma divisão que deixa seu dinheiro mais perto do planejado. Mude à vontade: o que vale é onde o dinheiro está de verdade.</p>${wzRowsHtml(d, null, false)}` }; }
+        const rows = wzRowsFinal(d), av = wzAvisosFgc(rows, X);
+        if (wzMesConferido(X, d.data)) av.push(`${iLbl(dataI(d.data))} já foi conferido. Depois de gravar, confira esse mês de novo para os saldos incluírem este dinheiro.`);
+        return { tit:'Confira antes de gravar', ok:'✓ Gravar',
+            html:`<div class="wz-res">${wzLin('Dinheiro novo', `${fmt(wzNum(d.valor))} em ${dataBR(d.data)}`)}${rows.map(r => wzLin('→ ' + escH(nomeAtivo(r.a)), fmt(r.v))).join('')}</div>
+                ${d.prog ? `<p class="wz-nota" style="margin:0 0 12px!important;">A entrada prevista "<strong>${escH(d.obs)}</strong>" será marcada como recebida.</p>` : ''}${wzAvisos(av)}` };
+    },
+    valida(pid, d, X){
+        if (pid === 'valor') return wzValorData(d, 'Esse dia ainda não chegou. Para um dinheiro que vai entrar, use "Prever entrada".');
+        if (pid === 'onde') return wzRowsValida(d, wzNum(d.valor));
+        if (pid === 'conf') return wzRowsValida(d, wzNum(d.valor));
+        return null;
+    },
+    async grava(d){
+        const rows = wzRowsFinal(d), ids = rows.map(() => novoId('mv')), progId = d.prog;
+        d.total = wzNum(d.valor);
+        return commit(dd => {
+            rows.forEach((r,j) => upsert(dd, ids[j], 'mov', o => Object.assign(o, { tipo:'aporte', data:d.data, valor:r.v, ativo:r.a, ativoDest:'', obs:(d.obs || '').trim() })));
+            if (progId) { const p = dd.find(z => z.id === progId); if (p && !p.efetivada) { p.efetivada = true; p.efetivadaEm = hojeISO(); p.movId = ids[0]; } }
+        });
+    },
+    fim(d, X){
+        const apMes = X.apEntre(X.hojeI-1, X.hojeI);
+        return { tit:'✓ Registrado', html:`<div class="wz-res">${wzLin('Dinheiro novo registrado', fmt(d.total))}${wzLin('Você tem agora', fmt(X.estHoje))}
+            ${wzLin(`Dinheiro novo em ${iLbl(X.hojeI)}`, `${semCent(apMes)} de ${semCent(X.c.aporte)}`)}${X.chegI != null && X.chegI > X.hojeI ? wzLin('Chegada prevista', iLbl(X.chegI)) : ''}</div>` };
+    },
+};
+
+// ── ⏳ Venceu uma aplicação ──
+function wzVencEscolhe(id){
+    const X = calc(), a = X.posAtivos.find(z => z.id === id); if (!a) return;
+    const d = wz.d; wz.sujo = true;
+    d.id = id; d.est = Math.max(0, a.saldo); d.valor = d.est > 0 ? fmtN(d.est) : '';
+    d.data = a.vencimento && a.vencimento <= hojeISO() ? a.vencimento : hojeISO(); d.encerrar = true; d.rowsDe = null;
+    wz.pid = 'valor'; wzRender();
+}
+WZ.venceu = {
+    nome:'⏳ Venceu uma aplicação',
+    ini(d, X){
+        const a = d.id ? X.posAtivos.find(z => z.id === d.id) : null;
+        if (a) { d.idFixo = true; d.est = Math.max(0, a.saldo); d.valor = d.est > 0 ? fmtN(d.est) : ''; d.data = a.vencimento && a.vencimento <= hojeISO() ? a.vencimento : hojeISO(); d.encerrar = true; }
+        else d.id = '';
+    },
+    passos(d){ return [...(d.idFixo ? [] : ['qual']), 'valor', 'onde', 'conf']; },
+    tela(pid, d, X){
+        const hoje = hojeISO(), a = ativoPor(d.id);
+        if (pid === 'qual') { const l = X.posAtivos.filter(z => !z.encerrado && z.saldo > 1).sort((p,q) => (p.vencimento || '9999').localeCompare(q.vencimento || '9999') || p.nome.localeCompare(q.nome));
+            return { tit:'Qual aplicação venceu?', semOk:true, html: l.length ? l.map(z => `<button class="wz-op" onclick="wzVencEscolhe('${z.id}')"><strong>${escH(z.nome)}</strong>
+                <span>${fmt(z.saldo)}${z.vencimento ? ` · ${z.vencimento <= hoje ? '▲ venceu' : 'vence'} em ${dataBR(z.vencimento)}` : ' · sem data de vencimento'}</span></button>`).join('')
+                : '<p>Você não tem aplicações com saldo cadastradas.</p>' }; }
+        if (pid === 'valor') return { tit:`Quanto você recebeu de ${escH(a ? a.nome : '')}?`,
+            html:`<input class="wz-big" data-k="valor" data-foco inputmode="decimal" placeholder="0,00" aria-label="Valor em reais" value="${escH(d.valor)}">
+                <div class="form-row" style="margin-top:12px;"><div class="form-field" style="max-width:180px;"><label>Em que dia caiu na conta?</label><input type="date" data-k="data" value="${escH(d.data)}" max="${hoje}"></div></div>
+                <label class="check-field" style="margin-top:12px;"><input type="checkbox" data-k="encerrar"${d.encerrar ? ' checked' : ''}> Essa aplicação acabou: não sobrou nada nela</label>
+                <p class="wz-nota">O app calculava <strong>${fmt(d.est)}</strong> nessa aplicação. Coloque o valor que caiu na conta de verdade, já descontado o imposto.</p>` };
+        if (pid === 'onde') { const v = wzNum(d.valor); wzRowsIni(d, X, v, d.id);
+            return { tit:`O que você fez com os ${semCent(v)}?`, depois:wzSoma,
+                html:`<p class="wz-nota" style="margin:0 0 12px!important;">O app sugeriu onde reaplicar para ficar mais perto do planejado. Mude para o que você fez de verdade. Se o dinheiro ainda está parado, escolha a aplicação que representa a sua conta ou caixa.</p>${wzRowsHtml(d, d.id, true)}` }; }
+        const rows = wzRowsFinal(d), av = wzAvisosFgc(rows, X), v = wzNum(d.valor);
+        if (wzMesConferido(X, d.data)) av.push(`${iLbl(dataI(d.data))} já foi conferido. O app vai acertar os saldos conferidos para refletir a troca; se parte do dinheiro saiu do Planejamento, confira esse mês de novo.`);
+        if (Math.abs(v - d.est) > 1) av.push(`O app calculava ${fmt(d.est)} e você recebeu ${fmt(v)}. A diferença de ${fmt(Math.abs(v - d.est))} é acertada na próxima conferência do mês.`);
+        return { tit:'Confira antes de gravar', ok:'✓ Gravar',
+            html:`<div class="wz-res">${wzLin('Saiu de ' + escH(a ? a.nome : ''), `${fmt(v)} em ${dataBR(d.data)}`)}${rows.map(r => wzLin(r.a === '__saiu' ? '→ Saiu do Planejamento' : '→ ' + escH(nomeAtivo(r.a)), fmt(r.v))).join('')}
+                ${wzLin(escH(a ? a.nome : ''), d.encerrar ? 'será encerrada' : 'continua aberta')}</div>${wzAvisos(av)}
+                <p class="wz-nota" style="margin:0!important;">O que foi reaplicado continua contando no seu total e <strong>não</strong> entra como dinheiro novo do mês.</p>` };
+    },
+    valida(pid, d, X){
+        if (pid === 'qual') return 'Escolha a aplicação.';
+        if (pid === 'valor') return wzValorData(d, 'Esse dia ainda não chegou. Registre quando o dinheiro cair na conta.');
+        const e = wzRowsValida(d, wzNum(d.valor)); if (e) return e;
+        if (d.rows.some(r => r.a === d.id && wzNum(r.v) > 0)) return 'O destino não pode ser a própria aplicação que venceu.';
+        return null;
+    },
+    async grava(d){
+        const rows = wzRowsFinal(d), ids = rows.map(() => novoId('mv'));
+        d.total = wzNum(d.valor); d.saiu = rows.filter(r => r.a === '__saiu').reduce((t,r) => t + r.v, 0);
+        return commit(dd => {
+            rows.forEach((r,j) => {
+                if (r.a === '__saiu') upsert(dd, ids[j], 'mov', o => Object.assign(o, { tipo:'resgate', data:d.data, valor:r.v, ativo:d.id, ativoDest:'', obs:'Vencimento: saiu do Planejamento' }));
+                else { upsert(dd, ids[j], 'mov', o => Object.assign(o, { tipo:'transf', data:d.data, valor:r.v, ativo:d.id, ativoDest:r.a, obs:'Vencimento reaplicado' })); wzAjustaFech(dd, d.data, d.id, r.a, r.v); }
+            });
+            if (d.encerrar) { const o = dd.find(z => z.id === d.id); if (o) o.encerrado = true; }
+        });
+    },
+    fim(d, X){
+        return { tit:'✓ Registrado', html:`<div class="wz-res">${wzLin('Reaplicado', fmt(d.total - d.saiu))}${d.saiu > 0 ? wzLin('Saiu do Planejamento', fmt(d.saiu)) : ''}${wzLin('Você tem agora', fmt(X.estHoje))}</div>` };
+    },
+};
+
+// ── 📋 Conferir o mês ──
+function wzConfCarrega(d, X){
+    const i = d.i, E = estimar(X, fimMes(i), i), reg = fechs().find(f => f.mk === iMk(i)), sr = reg ? (reg.saldos || {}) : null;
+    d.est = E.v; d.reg = !!reg; d.estRend = E.rend;
+    d.prevTot = E.ck ? E.ck.tot : X.p0Real; d.prevI = E.ck ? E.ck.i : X.baseI;
+    const ordem = a => CLASSES.findIndex(c => c.k === (a.classe || 'out'));
+    d.ids = ativos().filter(a => {
+        const est = E.v[a.id] || 0, meus = X.ms.filter(m => m.ativo === a.id || m.ativoDest === a.id);
+        if (sr && sr[a.id] != null) return true;
+        if (a.encerrado) return est > 0.5 && !meus.some(m => m.i <= i && m.ativo === a.id && m.tipo !== 'aporte');   // encerrada depois deste mês
+        return est > 0.5 || !meus.length || meus.some(m => m.i <= i);                                                // ainda não existia neste mês: não pergunta
+    }).sort((a,b) => ordem(a) - ordem(b) || a.nome.localeCompare(b.nome)).map(a => a.id);
+    d.s = {};
+    d.ids.forEach(id => { const v = sr ? sr[id] : E.v[id]; d.s[id] = v > 0 ? fmtN(v) : ''; });
+}
+function wzConfMes(o){
+    const X = calc(), n = wz.d.i + o;
+    if (n <= X.baseI || n > X.hojeI) return;
+    if (wz.sujo && !confirm('Trocar de mês descarta o que você já digitou. Trocar?')) return;
+    wz.d.i = n; wz.sujo = false; wzConfCarrega(wz.d, X); wzRender();
+}
+function wzConfNovo(){ wz.novo = { conf:true, antes: ativos().map(a => a.id) }; abrirAtivo(); }
+function wzConfTotal(d){
+    let t = 0, erro = null;
+    d.ids.forEach(id => { const raw = String(d.s[id] || '').trim(); if (!raw) return; const v = parseBR(raw); if (isNaN(v) || v < 0) erro = nomeAtivo(id); else t += v; });
+    return { t:r2(t), erro };
+}
+WZ.conferir = {
+    nome:'📋 Conferir o mês',
+    ini(d, X){
+        if (d.i == null) { const p = mesPendente(X); d.i = p != null ? p : Math.max(X.baseI + 1, X.hojeI - 1); }
+        if (d.i <= X.baseI) d.i = X.baseI + 1;
+        d.cedo = d.i > X.hojeI;
+        if (!d.cedo) wzConfCarrega(d, X); else { d.ids = []; d.s = {}; }
+    },
+    passos(d){ return d.cedo ? ['mes'] : ['mes', ...d.ids.map(id => 'a:' + id), 'conf']; },
+    tela(pid, d, X){
+        const dia = dataBR(fimMes(d.i)), n = d.ids.length;
+        if (pid === 'mes') {
+            if (d.cedo) return { tit:'Ainda não há mês para conferir', semOk:true, html:`<p>O plano começa em ${iLbl(X.baseI)}. A primeira conferência é a de <strong>${iLbl(X.baseI + 1)}</strong>.</p>` };
+            return { tit:`Conferir os saldos de ${iLbl(d.i)}`, ok: n ? 'Começar →' : 'Continuar →',
+                html:`<div class="wz-mes"><button onclick="wzConfMes(-1)" title="Mês anterior"${d.i - 1 <= X.baseI ? ' disabled' : ''}>◀</button><span>${iLbl(d.i)}</span><button onclick="wzConfMes(1)" title="Mês seguinte"${d.i + 1 > X.hojeI ? ' disabled' : ''}>▶</button></div>
+                <p>Abra o aplicativo do banco ou da corretora. Vou perguntar o saldo de cada aplicação <strong>no dia ${dia}</strong>, uma por vez. O campo já vem com o valor que o app calculou: você só corrige o que estiver diferente.</p>
+                <p class="wz-nota" style="margin:0!important;">${d.reg ? 'Este mês já foi conferido. Você pode corrigir os valores.' : n ? `São ${n} ${n === 1 ? 'aplicação' : 'aplicações'}.` : 'Você ainda não tem aplicações cadastradas. No próximo passo dá para cadastrar.'}${d.i === X.hojeI ? ' Atenção: este mês ainda não terminou.' : ''}</p>` };
+        }
+        if (pid.startsWith('a:')) { const id = pid.slice(2), a = ativoPor(id), k = d.ids.indexOf(id), est = d.est[id] || 0;
+            return { tit:`${escH(a ? a.nome : '')}${a && a.inst ? ` <small style="font-weight:600;color:var(--mut);">· ${escH(a.inst)}</small>` : ''}`,
+                html:`<div class="form-field"><label>Saldo em ${dia} (R$)</label><input class="wz-big" data-s="${id}" data-foco inputmode="decimal" placeholder="0,00" value="${escH(d.s[id] || '')}"></div>
+                <p class="wz-nota">Aplicação ${k+1} de ${n}${a && a.encerrado ? ' · já encerrada' : ''}. O app calculava <strong>${fmt(Math.max(0, est))}</strong>. Se está igual, é só continuar. Se estava zerada nesse dia, deixe em branco.</p>` }; }
+        const { t } = wzConfTotal(d), net = X.netEntre(d.prevI, d.i), rend = t - d.prevTot - net, pct = d.prevTot > 0 ? rend/d.prevTot : null;
+        const estranho = t > 0 && pct != null && (pct < -0.03 || pct > 0.05);
+        const desde = d.prevI < d.i - 1 ? `De ${iLbl(d.prevI + 1)} a ${iLbl(d.i)}` : `Em ${iLbl(d.i)}`;
+        return { tit:`Resumo de ${iLbl(d.i)}`, ok:'✓ Gravar conferência',
+            html:`<div class="wz-res">${d.ids.map(id => `<div class="wz-clic" onclick="wzIr('a:${id}')" title="Corrigir"><span>${escH(nomeAtivo(id))} ✎</span><strong>${wzNum(d.s[id]) > 0 ? fmt(wzNum(d.s[id])) : '—'}</strong></div>`).join('')}
+                ${wzLin('<strong>Total</strong>', fmt(t))}</div>
+                <p style="margin-bottom:12px;">${desde}: você tinha <strong>${fmt(d.prevTot)}</strong>, ${net >= 0 ? 'colocou' : 'tirou'} <strong>${fmt(Math.abs(net))}</strong> e terminou com <strong>${fmt(t)}</strong>.
+                    Ou seja, o dinheiro <strong>${rend >= 0 ? 'rendeu' : 'perdeu'} ${fmt(Math.abs(rend))}</strong>${pct != null ? ` (${fmtPs(pct,2)})` : ''}. O app esperava ${fmtSigned(d.estRend)}.</p>
+                ${estranho ? wzAvisos(['Esse rendimento está fora do normal para um mês. Costuma ser dinheiro que entrou e não foi registrado, ou uma aplicação que ficou de fora.']) : ''}
+                <button class="btn btn-ghost" style="height:34px;padding:0 12px;" onclick="wzConfNovo()">＋ Faltou uma aplicação</button>` };
+    },
+    valida(pid, d){
+        if (pid.startsWith('a:')) { const raw = String(d.s[pid.slice(2)] || '').trim(); if (raw) { const v = parseBR(raw); if (isNaN(v) || v < 0) return 'Valor inválido. Use só números, como 15.300,50.'; } return null; }
+        if (pid === 'conf') { const { t, erro } = wzConfTotal(d); if (erro) return `Valor inválido em "${erro}".`; if (!(t > 0)) return 'Informe o saldo de pelo menos uma aplicação.'; }
+        return null;
+    },
+    async grava(d, X){
+        const saldos = {}; d.ids.forEach(id => { const v = wzNum(d.s[id]); if (v > 0) saldos[id] = r2(v); });
+        const { t } = wzConfTotal(d), rend = t - d.prevTot - X.netEntre(d.prevI, d.i), pct = d.prevTot > 0 ? rend/d.prevTot : 0;
+        if ((pct < -0.03 || pct > 0.05) && !confirm(`Com esses saldos, o rendimento de ${iLbl(d.i)} fica em ${fmtSigned(rend)} (${fmtPs(pct,1)}).\n\nIsso costuma indicar dinheiro não registrado ou uma aplicação sem saldo.\n\nGravar mesmo assim?`)) return false;
+        const mk = iMk(d.i); d.total = t; d.rend = rend;
+        const ok = await commit(dd => { upsert(dd, 'fech_' + mk, 'fech', o => { o.mk = mk; o.saldos = saldos; }); });
+        if (ok) { fDirty = false; fMk = null; }
+        return ok;
+    },
+    fim(d, X){
+        return { tit:`✓ ${iLbl(d.i)} conferido`, html:`<div class="wz-res">${wzLin(`Total no fim de ${iLbl(d.i)}`, fmt(d.total))}${wzLin('Rendimento do período', fmtSigned(d.rend))}${wzLin('Você tem hoje', fmt(X.estHoje))}</div>
+            <p class="wz-nota" style="margin:0!important;">A próxima conferência é no começo do mês que vem.</p>` };
+    },
+};
+
+// ── 📥 Prever entrada ──
+WZ.prever = {
+    nome:'📥 Prever entrada',
+    ini(d){ d.desc = ''; d.valor = ''; d.data = ''; },
+    passos(){ return ['dados']; },
+    tela(pid, d){
+        return { tit:'Que dinheiro você espera receber?', ok:'✓ Anotar',
+            html:`<div class="form-field"><label>O que é</label><input data-k="desc" data-foco placeholder="Ex.: 13º, bônus, venda da casa" value="${escH(d.desc)}"></div>
+                <div class="form-row" style="margin-top:12px;">
+                    <div class="form-field"><label>Valor (R$)</label><input data-k="valor" inputmode="decimal" placeholder="0,00" value="${escH(d.valor)}"></div>
+                    <div class="form-field" style="max-width:190px;"><label>Quando deve entrar</label><input type="date" data-k="data" value="${escH(d.data)}"></div>
+                </div>
+                <p class="wz-nota">Só dinheiro <strong>novo</strong>, de fora. Não anote aqui o vencimento de uma aplicação que já está no Planejamento: isso contaria o mesmo dinheiro duas vezes.</p>` };
+    },
+    valida(pid, d){
+        if (!String(d.desc || '').trim()) return 'Diga o que é esse dinheiro.';
+        if (!(wzNum(d.valor) > 0)) return 'Digite o valor.';
+        if (dataI(d.data) == null) return 'Informe quando deve entrar.';
+        return null;
+    },
+    async grava(d){
+        const id = novoId('pg');
+        return commit(dd => { upsert(dd, id, 'prog', o => Object.assign(o, { desc:d.desc.trim(), data:d.data, valor:r2(wzNum(d.valor)), ativo:'', efetivada:false })); });
+    },
+    fim(d, X){
+        const cp = projetar(X, { aporte:X.c.aporte, extras:X.progPend }).chegI;
+        return { tit:'✓ Anotado', html:`<div class="wz-res">${wzLin(escH(d.desc.trim()), `${fmt(wzNum(d.valor))} em ${dataBR(d.data)}`)}${cp != null && cp > X.hojeI ? wzLin('Chegada com as entradas previstas', iLbl(cp)) : ''}</div>
+            <p class="wz-nota" style="margin:0!important;">Quando o dinheiro entrar, toque em <strong>Recebi</strong> na tela inicial.</p>` };
+    },
+};
+
+// ── 🎯 Meu plano: quanto coloco por mês, quanto quero de renda, quando quero chegar ──
+function wzPlanoX(d, X){
+    const renda = wzNum(d.renda), metaHoje = renda / (X.c.saque/100);
+    return { ...X, metaHoje, metaNom: k => metaHoje * Math.pow(1 + X.ipcaM, k) };
+}
+function wzPlanoVivo(){
+    const el = $('wz-plano-res'); if (!el || !wz) return;
+    const d = wz.d, X = calc(), ap = wzNum(d.aporte), renda = wzNum(d.renda);
+    if (!(ap > 0) || !(renda > 0)) { el.innerHTML = '<div>Preencha os dois valores para ver a data.</div>'; return; }
+    const X2 = wzPlanoX(d, X), ch = projetar(X2, { aporte:ap }).chegI;
+    let h = wzLin('É preciso juntar (dinheiro de hoje)', fmtMi(X2.metaHoje)) + wzLin('Chegada prevista', ch == null ? 'além de 35 anos' : ch <= X.hojeI ? 'já atingida' : `${iLbl(ch)} · ${mesesTxt(ch - X.hojeI)}`);
+    const alvoI = mesI(d.quando);
+    d.precisa = null;
+    if (alvoI != null) {
+        if (alvoI <= X.hojeI) h += wzLin('Para chegar nessa data', 'escolha um mês futuro');
+        else {
+            const n = alvoI - X.hojeI, meta = X2.metaNom(alvoI - X.baseI), chega = a => projetar(X2, { aporte:a, n }).serie[n] >= meta;
+            if (chega(0)) h += wzLin(`Para chegar em ${iLbl(alvoI)}`, 'não precisa de dinheiro novo');
+            else { let lo = 0, hi = Math.max(1e5, meta); for (let j = 0; j < 60; j++) { const m = (lo+hi)/2; if (chega(m)) hi = m; else lo = m; }
+                d.precisa = Math.ceil(hi/100)*100;
+                h += wzLin(`Para chegar em ${iLbl(alvoI)}`, `${semCent(d.precisa)} por mês <button class="h-link" onclick="wzPlanoUsa()">usar</button>`); }
+        }
+    }
+    el.innerHTML = h;
+}
+function wzPlanoUsa(){ if (!wz || !wz.d.precisa) return; wz.d.aporte = fmtN(wz.d.precisa); wz.sujo = true; wzRender(); }
+WZ.plano = {
+    nome:'🎯 Meu plano',
+    ini(d, X){ d.aporte = fmtN(X.c.aporte); d.renda = fmtN(X.c.renda); d.quando = ''; },
+    passos(){ return ['dados']; },
+    vivo(){ wzPlanoVivo(); },
+    tela(pid, d, X){
+        return { tit:'Seu plano em dois números', ok:'✓ Salvar plano', depois:wzPlanoVivo,
+            html:`<div class="form-row">
+                    <div class="form-field"><label>Quanto você coloca por mês (R$)</label><input data-k="aporte" data-foco inputmode="decimal" value="${escH(d.aporte)}"></div>
+                    <div class="form-field"><label>Renda mensal que você quer (R$)</label><input data-k="renda" inputmode="decimal" value="${escH(d.renda)}"></div>
+                </div>
+                <div class="form-field" style="margin-top:12px;max-width:260px;"><label>Quer chegar até quando? (opcional)</label><input type="month" data-k="quando" value="${escH(d.quando)}"></div>
+                <div class="wz-res" id="wz-plano-res" style="margin-top:14px;"></div>
+                <p class="wz-nota" style="margin:0!important;">A renda é em dinheiro de hoje: o plano já corrige pela inflação. Você tem hoje <strong>${fmt(X.estHoje)}</strong>. Juros, inflação e imposto ficam em Avançado.</p>` };
+    },
+    valida(pid, d){
+        if (!(wzNum(d.aporte) > 0)) return 'Digite quanto você coloca por mês.';
+        if (!(wzNum(d.renda) > 0)) return 'Digite a renda mensal que você quer.';
+        return null;
+    },
+    async grava(d){
+        const ap = r2(wzNum(d.aporte)), renda = r2(wzNum(d.renda));
+        const ok = await commit(dd => { upsert(dd, 'cfg', 'cfg', o => { o.aporte = ap; o.renda = renda; }); });
+        if (ok) { cfgDirty = false; const s = $('s-aporte'); if (s) s.dataset.pronto = ''; render(); }
+        return ok;
+    },
+    fim(d, X){
+        return { tit:'✓ Plano salvo', html:`<div class="wz-res">${wzLin('Por mês', semCent(X.c.aporte))}${wzLin('Renda desejada', semCent(X.c.renda) + ' por mês')}${wzLin('É preciso juntar', fmtMi(X.metaHoje))}
+            ${wzLin('Chegada prevista', X.chegI == null ? 'além de 35 anos' : X.chegI <= X.hojeI ? 'já atingida' : iLbl(X.chegI))}</div>` };
+    },
+};
+
+// ══════════════════════════════════════════════════════
 //  NAVEGAÇÃO, LOGIN, CONFIG
 // ══════════════════════════════════════════════════════
+const ABAS = ['Inicio','Mais','Detalhes','Carteira','Movimentos','Projecao','Ajustes'];
 function openTab(name){
+    if (!ABAS.includes(name)) name = 'Inicio';
+    const grupo = name === 'Inicio' ? 'Inicio' : name === 'Ajustes' ? 'Ajustes' : 'Mais';
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-link').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    document.querySelectorAll('.tab-link').forEach(t => t.classList.toggle('active', t.dataset.tab === grupo));
     $(name)?.classList.add('active');
-    try { localStorage.setItem('mis_aba', name); } catch(e) {}
+    const fab = $('fab'); if (fab) fab.style.display = name === 'Inicio' ? 'none' : '';
     window.scrollTo({ top:0 });
 }
 function podeTrocarMes(){
@@ -2776,19 +3448,20 @@ let _esc = 0;
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
         if (!$('modal-ativo').classList.contains('hidden')) { fecharAtivo(); return; }
+        if (wz) { wzFechar(); return; }
         const n = Date.now(); if (n - _esc < 400) $('login-screen').classList.remove('hidden'); _esc = n;
     }
 });
 function changePassword(){
     const v = $('new-pass').value; if (!v.trim()) return;
-    appPassword = v; localStorage.setItem(LS.senha, v); $('new-pass').value = ''; toast('Senha da Missão alterada.', 'success');
+    appPassword = v; localStorage.setItem(LS.senha, v); $('new-pass').value = ''; toast('Senha do Planejamento alterada.', 'success');
 }
 function abrirWizard(){ const wz = $('wizard-url'); if (wz) wz.value = url(); $('setup-wizard').classList.remove('hidden'); }
 function saveUrl(){
     const w = $('wizard-url'), c = $('config-url');
     const u = (w && !$('setup-wizard').classList.contains('hidden') && w.value.trim()) || c.value.trim() || (w && w.value.trim()) || '';
     if (!u) return toast('Cole a URL primeiro.', 'error');
-    if (u === CGG_URL_PADRAO) return toast('Essa é a URL do CGG. A Missão precisa de uma planilha própria.', 'error', 8000);
+    if (u === CGG_URL_PADRAO) return toast('Essa é a URL do CGG. O Planejamento precisa de uma planilha própria.', 'error', 8000);
     window._runtimeUrl = u; localStorage.setItem(LS.url, u);
     if (w) w.value = u; c.value = u;
     $('setup-wizard').classList.add('hidden');
@@ -2797,7 +3470,7 @@ function saveUrl(){
 }
 
 // ══════════════════════════════════════════════════════
-//  SCRIPT DO APPS SCRIPT (planilha da Missão)
+//  SCRIPT DO APPS SCRIPT (planilha do Planejamento)
 // ══════════════════════════════════════════════════════
 function showScript(){
     const code = `// ════════════════════════════════════════════
@@ -2889,12 +3562,12 @@ function respond(data) {
 }`;
     const w = window.open('', '_blank', 'width=760,height=640');
     if (!w) return toast('O navegador bloqueou a janela. Libere pop-ups para este site.', 'error', 8000);
-    w.document.write(`<!DOCTYPE html><html><head><title>Apps Script — Missão</title>
+    w.document.write(`<!DOCTYPE html><html><head><title>Apps Script — Planejamento</title>
     <style>body{font-family:monospace;padding:20px;background:#1e1e2e;color:#cdd6f4;margin:0;}
     pre{white-space:pre-wrap;font-size:12px;line-height:1.7;background:#181825;padding:16px;border-radius:8px;border:1px solid #313244;}
     button{margin-top:14px;padding:9px 20px;background:#4d90fe;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;}
     h3{color:#89b4fa;margin-bottom:14px;font-size:15px;}</style></head><body>
-    <h3>📋 Cole este código no Apps Script da planilha NOVA da Missão</h3>
+    <h3>📋 Cole este código no Apps Script da planilha NOVA do Planejamento</h3>
     <pre id="c">${code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
     <button onclick="navigator.clipboard.writeText(document.getElementById('c').innerText).then(()=>{this.textContent='✅ Copiado!';})">Copiar código</button>
     </body></html>`);
@@ -2911,8 +3584,7 @@ function init(){
     aplicarPrivado();
     aplicarAjuda(localStorage.getItem('mis_ajuda') === '1');
     const h = new Date(); currentDate = new Date(h.getFullYear(), h.getMonth() - 1, 1);   // conferência abre no último mês encerrado
-    const aba = localStorage.getItem('mis_aba');
-    openTab(['Inicio','Carteira','Movimentos','Projecao','Ajustes'].includes(aba) ? aba : 'Inicio');
+    openTab('Inicio');   // sempre abre na tela inicial
     render();
 }
 init();
